@@ -1,0 +1,19 @@
+# Python
+backend/venv/
+__pycache__/
+*.pyc
+db.sqlite3
+
+# Node
+frontend/node_modules/
+dist/
+
+# Entornos
+.env
+
+# Blender (todos los archivos)
+*.blend
+*.blend1
+*.blend2
+*.fbx
+*.obj
