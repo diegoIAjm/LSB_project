@@ -40,7 +40,19 @@
         <td>{{ u.apellido }}</td>
         <td>{{ u.email }}</td>
         <td>{{ u.rol }}</td>
-        <td>{{ u.estado }}</td>
+        <td>
+        <button 
+            class="btn-estado"
+            [ngClass]="{
+            'activo': u.estado === 'activo',
+            'inactivo': u.estado === 'inactivo'
+            }"
+            (click)="toggleEstado(u)">
+            
+            {{ u.estado === 'activo' ? 'Activo' : 'Inactivo' }}
+
+        </button>
+        </td>
       </tr>
     </tbody>
   </table>

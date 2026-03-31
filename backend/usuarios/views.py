@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Usuario
 from .serializers import UsuarioSerializer, UsuarioCreateSerializer
+from rest_framework.views import APIView
 
 
 # 🔹 Lista usuarios existentes
@@ -51,4 +52,19 @@ class UsuarioCreateView(CreateAPIView):
             {"mensaje": "Usuario creado correctamente", "usuario": data},
             status=status.HTTP_201_CREATED
         )
+    
+class UsuarioToggleEstadoView(APIView):
+
+    def patch(self, request, pk):
+        try:
+            usuario = Usuario.objects.get(pk=pk)
+
+            # 🔹 cambiar estado
+            usuario.estado = 'inactivo' if usuario.estado == 'activo' else 'activo'
+            usuario.save()
+
+            return Response({"mensaje": "Estado actualizado"}, status=status.HTTP_200_OK)
+
+        except Usuario.DoesNotExist:
+            return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
     

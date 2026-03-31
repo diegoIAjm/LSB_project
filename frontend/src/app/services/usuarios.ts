@@ -42,4 +42,8 @@ export class UsuariosService {
     return this.http.post<Usuario>(`${this.api}crear/`, usuario);
   }
 
+  toggleEstado(id: number) {
+    return this.http.patch(`${this.api}${id}/estado/`, {});
+  }
+
 }

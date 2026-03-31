@@ -32,54 +32,82 @@ export class UsuariosComponent implements OnInit {
     private router: Router           // 🔹 para navegación
   ) {}
 
-  ngOnInit() {
-    this.cargarUsuarios();
+ngOnInit() {
+  this.cargarUsuarios();
 
-    const nav = this.router.getCurrentNavigation();
-    if (nav?.extras.state) {
-      this.mensajeExito = nav.extras.state['mensaje'] || '';
-      setTimeout(() => this.mensajeExito = '', 8000);
-    }
+  const nav = this.router.getCurrentNavigation();
+  if (nav?.extras.state) {
+    this.mensajeExito = nav.extras.state['mensaje'] || '';
+    setTimeout(() => this.mensajeExito = '', 8000);
   }
+}
 
-  cargarUsuarios(filtros: any = {}, pagina: number = 1) {
-    if (Object.keys(filtros).length === 0) filtros = this.filtro;
+// 🔹 🔥 ESTE MÉTODO FALTABA
+mostrarMensaje(mensaje: string) {
+  this.mensajeExito = mensaje;
 
-    if (filtros.rol !== null && filtros.rol !== '') filtros.rol = Number(filtros.rol);
-    else delete filtros.rol;
+  setTimeout(() => {
+    this.mensajeExito = '';
+    this.cd.detectChanges();
+  }, 5000);
+}
 
-    // 🔹 Enviar página y límite al servicio
-    this.usuariosService.getUsuarios({ ...filtros, pagina, limite: this.limite }).subscribe(
-      (res: any) => {
-        this.usuarios = res.usuarios;         // lista de usuarios paginada
-        this.totalUsuarios = res.total;       // total de usuarios para paginación
-        this.paginaActual = pagina;
-        this.cd.detectChanges();
-      },
-      error => console.error('Error al cargar usuarios', error)
-    );
-  }
+cargarUsuarios(filtros: any = {}, pagina: number = 1) {
+  if (Object.keys(filtros).length === 0) filtros = this.filtro;
 
-  irACrearUsuario() {
-    this.router.navigate(['/admin/usuarios/crear']);
-  }
+  if (filtros.rol !== null && filtros.rol !== '') filtros.rol = Number(filtros.rol);
+  else delete filtros.rol;
 
-  limpiarFiltros() {
-    this.filtro = { nombre: '', rol: '' };
-    this.cargarUsuarios({}, 1);
-  }
+  this.usuariosService.getUsuarios({ ...filtros, pagina, limite: this.limite }).subscribe(
+    (res: any) => {
+      this.usuarios = res.usuarios;
+      this.totalUsuarios = res.total;
+      this.paginaActual = pagina;
+      this.cd.detectChanges();
+    },
+    error => console.error('Error al cargar usuarios', error)
+  );
+}
 
-  siguientePagina() {
-    const totalPaginas = Math.ceil(this.totalUsuarios / this.limite);
-    if (this.paginaActual < totalPaginas) this.cargarUsuarios(this.filtro, this.paginaActual + 1);
-  }
+irACrearUsuario() {
+  this.router.navigate(['/admin/usuarios/crear']);
+}
 
-  anteriorPagina() {
-    if (this.paginaActual > 1) this.cargarUsuarios(this.filtro, this.paginaActual - 1);
-  }
+limpiarFiltros() {
+  this.filtro = { nombre: '', rol: '' };
+  this.cargarUsuarios({}, 1);
+}
 
-  get totalPaginas(): number {
+siguientePagina() {
+  const totalPaginas = Math.ceil(this.totalUsuarios / this.limite);
+  if (this.paginaActual < totalPaginas) this.cargarUsuarios(this.filtro, this.paginaActual + 1);
+}
+
+anteriorPagina() {
+  if (this.paginaActual > 1) this.cargarUsuarios(this.filtro, this.paginaActual - 1);
+}
+
+get totalPaginas(): number {
   return Math.ceil(this.totalUsuarios / this.limite);
+}
+
+toggleEstado(usuario: any) {
+
+  const accion = usuario.estado === 'activo' ? 'desactivar' : 'activar';
+
+  const confirmar = confirm(`¿Seguro que deseas ${accion} este usuario?`);
+  if (!confirmar) return;
+
+  this.usuariosService.toggleEstado(usuario.id).subscribe({
+    next: () => {
+      usuario.estado = usuario.estado === 'activo' ? 'inactivo' : 'activo';
+      this.mostrarMensaje(`Usuario ${accion} correctamente`);
+    },
+    error: () => {
+      this.mostrarMensaje('Error al cambiar estado');
+    }
+  });
+
 }
 
 }
