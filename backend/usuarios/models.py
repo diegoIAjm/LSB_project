@@ -19,8 +19,8 @@ class Usuario(models.Model):
     password = models.TextField()
     rol = models.ForeignKey(Rol, on_delete=models.CASCADE, db_column='rol_id')
     foto = models.TextField(null=True, blank=True)
-    estado = models.CharField(max_length=20)
-    fecha_registro = models.DateTimeField()
+    estado = models.CharField(max_length=20, default= 'Activo')
+    fecha_registro = models.DateTimeField(auto_now_add='True')
 
     class Meta:
         db_table = 'usuarios'
