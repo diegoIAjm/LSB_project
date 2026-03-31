@@ -1,0 +1,117 @@
+.sidebar {
+  width: 250px;
+  background: #0b0f19;
+  color: #d1d5db;
+  padding: 16px;
+  transition: all 0.3s ease;
+}
+
+.sidebar.collapsed {
+  width: 70px;
+}
+
+/* LOGO */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+  font-weight: 600;
+}
+
+/* ITEMS */
+.item, .menu-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 10px 12px;
+  border-radius: 8px;
+
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+
+  margin-bottom: 6px;
+}
+
+.item:hover,
+.menu-title:hover {
+  background: #151b2c;
+}
+
+/* ACTIVE */
+.active {
+  background: #22c55e;
+  color: #022c22;
+}
+
+/* ICON */
+.icon {
+  margin-right: 10px;
+}
+
+/* SUBMENU */
+.submenu {
+  margin-left: 30px;
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.submenu a {
+  padding: 8px;
+  border-radius: 6px;
+  color: #9ca3af;
+  text-decoration: none;
+}
+
+.submenu a:hover {
+  background: #151b2c;
+  color: white;
+}
+
+/* ARROW */
+.arrow {
+  transition: transform 0.2s;
+}
+
+.arrow.open {
+  transform: rotate(180deg);
+}
+
+/* ALIGN LEFT CONTENT */
+.menu-title .left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ICONS */
+.icon {
+  font-size: 16px;
+  min-width: 22px;
+  text-align: center;
+  opacity: 0.85;
+}
+
+/* SUBMENU ICONS */
+.submenu a i {
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+/* HOVER MÁS SUAVE */
+.item:hover,
+.menu-title:hover,
+.submenu a:hover {
+  background: #1b2236;
+}
+
+/* ACTIVE MÁS ELEGANTE */
+.active {
+  background: #22c55e;
+  color: #022c22;
+  font-weight: 500;
+}

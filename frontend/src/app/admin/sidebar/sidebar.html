@@ -1,0 +1,135 @@
+<aside class="sidebar" [class.collapsed]="collapsed">
+
+  <!-- LOGO -->
+  <div class="logo">
+    <i class="bi bi-grid-fill logo-icon"></i>
+    <span *ngIf="!collapsed">LSB Admin</span>
+  </div>
+
+  <nav>
+
+    <!-- DASHBOARD -->
+    <a routerLink="/admin/dashboard" routerLinkActive="active" class="item">
+      <i class="bi bi-speedometer2 icon"></i>
+      <span *ngIf="!collapsed">Dashboard</span>
+    </a>
+
+    <!-- USUARIOS -->
+    <div class="menu">
+
+      <div (click)="toggleMenu('usuarios')" class="menu-title">
+        <div class="left">
+          <i class="bi bi-people icon"></i>
+          <span *ngIf="!collapsed">Usuarios</span>
+        </div>
+        <i class="bi bi-chevron-down arrow"
+           *ngIf="!collapsed"
+           [class.open]="menu.usuarios"></i>
+      </div>
+
+      <div *ngIf="menu.usuarios && !collapsed" class="submenu">
+        <a routerLink="/admin/usuarios" routerLinkActive="active">
+          <i class="bi bi-person"></i> Usuarios
+        </a>
+        <a routerLink="/admin/roles" routerLinkActive="active">
+          <i class="bi bi-shield-lock"></i> Roles
+        </a>
+        <a routerLink="/admin/docentes" routerLinkActive="active">
+          <i class="bi bi-person-badge"></i> Docentes
+        </a>
+        <a routerLink="/admin/estudiantes" routerLinkActive="active">
+          <i class="bi bi-mortarboard"></i> Estudiantes
+        </a>
+      </div>
+
+    </div>
+
+    <!-- CURSOS -->
+    <div class="menu">
+
+      <div (click)="toggleMenu('academico')" class="menu-title">
+        <div class="left">
+          <i class="bi bi-journal-bookmark icon"></i>
+          <span *ngIf="!collapsed">Cursos</span>
+        </div>
+        <i class="bi bi-chevron-down arrow"
+           *ngIf="!collapsed"
+           [class.open]="menu.academico"></i>
+      </div>
+
+      <div *ngIf="menu.academico && !collapsed" class="submenu">
+        <a routerLink="/admin/cursos" routerLinkActive="active">
+          <i class="bi bi-book"></i> Cursos
+        </a>
+        <a routerLink="/admin/inscripciones" routerLinkActive="active">
+          <i class="bi bi-pencil-square"></i> Inscripciones
+        </a>
+        <a routerLink="/admin/horarios" routerLinkActive="active">
+          <i class="bi bi-clock"></i> Horarios
+        </a>
+        <a routerLink="/admin/materiales" routerLinkActive="active">
+          <i class="bi bi-folder"></i> Materiales
+        </a>
+      </div>
+
+    </div>
+
+    <!-- CONTENIDO -->
+    <div class="menu">
+
+      <div (click)="toggleMenu('duolingo')" class="menu-title">
+        <div class="left">
+          <i class="bi bi-lightbulb icon"></i>
+          <span *ngIf="!collapsed">Contenido</span>
+        </div>
+        <i class="bi bi-chevron-down arrow"
+           *ngIf="!collapsed"
+           [class.open]="menu.duolingo"></i>
+      </div>
+
+      <div *ngIf="menu.duolingo && !collapsed" class="submenu">
+        <a routerLink="/admin/niveles" routerLinkActive="active">
+          <i class="bi bi-bar-chart"></i> Niveles
+        </a>
+        <a routerLink="/admin/unidades" routerLinkActive="active">
+          <i class="bi bi-layers"></i> Unidades
+        </a>
+        <a routerLink="/admin/lecciones" routerLinkActive="active">
+          <i class="bi bi-journal-text"></i> Lecciones
+        </a>
+        <a routerLink="/admin/ejercicios" routerLinkActive="active">
+          <i class="bi bi-pencil"></i> Ejercicios
+        </a>
+      </div>
+
+    </div>
+
+    <!-- SIMPLES -->
+    <a routerLink="/admin/senas" routerLinkActive="active" class="item">
+      <i class="bi bi-hand-index icon"></i>
+      <span *ngIf="!collapsed">Señas</span>
+    </a>
+
+    <a routerLink="/admin/conversaciones" routerLinkActive="active" class="item">
+      <i class="bi bi-cpu icon"></i>
+      <span *ngIf="!collapsed">Conversaciones</span>
+    </a>
+
+    <a routerLink="/admin/evaluaciones" routerLinkActive="active" class="item">
+      <i class="bi bi-graph-up icon"></i>
+      <span *ngIf="!collapsed">Evaluaciones</span>
+    </a>
+
+    <a routerLink="/admin/reportes" routerLinkActive="active" class="item">
+      <i class="bi bi-file-earmark-text icon"></i>
+      <span *ngIf="!collapsed">Reportes</span>
+    </a>
+
+    <a routerLink="/admin/notificaciones" routerLinkActive="active" class="item">
+      <i class="bi bi-bell icon"></i>
+      <span *ngIf="!collapsed">Notificaciones</span>
+    </a>
+
+  </nav>
+
+</aside>

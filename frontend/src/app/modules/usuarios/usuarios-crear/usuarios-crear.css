@@ -1,0 +1,70 @@
+.container {
+  background: #f9fafb;
+  padding: 25px;
+  border-radius: 12px;
+  max-width: 500px;
+  margin: 20px auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #111827;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+input, select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+input:focus, select:focus {
+  border-color: #22c55e;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(34,197,94,0.2);
+}
+
+button {
+  background: #22c55e;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+button:hover {
+  background: #16a34a;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.mensaje-exito {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 8px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.mensaje-error {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 8px;
+  border-radius: 6px;
+  text-align: center;
+}

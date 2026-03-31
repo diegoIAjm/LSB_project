@@ -1,0 +1,25 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+/* GRID REAL, NO FLEX BASICO */
+.layout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  height: 100%;
+  background: #0b1220;
+}
+
+/* MAIN */
+.main {
+  display: grid;
+  grid-template-rows: 64px 1fr;
+  background: #f8fafc;
+}
+
+/* CONTENT */
+.content {
+  padding: 24px;
+  overflow-y: auto;
+}

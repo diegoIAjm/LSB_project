@@ -1,0 +1,67 @@
+<div class="container">
+
+  <!-- Header con título y botón -->
+  <div class="header-actions">
+    <h2>Gestión de Usuarios</h2>
+    <button class="btn-add" (click)="irACrearUsuario()">Añadir Usuario</button>
+  </div>
+
+  <!-- Mensaje de éxito -->
+  <p class="mensaje-exito" *ngIf="mensajeExito">{{ mensajeExito }}</p>
+
+  <!-- Filtros -->
+<div class="filters">
+    <input type="text" placeholder="Buscar por nombre..." [(ngModel)]="filtro.nombre" />
+    <select [(ngModel)]="filtro.rol">
+      <option value="">Todos los roles</option>
+      <option value="1">Administrador</option>
+      <option value="2">Docente</option>
+      <option value="3">Estudiante</option>
+    </select>
+
+    <button (click)="cargarUsuarios(filtro, 1)">Buscar</button>
+    <button (click)="limpiarFiltros()">Limpiar filtros</button>
+  </div>
+
+  <!-- Tabla de usuarios -->
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>Email</th>
+        <th>Rol</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let u of usuarios">
+        <td>{{ u.nombre }}</td>
+        <td>{{ u.apellido }}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.rol }}</td>
+        <td>{{ u.estado }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <!-- Paginación -->
+<div class="pagination">
+
+  <button 
+    (click)="anteriorPagina()" 
+    [disabled]="paginaActual === 1">
+    ⬅ Anterior
+  </button>
+
+  <span class="page-info">
+    Página {{ paginaActual }} de {{ totalPaginas }}
+  </span>
+
+  <button 
+    (click)="siguientePagina()" 
+    [disabled]="paginaActual >= totalPaginas">
+    Siguiente ➡
+  </button>
+
+</div>
+</div>

@@ -1,0 +1,31 @@
+<header class="header">
+
+  <!-- LEFT -->
+  <div class="left">
+    <button class="toggle-btn" (click)="toggleSidebar.emit()">
+      ☰
+    </button>
+
+    <div class="search">
+      <input type="text" placeholder="Buscar..." />
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right">
+
+    <div class="user">
+      <div class="avatar">A</div>
+      <div class="info">
+        <span class="name">{{usuario.nombre}}</span>
+        <span class="role">{{usuario.rol}}</span>
+      </div>
+    </div>
+
+    <button class="logout" (click)="logout()">
+      Salir
+    </button>
+
+  </div>
+
+</header>
