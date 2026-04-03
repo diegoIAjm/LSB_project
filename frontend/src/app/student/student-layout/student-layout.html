@@ -1,0 +1,59 @@
+<div class="app-container">
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.sidebar-collapsed]="!sidebarOpen">
+    <div class="sidebar-header">
+      <div class="logo" *ngIf="sidebarOpen">
+        <span class="logo-icon">🎓</span>
+        <span class="logo-text">EduLearn</span>
+      </div>
+      <div class="logo-icon-only" *ngIf="!sidebarOpen">
+        <span class="logo-icon">🎓</span>
+      </div>
+      <button class="toggle-btn" (click)="toggleSidebar()">
+        {{ sidebarOpen ? '◀' : '▶' }}
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a *ngFor="let item of menuItems"
+         class="nav-item"
+         [class.active]="activeMenu === item.id"
+         (click)="setActiveMenu(item.id)">
+        <span class="nav-icon">{{ item.icon }}</span>
+        <span class="nav-label" *ngIf="sidebarOpen">{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer" *ngIf="sidebarOpen">
+      <div class="user-info">
+        <div class="user-avatar">
+          <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Avatar">
+        </div>
+        <div class="user-details">
+          <span class="user-name">María González</span>
+          <span class="user-role">Estudiante</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content" [class.content-expanded]="!sidebarOpen">
+    <header class="top-bar">
+      <div class="welcome-message">
+        <h1>¡Hola, María! 👋</h1>
+        <p>¿Lista para seguir aprendiendo hoy?</p>
+      </div>
+      <div class="header-actions">
+        <button class="notification-btn">🔔</button>
+        <div class="user-menu">
+          <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Avatar" class="avatar">
+        </div>
+      </div>
+    </header>
+
+    <div class="content-area">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

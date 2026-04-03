@@ -1,0 +1,81 @@
+<div class="dashboard-container">
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card" *ngFor="let stat of stats" [style.border-left-color]="stat.color">
+      <div class="stat-icon">{{ stat.icon }}</div>
+      <div class="stat-info">
+        <h3>{{ stat.value }}</h3>
+        <p>{{ stat.label }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="dashboard-grid">
+    <!-- Cursos Recientes -->
+    <div class="card courses-card">
+      <div class="card-header">
+        <h2>📖 Mis Cursos</h2>
+        <span class="view-all">Ver todos →</span>
+      </div>
+      <div class="course-list">
+        <div class="course-item" *ngFor="let course of recentCourses">
+          <div class="course-icon" [style.background]="course.color">{{ course.icon }}</div>
+          <div class="course-details">
+            <h4>{{ course.name }}</h4>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="course.progress"></div>
+            </div>
+            <span class="progress-text">{{ course.progress }}% completado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tareas Pendientes -->
+    <div class="card tasks-card">
+      <div class="card-header">
+        <h2>⏰ Próximas Tareas</h2>
+      </div>
+      <div class="task-list">
+        <div class="task-item" *ngFor="let task of upcomingTasks">
+          <div class="task-priority" 
+               [class.priority-high]="task.priority === 'high'"
+               [class.priority-medium]="task.priority === 'medium'"
+               [class.priority-low]="task.priority === 'low'">
+          </div>
+          <div class="task-info">
+            <h4>{{ task.title }}</h4>
+            <p>📅 {{ task.due }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Acceso Rápido a Módulos IA -->
+    <div class="card modules-card">
+      <div class="card-header">
+        <h2>🤖 Módulos IA</h2>
+        <span class="view-all">Ver todos →</span>
+      </div>
+      <div class="modules-grid">
+        <div class="module-item" *ngFor="let module of quickAccessModules">
+          <div class="module-icon" [style.background]="module.color">{{ module.icon }}</div>
+          <div class="module-info">
+            <h4>{{ module.name }}</h4>
+            <p>{{ module.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Frase Motivacional -->
+    <div class="card motivation-card">
+      <div class="motivation-content">
+        <div class="quote-icon">💡</div>
+        <p class="quote">"El aprendizaje es un tesoro que seguirá a su dueño a todas partes"</p>
+        <p class="author">- Proverbio chino</p>
+      </div>
+    </div>
+  </div>
+</div>

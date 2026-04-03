@@ -24,8 +24,30 @@ export const routes: Routes = [
     {
         path: 'usuarios/editar/:id',
         loadComponent: () => import('./modules/usuarios/editar-usuario/editar-usuario').then(m => m.UsuariosEditarComponent)
-    },
+    }
     
     ]
+  },
+
+    {
+    path: 'student',
+        loadComponent: () => import('./student/student-layout/student-layout').then(m => m.StudentLayout),
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./student/dashboard/dashboard').then(m => m.StudentDashboard)
+      },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      }
+    ]
+  },
+  {
+    path: '',
+    redirectTo: '/student',
+    pathMatch: 'full'
   }
+
 ];
