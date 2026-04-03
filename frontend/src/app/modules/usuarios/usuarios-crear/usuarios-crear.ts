@@ -16,6 +16,7 @@ export class UsuariosCrearComponent {
     nombre: '',
     apellido: '',
     email: '',
+    ci:'',
     password: '',
     rol: 0
   };
@@ -38,14 +39,15 @@ crearUsuario() {
   this.error = '';
   this.cargando = true;
 
-  const { nombre, apellido, email, password, rol } = this.usuario;
+  const { nombre, apellido, email, ci, password, rol } = this.usuario;
 
   // 🔹 Expresiones regulares
   const nombreApellidoRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const ciRegex = /^[0-9]{5,15}$/;
 
   // 🔹 Validaciones
-  if (!nombre || !apellido || !email || !password || !rol) {
+  if (!nombre || !apellido || !email || !ci || !password || !rol) {
     this.error = 'Todos los campos son obligatorios';
     this.cargando = false;
     return;
@@ -69,6 +71,12 @@ crearUsuario() {
     return;
   }
 
+  if (!ciRegex.test(ci)) {
+    this.error = 'El CI debe contener solo números y entre 5 y 15 dígitos';
+    this.cargando = false;
+    return;
+  }
+
   if (password.length < 6) {
     this.error = 'La contraseña debe tener al menos 6 caracteres';
     this.cargando = false;
@@ -81,10 +89,17 @@ crearUsuario() {
       // Redirigir al listado con mensaje
       this.router.navigate(['/admin/usuarios'], { state: { mensaje: 'Usuario creado correctamente' } });
     },
-    error: err => {
-      this.error = err.error?.mensaje || 'Error al crear usuario';
-      this.cargando = false;
-    }
-  });
+      error: err => {
+        // 🔹 Manejar errores específicos del backend
+        if (err.error?.email) {
+          this.error = err.error.email;
+        } else if (err.error?.ci) {
+          this.error = err.error.ci;
+        } else {
+          this.error = err.error?.mensaje || 'Error al crear usuario';
+        }
+        this.cargando = false;
+      }
+    });
 }
 }

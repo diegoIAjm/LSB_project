@@ -10,13 +10,13 @@ class UsuarioSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Usuario
-        fields = ['id', 'nombre', 'apellido', 'email', 'rol', 'foto', 'estado', 'fecha_registro']
+        fields = ['id', 'nombre', 'apellido', 'email', 'ci', 'rol', 'foto', 'estado', 'fecha_registro']
 
 # 🔹 Serializador para crear usuarios
 class UsuarioCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
-        fields = ['nombre', 'apellido', 'email', 'password', 'rol', 'estado', 'fecha_registro']
+        fields = ['nombre', 'apellido', 'email', 'ci', 'password', 'rol', 'estado', 'fecha_registro']
 
     def validate_nombre(self, value):
         if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$', value):
@@ -31,6 +31,16 @@ class UsuarioCreateSerializer(serializers.ModelSerializer):
     def validate_email(self, value):
         if not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', value):
             raise serializers.ValidationError("Ingrese un correo electrónico válido")
+        return value
+    
+    def validate_ci(self, value):
+        if not value or len(value.strip()) == 0:
+            raise serializers.ValidationError("El CI es obligatorio")
+        if not re.match(r'^[0-9]{5,15}$', value):
+            raise serializers.ValidationError("El CI debe contener solo números y entre 5 y 15 dígitos")
+        # 🔹 Validar CI único
+        if Usuario.objects.filter(ci=value).exists():
+            raise serializers.ValidationError("Ya existe un usuario con este CI")
         return value
 
     def validate_password(self, value):
@@ -52,7 +62,7 @@ class UsuarioUpdateSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Usuario
-        fields = ['nombre', 'apellido', 'email', 'rol']
+        fields = ['nombre', 'apellido', 'email', 'ci', 'rol']
 
     def validate_nombre(self, value):
         if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$', value):
@@ -68,6 +78,18 @@ class UsuarioUpdateSerializer(serializers.ModelSerializer):
         if not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', value):
             raise serializers.ValidationError("Ingrese un correo electrónico válido")
         return value
+    
+    def validate_ci(self, value):
+        if not value or len(value.strip()) == 0:
+            raise serializers.ValidationError("El CI es obligatorio")
+        if not re.match(r'^[0-9]{5,15}$', value):
+            raise serializers.ValidationError("El CI debe contener solo números y entre 5 y 15 dígitos")
+        return value
+
+    def validate(self, data):
+        email = data.get('email')
+        ci = data.get('ci')
+        usuario_actual = self.instance
 
     def validate(self, data):
         email = data.get('email')
@@ -76,4 +98,9 @@ class UsuarioUpdateSerializer(serializers.ModelSerializer):
         if email and Usuario.objects.filter(email=email).exclude(id=usuario_actual.id).exists():
             raise serializers.ValidationError({"email": "Ya existe un usuario con este correo electrónico"})
         
+        return data
+    
+        if ci and Usuario.objects.filter(ci=ci).exclude(id=usuario_actual.id).exists():
+            raise serializers.ValidationError({"ci": "Ya existe un usuario con este CI"})
+    
         return data

@@ -17,6 +17,7 @@ export class UsuariosEditarComponent implements OnInit {
     nombre: '',
     apellido: '',
     email: '',
+    ci: '',
     rol: 0
   };
 
@@ -82,6 +83,7 @@ export class UsuariosEditarComponent implements OnInit {
               nombre: usuarioEncontrado.nombre,
               apellido: usuarioEncontrado.apellido,
               email: usuarioEncontrado.email,
+              ci: usuarioEncontrado.ci ||'',
               rol: rolId
             };
             
@@ -116,12 +118,13 @@ export class UsuariosEditarComponent implements OnInit {
     this.cargando = true;
     this.cd.detectChanges();  // 🔹 AÑADIDO
 
-    const { nombre, apellido, email, rol } = this.usuario;
+    const { nombre, apellido, email, ci, rol } = this.usuario;
 
     const nombreApellidoRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const ciRegex = /^[0-9]{5,15}$/;
 
-    if (!nombre || !apellido || !email || !rol) {
+    if (!nombre || !apellido || !email || !ci || !rol) {
       this.error = 'Todos los campos son obligatorios';
       this.cargando = false;
       this.cd.detectChanges();  // 🔹 AÑADIDO
@@ -149,10 +152,18 @@ export class UsuariosEditarComponent implements OnInit {
       return;
     }
 
+    if (!ciRegex.test(ci)) {
+      this.error = 'El CI debe contener solo números y entre 5 y 15 dígitos';
+      this.cargando = false;
+      this.cd.detectChanges();
+      return;
+    }
+
     const usuarioData = {
       nombre: this.usuario.nombre,
       apellido: this.usuario.apellido,
       email: this.usuario.email,
+      ci: this.usuario.ci,
       rol: this.usuario.rol
     };
 
@@ -165,6 +176,8 @@ export class UsuariosEditarComponent implements OnInit {
       error: (err) => {
         if (err.error?.email) {
           this.error = err.error.email;
+        }else if (err.error?.ci){ 
+          this.error = err.error.ci;
         } else if (err.error?.nombre) {
           this.error = err.error.nombre;
         } else if (err.error?.apellido) {

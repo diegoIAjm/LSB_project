@@ -7,6 +7,7 @@ export interface Usuario {
   nombre: string;
   apellido: string;
   email: string;
+  ci: string;
   rol: string;       
   foto?: string;
   estado: string;
@@ -17,6 +18,7 @@ export interface NuevoUsuario {
   nombre: string;
   apellido: string;
   email: string;
+  ci: string;
   password: string;
   rol: number; // 🔹 usar número para el rol
 }
@@ -25,6 +27,7 @@ export interface EditarUsuario {
   nombre: string;
   apellido: string;
   email: string;
+  ci: string;
   rol: number;
 }
 

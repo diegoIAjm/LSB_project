@@ -31,6 +31,11 @@
       [(ngModel)]="usuario.email" 
       [disabled]="cargando" />
 
+    <input 
+      type="text" 
+      placeholder="Cédula de Identidad (CI)" 
+      [(ngModel)]="usuario.ci"/>
+
     <select [(ngModel)]="usuario.rol" [disabled]="cargando">
       <option [value]="0">Seleccionar rol</option>
       <option [value]="1">Administrador</option>

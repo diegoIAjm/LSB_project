@@ -27,6 +27,7 @@
   <table>
     <thead>
       <tr>
+        <th>CI</th>
         <th>Nombre</th>
         <th>Apellido</th>
         <th>Email</th>
@@ -37,6 +38,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let u of usuarios">
+        <td>{{u.ci}}</td>
         <td>{{ u.nombre }}</td>
         <td>{{ u.apellido }}</td>
         <td>{{ u.email }}</td>
