@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Usuario
+from .models import Usuario, Rol
 from django.contrib.auth.hashers import make_password
 import re 
 from django.utils import timezone
@@ -45,3 +45,35 @@ class UsuarioCreateSerializer(serializers.ModelSerializer):
         # 🔹 Fecha de registro actual
         validated_data['fecha_registro'] = timezone.now()
         return super().create(validated_data)
+
+class UsuarioUpdateSerializer(serializers.ModelSerializer):
+    # 🔹 Campo rol como ID (entero)
+    rol = serializers.PrimaryKeyRelatedField(queryset=Rol.objects.all())
+    
+    class Meta:
+        model = Usuario
+        fields = ['nombre', 'apellido', 'email', 'rol']
+
+    def validate_nombre(self, value):
+        if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$', value):
+            raise serializers.ValidationError("El nombre debe tener solo letras y entre 2 y 50 caracteres")
+        return value
+
+    def validate_apellido(self, value):
+        if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$', value):
+            raise serializers.ValidationError("El apellido debe tener solo letras y entre 2 y 50 caracteres")
+        return value
+
+    def validate_email(self, value):
+        if not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', value):
+            raise serializers.ValidationError("Ingrese un correo electrónico válido")
+        return value
+
+    def validate(self, data):
+        email = data.get('email')
+        usuario_actual = self.instance
+        
+        if email and Usuario.objects.filter(email=email).exclude(id=usuario_actual.id).exists():
+            raise serializers.ValidationError({"email": "Ya existe un usuario con este correo electrónico"})
+        
+        return data

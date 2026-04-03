@@ -20,7 +20,12 @@ export const routes: Routes = [
         loadComponent: () =>
             import('./modules/usuarios/usuarios-crear/usuarios-crear')
             .then(m => m.UsuariosCrearComponent)
-        }
+        },
+    {
+        path: 'usuarios/editar/:id',
+        loadComponent: () => import('./modules/usuarios/editar-usuario/editar-usuario').then(m => m.UsuariosEditarComponent)
+    },
+    
     ]
   }
 ];

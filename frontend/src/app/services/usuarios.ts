@@ -21,6 +21,13 @@ export interface NuevoUsuario {
   rol: number; // 🔹 usar número para el rol
 }
 
+export interface EditarUsuario {
+  nombre: string;
+  apellido: string;
+  email: string;
+  rol: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -45,5 +52,16 @@ export class UsuariosService {
   toggleEstado(id: number) {
     return this.http.patch(`${this.api}${id}/estado/`, {});
   }
+
+  editarUsuario(id: number, usuario: EditarUsuario): Observable<any> {
+    return this.http.put(`${this.api}editar/${id}/`, usuario);
+  }
+
+  getUsuarioById(id: number): Observable<any> {
+    return this.http.get<any>(this.api, { params: new HttpParams().set('pagina', '1').set('limite', '1000')});
+  }
+  getUsuario(id: number): Observable<any> {
+  return this.http.get<any>(`${this.api}${id}/`);
+}
 
 }

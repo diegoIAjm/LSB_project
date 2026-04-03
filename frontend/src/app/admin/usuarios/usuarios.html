@@ -32,6 +32,7 @@
         <th>Email</th>
         <th>Rol</th>
         <th>Estado</th>
+        <th>Acciones</th>
       </tr>
     </thead>
     <tbody>
@@ -50,8 +51,12 @@
             (click)="toggleEstado(u)">
             
             {{ u.estado === 'activo' ? 'Activo' : 'Inactivo' }}
-
         </button>
+        </td>
+        <td class="acciones">
+          <button class="btn-editar" (click)="irAEditarUsuario(u.id)" title="Editar usuario">
+            ✏️ Editar
+          </button>
         </td>
       </tr>
     </tbody>

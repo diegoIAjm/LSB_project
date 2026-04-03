@@ -28,21 +28,36 @@ export class UsuariosComponent implements OnInit {
 
   constructor(
     private usuariosService: UsuariosService,
-    private cd: ChangeDetectorRef,   // 🔹 para forzar actualización
-    private router: Router           // 🔹 para navegación
+    private cd: ChangeDetectorRef,   // para forzar actualización
+    private router: Router           // para navegación
   ) {}
 
 ngOnInit() {
   this.cargarUsuarios();
 
+  // 🔹 Primero intentar con history.state (más confiable)
+  const historyState = history.state;
+  console.log('History state:', historyState); // Debug
+  
+  if (historyState && historyState.mensaje) {
+    this.mensajeExito = historyState.mensaje;
+    console.log('Mensaje desde history.state:', this.mensajeExito);
+    setTimeout(() => {
+      this.mensajeExito = '';
+      this.cd.detectChanges();
+    }, 5000);
+    // Limpiar el estado para que no persista
+    history.replaceState({}, '');
+  }
+  
+  // 🔹 También intentar con navigation state como respaldo
   const nav = this.router.getCurrentNavigation();
-  if (nav?.extras.state) {
-    this.mensajeExito = nav.extras.state['mensaje'] || '';
-    setTimeout(() => this.mensajeExito = '', 8000);
+  if (nav?.extras.state && nav.extras.state['mensaje']) {
+    this.mensajeExito = nav.extras.state['mensaje'];
+    setTimeout(() => this.mensajeExito = '', 5000);
   }
 }
 
-// 🔹 🔥 ESTE MÉTODO FALTABA
 mostrarMensaje(mensaje: string) {
   this.mensajeExito = mensaje;
 
@@ -71,6 +86,10 @@ cargarUsuarios(filtros: any = {}, pagina: number = 1) {
 
 irACrearUsuario() {
   this.router.navigate(['/admin/usuarios/crear']);
+}
+
+irAEditarUsuario(id: number) {
+  this.router.navigate(['/admin/usuarios/editar', id]);
 }
 
 limpiarFiltros() {
@@ -107,6 +126,7 @@ toggleEstado(usuario: any) {
       this.mostrarMensaje('Error al cambiar estado');
     }
   });
+
 
 }
 

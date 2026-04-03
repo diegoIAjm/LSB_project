@@ -1,0 +1,45 @@
+<div class="container">
+  <h2>Editar Usuario</h2>
+
+  <button class="btn-volver" (click)="volverUsuarios()">← Volver al listado</button>
+
+  <!-- Estado de carga -->
+  <div *ngIf="cargandoDatos" class="loading">
+    Cargando datos del usuario...
+  </div>
+
+  <!-- Formulario de edición -->
+  <div class="formulario" *ngIf="!cargandoDatos">
+    <p class="mensaje-exito" *ngIf="mensaje">{{ mensaje }}</p>
+    <p class="mensaje-error" *ngIf="error">{{ error }}</p>
+
+    <input 
+      type="text" 
+      placeholder="Nombre" 
+      [(ngModel)]="usuario.nombre" 
+      [disabled]="cargando" />
+
+    <input 
+      type="text" 
+      placeholder="Apellido" 
+      [(ngModel)]="usuario.apellido" 
+      [disabled]="cargando" />
+
+    <input 
+      type="email" 
+      placeholder="Correo electrónico" 
+      [(ngModel)]="usuario.email" 
+      [disabled]="cargando" />
+
+    <select [(ngModel)]="usuario.rol" [disabled]="cargando">
+      <option [value]="0">Seleccionar rol</option>
+      <option [value]="1">Administrador</option>
+      <option [value]="2">Docente</option>
+      <option [value]="3">Estudiante</option>
+    </select>
+
+    <button [disabled]="cargando" (click)="actualizarUsuario()">
+      {{ cargando ? 'Actualizando...' : 'Actualizar Usuario' }}
+    </button>
+  </div>
+</div>

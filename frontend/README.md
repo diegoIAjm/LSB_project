@@ -300,3 +300,141 @@ frontend
 └─ tsconfig.spec.json
 
 ```
+```
+frontend
+├─ .angular
+├─ .editorconfig
+├─ .prettierrc
+├─ angular.json
+├─ package-lock.json
+├─ package.json
+├─ public
+│  └─ favicon.ico
+├─ README.md
+├─ src
+│  ├─ app
+│  │  ├─ admin
+│  │  │  ├─ admin-module.ts
+│  │  │  ├─ dashboard
+│  │  │  │  ├─ dashboard.css
+│  │  │  │  ├─ dashboard.html
+│  │  │  │  ├─ dashboard.spec.ts
+│  │  │  │  └─ dashboard.ts
+│  │  │  ├─ header
+│  │  │  │  ├─ header.css
+│  │  │  │  ├─ header.html
+│  │  │  │  ├─ header.spec.ts
+│  │  │  │  └─ header.ts
+│  │  │  ├─ layout
+│  │  │  │  ├─ layout.css
+│  │  │  │  ├─ layout.html
+│  │  │  │  ├─ layout.spec.ts
+│  │  │  │  └─ layout.ts
+│  │  │  ├─ sidebar
+│  │  │  │  ├─ sidebar.css
+│  │  │  │  ├─ sidebar.html
+│  │  │  │  ├─ sidebar.spec.ts
+│  │  │  │  └─ sidebar.ts
+│  │  │  └─ usuarios
+│  │  │     ├─ usuarios.css
+│  │  │     ├─ usuarios.html
+│  │  │     ├─ usuarios.spec.ts
+│  │  │     └─ usuarios.ts
+│  │  ├─ app.config.ts
+│  │  ├─ app.css
+│  │  ├─ app.html
+│  │  ├─ app.routes.ts
+│  │  ├─ app.spec.ts
+│  │  ├─ app.ts
+│  │  ├─ auth
+│  │  │  └─ auth-module.ts
+│  │  ├─ modules
+│  │  │  └─ usuarios
+│  │  │     └─ usuarios-crear
+│  │  │        ├─ usuarios-crear.css
+│  │  │        ├─ usuarios-crear.html
+│  │  │        └─ usuarios-crear.ts
+│  │  ├─ services
+│  │  │  ├─ usuarios.spec.ts
+│  │  │  └─ usuarios.ts
+│  │  └─ shared
+│  │     └─ shared-module.ts
+│  ├─ index.html
+│  ├─ main.ts
+│  └─ styles.css
+├─ tsconfig.app.json
+├─ tsconfig.json
+└─ tsconfig.spec.json
+
+```
+```
+frontend
+├─ .angular
+├─ .editorconfig
+├─ .prettierrc
+├─ angular.json
+├─ package-lock.json
+├─ package.json
+├─ public
+│  └─ favicon.ico
+├─ README.md
+├─ src
+│  ├─ app
+│  │  ├─ admin
+│  │  │  ├─ admin-module.ts
+│  │  │  ├─ dashboard
+│  │  │  │  ├─ dashboard.css
+│  │  │  │  ├─ dashboard.html
+│  │  │  │  ├─ dashboard.spec.ts
+│  │  │  │  └─ dashboard.ts
+│  │  │  ├─ header
+│  │  │  │  ├─ header.css
+│  │  │  │  ├─ header.html
+│  │  │  │  ├─ header.spec.ts
+│  │  │  │  └─ header.ts
+│  │  │  ├─ layout
+│  │  │  │  ├─ layout.css
+│  │  │  │  ├─ layout.html
+│  │  │  │  ├─ layout.spec.ts
+│  │  │  │  └─ layout.ts
+│  │  │  ├─ sidebar
+│  │  │  │  ├─ sidebar.css
+│  │  │  │  ├─ sidebar.html
+│  │  │  │  ├─ sidebar.spec.ts
+│  │  │  │  └─ sidebar.ts
+│  │  │  └─ usuarios
+│  │  │     ├─ usuarios.css
+│  │  │     ├─ usuarios.html
+│  │  │     ├─ usuarios.spec.ts
+│  │  │     └─ usuarios.ts
+│  │  ├─ app.config.ts
+│  │  ├─ app.css
+│  │  ├─ app.html
+│  │  ├─ app.routes.ts
+│  │  ├─ app.spec.ts
+│  │  ├─ app.ts
+│  │  ├─ auth
+│  │  │  └─ auth-module.ts
+│  │  ├─ modules
+│  │  │  └─ usuarios
+│  │  │     ├─ editar-usuario
+│  │  │     │  ├─ editar-usuario.css
+│  │  │     │  ├─ editar-usuario.html
+│  │  │     │  └─ editar-usuario.ts
+│  │  │     └─ usuarios-crear
+│  │  │        ├─ usuarios-crear.css
+│  │  │        ├─ usuarios-crear.html
+│  │  │        └─ usuarios-crear.ts
+│  │  ├─ services
+│  │  │  ├─ usuarios.spec.ts
+│  │  │  └─ usuarios.ts
+│  │  └─ shared
+│  │     └─ shared-module.ts
+│  ├─ index.html
+│  ├─ main.ts
+│  └─ styles.css
+├─ tsconfig.app.json
+├─ tsconfig.json
+└─ tsconfig.spec.json
+
+```

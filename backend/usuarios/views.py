@@ -1,9 +1,10 @@
-from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Usuario
-from .serializers import UsuarioSerializer, UsuarioCreateSerializer
+from .serializers import UsuarioSerializer, UsuarioCreateSerializer, UsuarioUpdateSerializer
 from rest_framework.views import APIView
+
 
 
 # 🔹 Lista usuarios existentes
@@ -68,3 +69,21 @@ class UsuarioToggleEstadoView(APIView):
         except Usuario.DoesNotExist:
             return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
     
+class UsuarioUpdateView(UpdateAPIView):
+    queryset = Usuario.objects.all()
+    serializer_class = UsuarioUpdateSerializer
+    lookup_field = 'pk'
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        # Retornar datos actualizados con el serializer de lista
+        updated_data = UsuarioSerializer(instance).data
+        return Response({
+            "mensaje": "Usuario actualizado correctamente",
+            "usuario": updated_data
+        }, status=status.HTTP_200_OK)
