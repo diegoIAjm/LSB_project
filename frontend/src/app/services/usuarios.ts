@@ -67,4 +67,16 @@ export class UsuariosService {
   return this.http.get<any>(`${this.api}${id}/`);
 }
 
+importarEstudiantes(archivo: File): Observable<any> {
+  const formData = new FormData();
+  formData.append('archivo', archivo);
+  return this.http.post(`${this.api}importar/estudiantes/`, formData);
+}
+
+importarDocentes(archivo: File): Observable<any> {
+  const formData = new FormData();
+  formData.append('archivo', archivo);
+  return this.http.post(`${this.api}importar/docentes/`, formData);
+}
+
 }

@@ -2,8 +2,10 @@ from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Usuario
-from .serializers import UsuarioSerializer, UsuarioCreateSerializer, UsuarioUpdateSerializer
+from .serializers import UsuarioSerializer, UsuarioCreateSerializer, UsuarioUpdateSerializer, ImportacionResponseSerializer
 from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
+from .services.import_service import ImportService
 
 
 
@@ -87,3 +89,78 @@ class UsuarioUpdateView(UpdateAPIView):
             "mensaje": "Usuario actualizado correctamente",
             "usuario": updated_data
         }, status=status.HTTP_200_OK)
+    
+
+class ImportarEstudiantesView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+    
+    def post(self, request, *args, **kwargs):
+        archivo = request.FILES.get('archivo')
+        
+        if not archivo:
+            return Response(
+                {'error': 'No se proporcionó ningún archivo'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Validar extensión
+        if not archivo.name.endswith(('.xlsx', '.xls')):
+            return Response(
+                {'error': 'Formato de archivo no válido. Use .xlsx o .xls'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            resultados = ImportService.importar_estudiantes(archivo)
+            
+            serializer = ImportacionResponseSerializer(resultados)
+            
+            # Determinar código de respuesta
+            if resultados['creados'] > 0 and len(resultados['errores']) == 0:
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            elif resultados['creados'] > 0 and len(resultados['errores']) > 0:
+                return Response(serializer.data, status=status.HTTP_207_MULTI_STATUS)
+            else:
+                return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+                
+        except Exception as e:
+            return Response(
+                {'error': f'Error al procesar el archivo: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        
+class ImportarDocentesView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+    
+    def post(self, request, *args, **kwargs):
+        archivo = request.FILES.get('archivo')
+        
+        if not archivo:
+            return Response(
+                {'error': 'No se proporcionó ningún archivo'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if not archivo.name.endswith(('.xlsx', '.xls')):
+            return Response(
+                {'error': 'Formato de archivo no válido. Use .xlsx o .xls'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            resultados = ImportService.importar_docentes(archivo)
+            
+            serializer = ImportacionResponseSerializer(resultados)
+            
+            if resultados['creados'] > 0 and len(resultados['errores']) == 0:
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            elif resultados['creados'] > 0 and len(resultados['errores']) > 0:
+                return Response(serializer.data, status=status.HTTP_207_MULTI_STATUS)
+            else:
+                return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+                
+        except Exception as e:
+            return Response(
+                {'error': f'Error al procesar el archivo: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

@@ -28,3 +28,27 @@ class Usuario(models.Model):
 
     def __str__(self):
         return f"{self.nombre} {self.apellido} ({self.rol})"
+    
+
+class Estudiante(models.Model):
+    id = models.AutoField(primary_key=True)
+    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='estudiante')
+    nivel_actual = models.CharField(max_length=50, blank=True, null=True)
+
+    class Meta:
+        db_table = 'estudiantes'
+
+    def __str__(self):
+        return f"Estudiante: {self.usuario.nombre} {self.usuario.apellido}"
+
+# 🔹 MODELO DOCENTE (para futuro)
+class Docente(models.Model):
+    id = models.AutoField(primary_key=True)
+    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='docente')
+    especialidad = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        db_table = 'docentes'
+
+    def __str__(self):
+        return f"Docente: {self.usuario.nombre} {self.usuario.apellido}"

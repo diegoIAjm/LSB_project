@@ -264,3 +264,18 @@
     width: 270px;
   }
 }
+
+.submenu-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 8px 0;
+}
+
+.submenu-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #6b7280;
+  padding: 8px 12px 4px;
+  display: block;
+}

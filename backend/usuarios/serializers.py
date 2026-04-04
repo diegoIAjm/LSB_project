@@ -104,3 +104,12 @@ class UsuarioUpdateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"ci": "Ya existe un usuario con este CI"})
     
         return data
+    
+    # Añade al final del archivo
+
+class ImportacionResponseSerializer(serializers.Serializer):
+    total = serializers.IntegerField()
+    creados = serializers.IntegerField()
+    duplicados = serializers.ListField(child=serializers.DictField(), required=False)
+    errores = serializers.ListField(child=serializers.DictField())
+    detalle = serializers.ListField(child=serializers.DictField())

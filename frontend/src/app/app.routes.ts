@@ -24,7 +24,18 @@ export const routes: Routes = [
     {
         path: 'usuarios/editar/:id',
         loadComponent: () => import('./modules/usuarios/editar-usuario/editar-usuario').then(m => m.UsuariosEditarComponent)
-    }
+    },
+
+    {
+  path: 'usuarios/importar/estudiantes',
+  loadComponent: () => import('./admin/usuarios/importar-estudiantes/importar-estudiantes')
+    .then(m => m.ImportarEstudiantesComponent)
+},
+{
+  path: 'usuarios/importar/docentes',
+  loadComponent: () => import('./admin/usuarios/importar-docentes/importar-docentes')
+    .then(m => m.ImportarDocentesComponent)
+}
     
     ]
   },
@@ -49,5 +60,7 @@ export const routes: Routes = [
     redirectTo: '/student',
     pathMatch: 'full'
   }
+
+
 
 ];

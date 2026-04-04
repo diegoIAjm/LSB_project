@@ -1,0 +1,80 @@
+<div class="container">
+  <h2>👨‍🏫 Importar Docentes</h2>
+  <p class="subtitulo">Importe docentes masivamente desde un archivo Excel</p>
+
+  <button class="btn-volver" (click)="volverUsuarios()">← Volver al listado</button>
+
+  <div class="import-area">
+    <div class="info-box">
+      <h3>📋 Instrucciones</h3>
+      <ul>
+        <li>El archivo debe ser formato <strong>.xlsx o .xls</strong></li>
+        <li>Las columnas deben estar en este orden: <strong>Nombre, Apellido, Email, CI, Especialidad</strong></li>
+        <li>La <strong>contraseña</strong> se asignará automáticamente con el <strong>CI</strong></li>
+        <li>El <strong>rol</strong> se asignará automáticamente como <strong>Docente</strong></li>
+        <li>El <strong>estado</strong> será <strong>Activo</strong> por defecto</li>
+      </ul>
+    </div>
+
+    <div class="example-box">
+      <h3>📝 Ejemplo de formato Excel</h3>
+      <table class="example-table">
+        <thead>
+          <tr><th>Nombre</th><th>Apellido</th><th>Email</th><th>CI</th><th>Especialidad</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let fila of ejemploExcel">
+            <td *ngFor="let celda of fila">{{ celda }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="note">⚠️ La primera fila debe ser el encabezado, los datos empiezan desde la fila 2</p>
+    </div>
+
+    <div *ngIf="mensajeExito" class="mensaje-exito">{{ mensajeExito }}</div>
+    <div *ngIf="mensajeError" class="mensaje-error">{{ mensajeError }}</div>
+
+    <div class="file-area">
+      <label class="file-label">
+        <input type="file" id="fileInput" (change)="onArchivoSeleccionado($event)" accept=".xlsx,.xls" />
+        <span class="file-button">📁 Seleccionar archivo</span>
+      </label>
+      
+      <div *ngIf="nombreArchivo" class="file-info">
+        <span class="file-name">📄 {{ nombreArchivo }}</span>
+        <button class="btn-clear" (click)="limpiarArchivo()">✖</button>
+      </div>
+    </div>
+
+    <button class="btn-importar" [disabled]="!archivoSeleccionado || cargando" (click)="importarDocentes()">
+      <span *ngIf="cargando" class="spinner"></span>
+      {{ cargando ? 'Importando...' : '🚀 Importar Docentes' }}
+    </button>
+
+    <div *ngIf="mostrarResultados" class="resultados-area">
+      <h3>📊 Resumen de Importación</h3>
+      <div class="resumen-stats">
+        <div class="stat total">📊 Total: {{ resultados.total }}</div>
+        <div class="stat creados">✅ Creados: {{ resultados.creados }}</div>
+        <div class="stat errores">❌ Errores: {{ resultados.errores.length }}</div>
+      </div>
+
+      <div *ngIf="resultados.errores.length > 0" class="errores-detalle">
+        <h4>⚠️ Errores encontrados:</h4>
+        <div class="error-item" *ngFor="let error of resultados.errores">
+          <strong>Fila {{ error.fila }}:</strong>
+          <ul>
+            <li *ngFor="let err of error.errores">{{ err }}</li>
+          </ul>
+        </div>
+      </div>
+
+      <div *ngIf="resultados.detalle.length > 0" class="creados-detalle">
+        <h4>✅ Docentes creados:</h4>
+        <div class="creado-item" *ngFor="let item of resultados.detalle">
+          {{ item.nombre }} {{ item.apellido }} - {{ item.email }} (CI: {{ item.ci }}) - {{ item.especialidad }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
