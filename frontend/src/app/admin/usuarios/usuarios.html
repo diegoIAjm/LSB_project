@@ -32,6 +32,7 @@
         <th>Apellido</th>
         <th>Email</th>
         <th>Rol</th>
+        <th>Nivel/Especialidad</th>
         <th>Estado</th>
         <th>Acciones</th>
       </tr>
@@ -43,6 +44,7 @@
         <td>{{ u.apellido }}</td>
         <td>{{ u.email }}</td>
         <td>{{ u.rol }}</td>
+<td>{{ getValorEspecifico(u) }}</td>
         <td>
         <button 
             class="btn-estado"

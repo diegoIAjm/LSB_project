@@ -75,6 +75,7 @@ cargarUsuarios(filtros: any = {}, pagina: number = 1) {
 
   this.usuariosService.getUsuarios({ ...filtros, pagina, limite: this.limite }).subscribe(
     (res: any) => {
+      console.log('📊 Datos recibidos del backend:', res.usuarios);
       this.usuarios = res.usuarios;
       this.totalUsuarios = res.total;
       this.paginaActual = pagina;
@@ -82,6 +83,25 @@ cargarUsuarios(filtros: any = {}, pagina: number = 1) {
     },
     error => console.error('Error al cargar usuarios', error)
   );
+}
+
+getRolTipo(rol: string): string {
+  if (!rol) return 'otro';
+  const rolLower = rol.toLowerCase();
+  if (rolLower.includes('estudiante')) return 'estudiante';
+  if (rolLower.includes('docente')) return 'docente';
+  return 'otro';
+}
+
+getValorEspecifico(usuario: any): string {
+  const rolLower = usuario.rol?.toLowerCase() || '';
+  if (rolLower.includes('estudiante')) {
+    return usuario.nivel_actual || 'No asignado';
+  }
+  if (rolLower.includes('docente')) {
+    return usuario.especialidad || 'No asignada';
+  }
+  return '—';
 }
 
 irACrearUsuario() {

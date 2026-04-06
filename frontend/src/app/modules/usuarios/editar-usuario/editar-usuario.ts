@@ -18,13 +18,16 @@ export class UsuariosEditarComponent implements OnInit {
     apellido: '',
     email: '',
     ci: '',
-    rol: 0
+    rol: 0, 
+    nivel_actual: '',
+    especialidad: ''
   };
 
   mensaje = '';
   error = '';
   cargando = false;
   cargandoDatos = true;
+  niveles = ['Inicial', 'Avanzado'];
 
   constructor(
     private usuariosService: UsuariosService,
@@ -42,6 +45,10 @@ export class UsuariosEditarComponent implements OnInit {
       this.cargandoDatos = false;
       this.cd.detectChanges();  // 🔹 AÑADIDO
     }
+  }
+
+  mostrarCampoEspecifico(): boolean {
+    return this.usuario.rol === 2 || this.usuario.rol === 3;
   }
 
   cargarUsuario(id: number): void {
@@ -84,7 +91,9 @@ export class UsuariosEditarComponent implements OnInit {
               apellido: usuarioEncontrado.apellido,
               email: usuarioEncontrado.email,
               ci: usuarioEncontrado.ci ||'',
-              rol: rolId
+              rol: rolId,
+              nivel_actual: usuarioEncontrado.nivel_actual || '',
+              especialidad: usuarioEncontrado.especialidad || ''
             };
             
             console.log('5. Usuario cargado:', this.usuario);
@@ -95,7 +104,7 @@ export class UsuariosEditarComponent implements OnInit {
           } else {
             this.error = 'Usuario no encontrado';
             this.cargandoDatos = false;
-            this.cd.detectChanges();  // 🔹 AÑADIDO
+            this.cd.detectChanges();  
           }
         }
       },
@@ -118,7 +127,7 @@ export class UsuariosEditarComponent implements OnInit {
     this.cargando = true;
     this.cd.detectChanges();  // 🔹 AÑADIDO
 
-    const { nombre, apellido, email, ci, rol } = this.usuario;
+    const { nombre, apellido, email, ci, rol, nivel_actual, especialidad } = this.usuario;
 
     const nombreApellidoRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -159,13 +168,33 @@ export class UsuariosEditarComponent implements OnInit {
       return;
     }
 
-    const usuarioData = {
+        if (rol === 3 && !nivel_actual) {
+      this.error = 'Debe seleccionar un nivel para el estudiante';
+      this.cargando = false;
+      this.cd.detectChanges();
+      return;
+    }
+
+    if (rol === 2 && !especialidad) {
+      this.error = 'Debe ingresar una especialidad para el docente';
+      this.cargando = false;
+      this.cd.detectChanges();
+      return;
+    }
+
+    const usuarioData: any = {
       nombre: this.usuario.nombre,
       apellido: this.usuario.apellido,
       email: this.usuario.email,
       ci: this.usuario.ci,
       rol: this.usuario.rol
     };
+
+    if (rol === 3) {
+      usuarioData.nivel_actual = nivel_actual;
+    } else if (rol === 2) {
+      usuarioData.especialidad = especialidad;
+    }
 
     this.usuariosService.editarUsuario(this.usuario.id, usuarioData).subscribe({
       next: (res: any) => {

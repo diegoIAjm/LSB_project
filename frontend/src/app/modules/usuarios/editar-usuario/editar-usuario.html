@@ -37,11 +37,24 @@
       [(ngModel)]="usuario.ci"/>
 
     <select [(ngModel)]="usuario.rol" [disabled]="cargando">
-      <option [value]="0">Seleccionar rol</option>
-      <option [value]="1">Administrador</option>
-      <option [value]="2">Docente</option>
-      <option [value]="3">Estudiante</option>
+      <option [ngValue]="0">Seleccionar rol</option>
+      <option [ngValue]="1">Administrador</option>
+      <option [ngValue]="2">Docente</option>
+      <option [ngValue]="3">Estudiante</option>
     </select>
+
+        <div *ngIf="usuario.rol === 3" class="campo-especifico">
+      <label>Nivel Actual:</label>
+      <select [(ngModel)]="usuario.nivel_actual" [disabled]="cargando">
+        <option [value]="''">Seleccionar nivel</option>
+        <option *ngFor="let nivel of niveles" [value]="nivel">{{ nivel }}</option>
+      </select>
+    </div>
+
+    <div *ngIf="usuario.rol === 2" class="campo-especifico">
+      <label>Especialidad:</label>
+      <input type="text" placeholder="Ej: Matemáticas, Inglés, Programación" [(ngModel)]="usuario.especialidad" [disabled]="cargando" />
+    </div>
 
     <button [disabled]="cargando" (click)="actualizarUsuario()">
       {{ cargando ? 'Actualizando...' : 'Actualizar Usuario' }}

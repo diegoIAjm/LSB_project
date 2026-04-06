@@ -8,7 +8,10 @@ export interface Usuario {
   apellido: string;
   email: string;
   ci: string;
-  rol: string;       
+  rol: string;  
+  rol_id?: number;
+  nivel_actual?: string;
+  especialidad?: string;   
   foto?: string;
   estado: string;
   fecha_registro: string;
@@ -20,7 +23,9 @@ export interface NuevoUsuario {
   email: string;
   ci: string;
   password: string;
-  rol: number; // 🔹 usar número para el rol
+  rol: number; 
+  nivel_actual?: string;
+  especialidad?: string; 
 }
 
 export interface EditarUsuario {
@@ -29,6 +34,8 @@ export interface EditarUsuario {
   email: string;
   ci: string;
   rol: number;
+  nivel_actual?: string;
+  especialidad?: string; 
 }
 
 @Injectable({

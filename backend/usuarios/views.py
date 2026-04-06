@@ -61,8 +61,6 @@ class UsuarioToggleEstadoView(APIView):
     def patch(self, request, pk):
         try:
             usuario = Usuario.objects.get(pk=pk)
-
-            # 🔹 cambiar estado
             usuario.estado = 'inactivo' if usuario.estado == 'activo' else 'activo'
             usuario.save()
 

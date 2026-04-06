@@ -18,12 +18,15 @@ export class UsuariosCrearComponent {
     email: '',
     ci:'',
     password: '',
-    rol: 0
+    rol: 0,
+    nivel_actual: '',
+    especialidad: ''
   };
 
   mensaje = '';       // mensaje de confirmación local
   error = '';         // mensaje de error
   cargando = false;   // deshabilita botón mientras se crea
+  niveles = ['Inicial', 'Avanzado'];
 
   constructor(
     private usuariosService: UsuariosService,
@@ -33,13 +36,16 @@ export class UsuariosCrearComponent {
   volverUsuarios() {
     this.router.navigate(['/admin/usuarios']);
   }
+  mostrarCampoEspecifico(): boolean {
+    return this.usuario.rol === 2 || this.usuario.rol === 3;
+  }
 
 crearUsuario() {
   this.mensaje = '';
   this.error = '';
   this.cargando = true;
 
-  const { nombre, apellido, email, ci, password, rol } = this.usuario;
+  const { nombre, apellido, email, ci, password, rol, nivel_actual, especialidad } = this.usuario;
 
   // 🔹 Expresiones regulares
   const nombreApellidoRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$/;
@@ -83,13 +89,46 @@ crearUsuario() {
     return;
   }
 
+    if (rol === 3 && !nivel_actual) {
+      this.error = 'Debe seleccionar un nivel para el estudiante';
+      this.cargando = false;
+      return;
+    }
+
+    if (rol === 2 && !especialidad) {
+      this.error = 'Debe ingresar una especialidad para el docente';
+      this.cargando = false;
+      return;
+    }
+
+    // 🔹 Preparar datos para enviar
+  const datosEnviar: any = {
+    nombre: nombre,
+    apellido: apellido,
+    email: email,
+    ci: ci,
+    password: password,
+    rol: Number(rol)  // Asegurar que sea número
+  };
+
+  if (rol === 3) {
+    datosEnviar.nivel_actual = nivel_actual;
+  } else if (rol === 2) {
+    datosEnviar.especialidad = especialidad;
+  }
+
+  console.log('📤 Enviando al backend:', datosEnviar); // Debug
+
   // 🔹 Enviar al backend
-  this.usuariosService.crearUsuario(this.usuario).subscribe({
+  this.usuariosService.crearUsuario(datosEnviar).subscribe({
     next: (res: any) => {
+      console.log('✅ Respuesta:', res);
       // Redirigir al listado con mensaje
       this.router.navigate(['/admin/usuarios'], { state: { mensaje: 'Usuario creado correctamente' } });
     },
       error: err => {
+        console.error('❌ Error:', err); // Debug
+        console.error('❌ Error response:', err.error); // Debug
         // 🔹 Manejar errores específicos del backend
         if (err.error?.email) {
           this.error = err.error.email;
