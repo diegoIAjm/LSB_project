@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import Curso
-from usuarios.models import Docente, Usuario
+from .models import Curso, Inscripcion
+from usuarios.models import Docente, Usuario, Estudiante
 
 class DocenteSimpleSerializer(serializers.ModelSerializer):
     nombre_completo = serializers.SerializerMethodField()
@@ -67,5 +67,63 @@ class CursoCreateUpdateSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({
                     'fechas': 'El curso debe tener una duración aproximada de 4 meses (90-150 días)'
                 })
+        
+        return data
+    
+class EstudianteSimpleSerializer(serializers.ModelSerializer):
+    nombre_completo = serializers.SerializerMethodField()
+    nivel = serializers.CharField(source='nivel_actual')
+    
+    class Meta:
+        model = Estudiante
+        fields = ['id', 'nombre_completo', 'nivel']
+    
+    def get_nombre_completo(self, obj):
+        return f"{obj.usuario.nombre} {obj.usuario.apellido}"
+
+class CursoDisponibleSerializer(serializers.ModelSerializer):
+    docente_nombre = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Curso
+        fields = ['id', 'nombre', 'nivel', 'fecha_inicio', 'fecha_fin', 'docente_nombre']
+    
+    def get_docente_nombre(self, obj):
+        if obj.docente and obj.docente.usuario:
+            return f"{obj.docente.usuario.nombre} {obj.docente.usuario.apellido}"
+        return 'No asignado'
+
+class InscripcionSerializer(serializers.ModelSerializer):
+    estudiante_nombre = serializers.SerializerMethodField()
+    curso_nombre = serializers.SerializerMethodField()
+    curso_nivel = serializers.CharField(source='curso.nivel')
+    fecha_inscripcion_formateada = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Inscripcion
+        fields = ['id', 'estudiante', 'estudiante_nombre', 'curso', 'curso_nombre', 
+            'curso_nivel', 'fecha_inscripcion', 'fecha_inscripcion_formateada', 'estado']
+    
+    def get_estudiante_nombre(self, obj):
+        return f"{obj.estudiante.usuario.nombre} {obj.estudiante.usuario.apellido}"
+    
+    def get_curso_nombre(self, obj):
+        return obj.curso.nombre
+    
+    def get_fecha_inscripcion_formateada(self, obj):
+        return obj.fecha_inscripcion.strftime('%d/%m/%Y %H:%M')
+
+class InscripcionCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Inscripcion
+        fields = ['estudiante', 'curso']
+    
+    def validate(self, data):
+        estudiante = data.get('estudiante')
+        curso = data.get('curso')
+        
+        # Verificar si ya existe inscripción activa
+        if Inscripcion.objects.filter(estudiante=estudiante, curso=curso, estado='activo').exists():
+            raise serializers.ValidationError("El estudiante ya está inscrito en este curso")
         
         return data

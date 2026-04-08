@@ -35,3 +35,23 @@ class Curso(models.Model):
         if self.fecha_inicio and self.fecha_fin and self.fecha_fin < self.fecha_inicio:
             raise ValueError("La fecha de fin no puede ser menor a la fecha de inicio")
         super().save(*args, **kwargs)
+
+class Inscripcion(models.Model):
+    ESTADO_CHOICES = [
+        ('activo', 'Activo'),
+        ('cancelado', 'Cancelado'),
+        ('completado', 'Completado'),
+    ]
+    
+    id = models.AutoField(primary_key=True)
+    estudiante = models.ForeignKey('usuarios.Estudiante', on_delete=models.CASCADE, related_name='inscripciones')
+    curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name='inscripciones')
+    fecha_inscripcion = models.DateTimeField(auto_now_add=True)
+    estado = models.CharField(max_length=50, default='activo', choices=ESTADO_CHOICES)
+    
+    class Meta:
+        db_table = 'inscripciones'
+        unique_together = ['estudiante', 'curso']  # Evita duplicados
+
+    def __str__(self):
+        return f"{self.estudiante.usuario.nombre} - {self.curso.nombre}"

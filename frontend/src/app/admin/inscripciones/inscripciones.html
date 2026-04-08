@@ -1,0 +1,106 @@
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header-actions">
+    <div>
+      <h2>📋 Gestión de Inscripciones</h2>
+      <p class="subtitle">Administra las inscripciones de estudiantes</p>
+    </div>
+
+    <button class="btn-add" (click)="irInscribir()">
+      ➕ Nueva Inscripción
+    </button>
+  </div>
+
+  <!-- MENSAJES -->
+  <p class="mensaje-exito" *ngIf="mensajeExito">
+    ✔ {{ mensajeExito }}
+  </p>
+
+  <p class="mensaje-error" *ngIf="error">
+    ❌ {{ error }}
+  </p>
+
+  <!-- FILTROS -->
+  <div class="filters">
+
+    <div class="filter-group">
+      <label>Estado</label>
+      <select [(ngModel)]="filtro.estado" (change)="cargarInscripciones()">
+        <option *ngFor="let estado of estados" [value]="estado.value">
+          {{ estado.label }}
+        </option>
+      </select>
+    </div>
+
+    <button class="btn-limpiar" (click)="limpiarFiltros()">
+      🗑️ Limpiar
+    </button>
+
+  </div>
+
+  <!-- TABLA -->
+  <div class="table-responsive">
+    <table class="tabla-inscripciones">
+      <thead>
+        <tr>
+          <th>Estudiante</th>
+          <th>Curso</th>
+          <th>Nivel</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let ins of inscripciones">
+
+          <td>
+            <strong>{{ ins.estudiante_nombre }}</strong>
+          </td>
+
+          <td>{{ ins.curso_nombre }}</td>
+
+          <td>
+            <span class="nivel-badge"
+              [class.nivel-basico]="ins.curso_nivel === 'basico'"
+              [class.nivel-avanzado]="ins.curso_nivel === 'avanzado'">
+              {{ ins.curso_nivel === 'basico' ? 'Básico' : 'Avanzado' }}
+            </span>
+          </td>
+
+          <td class="fechas">
+            {{ ins.fecha_inscripcion_formateada }}
+          </td>
+
+          <td>
+            <span class="estado-badge" [class]="getEstadoClass(ins.estado)">
+              {{ getEstadoTexto(ins.estado) }}
+            </span>
+          </td>
+
+<td class="acciones">
+<button class="btn-estado" 
+        [class.btn-activar]="ins.estado === 'cancelado'"
+        [class.btn-desactivar]="ins.estado === 'activo'"
+        (click)="toggleEstado(ins)"
+        title="{{ ins.estado === 'activo' ? 'Cancelar inscripción' : 'Activar inscripción' }}">
+  
+  {{ ins.estado === 'activo' ? '❌ Cancelar' : '🟢 Activar' }}
+
+</button>
+</td>
+
+        </tr>
+
+        <tr *ngIf="inscripciones.length === 0">
+          <td colspan="6" class="sin-datos">
+            📭 No hay inscripciones registradas
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

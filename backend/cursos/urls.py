@@ -6,7 +6,14 @@ from .views import (
     CursoUpdateView,
     CursoDeleteView,
     CursoToggleEstadoView,
-    DocentesDisponiblesView
+    DocentesDisponiblesView,
+    EstudiantesDisponiblesView,
+    InscripcionCancelarView,
+    InscripcionCreateView,
+    InscripcionListView,
+    CursosDisponiblesView,
+    CursosActivosView,
+    InscripcionMasivaView
 )
 
 urlpatterns = [
@@ -17,4 +24,11 @@ urlpatterns = [
     path('cursos/eliminar/<int:pk>/', CursoDeleteView.as_view(), name='curso-delete'),
     path('cursos/toggle-estado/<int:pk>/', CursoToggleEstadoView.as_view(), name='curso-toggle-estado'),
     path('docentes/disponibles/', DocentesDisponiblesView.as_view(), name='docentes-disponibles'),
+    path('estudiantes/disponibles/', EstudiantesDisponiblesView.as_view(), name='estudiantes-disponibles'),
+    path('cursos/disponibles/', CursosDisponiblesView.as_view(), name='cursos-disponibles'),
+    path('cursos/activos/', CursosActivosView.as_view(), name='cursos-activos'),
+    path('inscripciones/', InscripcionListView.as_view(), name='inscripciones-list'),
+    path('inscripciones/', InscripcionCreateView.as_view(), name='inscripciones-create'),
+    path('inscripciones/masivo/', InscripcionMasivaView.as_view(), name='inscripciones-masivo'),
+    path('inscripciones/<int:pk>/cancelar/', InscripcionCancelarView.as_view(), name='inscripciones-cancelar'),
 ]

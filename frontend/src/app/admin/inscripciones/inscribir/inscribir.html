@@ -1,0 +1,92 @@
+<div class="container">
+  <h2>📝 Inscribir Estudiantes</h2>
+  <p class="subtitulo">Inscripción individual o masiva</p>
+
+  <button class="btn-volver" (click)="volverInscripciones()">← Volver al listado</button>
+
+  <div class="tabs">
+    <button class="tab" [class.active]="modo === 'individual'" (click)="cambiarModo('individual')">
+      👤 Inscripción Individual
+    </button>
+    <button class="tab" [class.active]="modo === 'masivo'" (click)="cambiarModo('masivo')">
+      👥 Inscripción Masiva
+    </button>
+  </div>
+
+  <div *ngIf="cargandoDatos" class="loading">
+    Cargando datos...
+  </div>
+
+  <!-- Modo Individual -->
+  <div *ngIf="!cargandoDatos && modo === 'individual'" class="formulario">
+    <p class="mensaje-exito" *ngIf="mensaje">{{ mensaje }}</p>
+    <p class="mensaje-error" *ngIf="error">{{ error }}</p>
+
+    <div class="campo">
+      <label>Estudiante *</label>
+      <select [(ngModel)]="inscripcionIndividual.estudiante" [disabled]="cargando">
+        <option [value]="null">Seleccionar estudiante</option>
+        <option *ngFor="let est of estudiantes" [value]="est.id">
+          {{ est.nombre_completo }} ({{ est.nivel }})
+        </option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label>Curso *</label>
+      <select [(ngModel)]="inscripcionIndividual.curso" [disabled]="cargando">
+        <option [value]="null">Seleccionar curso</option>
+        <option *ngFor="let curso of cursos" [value]="curso.id">
+          {{ curso.nombre }} ({{ curso.nivel }}) - {{ curso.docente_nombre }}
+        </option>
+      </select>
+    </div>
+
+    <button class="btn-inscribir" [disabled]="cargando" (click)="inscribirIndividual()">
+      {{ cargando ? 'Inscribiendo...' : '✅ Inscribir Estudiante' }}
+    </button>
+  </div>
+
+  <!-- Modo Masivo -->
+  <div *ngIf="!cargandoDatos && modo === 'masivo'" class="formulario">
+    <p class="mensaje-exito" *ngIf="mensaje">{{ mensaje }}</p>
+    <p class="mensaje-error" *ngIf="error">{{ error }}</p>
+
+    <div class="campo">
+      <label>Curso *</label>
+      <select [(ngModel)]="inscripcionMasiva.curso" [disabled]="cargando">
+        <option [value]="null">Seleccionar curso</option>
+        <option *ngFor="let curso of cursos" [value]="curso.id">
+          {{ curso.nombre }} ({{ curso.nivel }}) - {{ curso.docente_nombre }}
+        </option>
+      </select>
+    </div>
+
+    <div class="seleccion-masiva">
+      <div class="masiva-header">
+        <label class="checkbox-label">
+          <input type="checkbox" (change)="toggleTodosEstudiantes()" 
+                 [checked]="inscripcionMasiva.estudiantes.length === estudiantes.length">
+          Seleccionar todos
+        </label>
+        <span>{{ inscripcionMasiva.estudiantes.length }} estudiantes seleccionados</span>
+      </div>
+
+      <div class="lista-estudiantes">
+        <label *ngFor="let est of estudiantes" class="estudiante-checkbox">
+          <input type="checkbox" [checked]="estaSeleccionado(est.id)" 
+                 (change)="toggleEstudiante(est.id)">
+          <span class="est-nombre">{{ est.nombre_completo }}</span>
+          <span class="est-nivel" [class.nivel-basico]="est.nivel === 'basico'" 
+                                 [class.nivel-avanzado]="est.nivel === 'avanzado'">
+            {{ est.nivel === 'basico' ? 'Básico' : 'Avanzado' }}
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <button class="btn-inscribir" [disabled]="cargando" (click)="inscribirMasivo()">
+      {{ cargando ? 'Inscribiendo...' : '👥 Inscribir Estudiantes Seleccionados' }}
+    </button>
+  </div>
+</div>

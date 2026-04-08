@@ -66,4 +66,44 @@ export class CursosService {
   getDocentesDisponibles(): Observable<Docente[]> {
     return this.http.get<Docente[]>(`http://127.0.0.1:8000/api/docentes/disponibles/`);
   }
+
+  // Obtener estudiantes disponibles (no inscritos en un curso específico o todos)
+getEstudiantesDisponibles(): Observable<any> {
+  return this.http.get('http://127.0.0.1:8000/api/estudiantes/disponibles/');
+}
+
+// Obtener cursos disponibles para inscripción
+getCursosDisponibles(): Observable<any> {
+  return this.http.get('http://127.0.0.1:8000/api/cursos/disponibles/');
+}
+
+  getCursosActivos(): Observable<any> {
+    return this.http.get('http://127.0.0.1:8000/api/cursos/activos/');
+  }
+
+// Inscribir estudiante
+inscribirEstudiante(inscripcion: any): Observable<any> {
+  return this.http.post('http://127.0.0.1:8000/api/inscripciones/', inscripcion);
+}
+
+getInscripciones(filtros: any = {}): Observable<any> {
+  let params = new HttpParams();
+  Object.keys(filtros).forEach(key => {
+    if (filtros[key]) params = params.set(key, filtros[key]);
+  });
+  return this.http.get('http://127.0.0.1:8000/api/inscripciones/', { params });
+}
+
+  inscribirMasivo(data: any): Observable<any> {
+    return this.http.post('http://127.0.0.1:8000/api/inscripciones/masivo/', data);
+  }
+
+// Cancelar inscripción
+cancelarInscripcion(id: number): Observable<any> {
+  return this.http.patch(`http://127.0.0.1:8000/api/inscripciones/${id}/cancelar/`, {});
+}
+
+toggleEstadoInscripcion(id: number): Observable<any> {
+  return this.http.patch(`http://127.0.0.1:8000/api/inscripciones/${id}/toggle-estado/`, {});
+}
 }

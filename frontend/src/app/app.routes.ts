@@ -50,7 +50,19 @@ export const routes: Routes = [
 {
   path: 'cursos/editar/:id',
   loadComponent: () => import('./admin/cursos/editar-curso/editar-curso').then(m => m.EditarCursoComponent)
+},
+
+{
+  path: 'inscripciones',
+    loadComponent: () => import('./admin/inscripciones/inscripciones').then(m => m.InscripcionesComponent)
+},
+
+
+{
+  path: 'inscripciones/inscribir',
+  loadComponent: () => import('./admin/inscripciones/inscribir/inscribir').then(m => m.InscribirComponent)
 }
+
 
 
     

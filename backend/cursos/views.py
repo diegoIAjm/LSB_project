@@ -1,9 +1,9 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Curso
-from .serializers import CursoSerializer, CursoCreateUpdateSerializer, DocenteSimpleSerializer
-from usuarios.models import Docente
+from .models import Curso, Inscripcion
+from .serializers import CursoSerializer, CursoCreateUpdateSerializer, CursoDisponibleSerializer, DocenteSimpleSerializer,EstudianteSimpleSerializer, InscripcionCreateSerializer, InscripcionSerializer
+from usuarios.models import Docente, Estudiante
 
 class CursoListView(generics.ListAPIView):
     """Listar todos los cursos con filtros"""
@@ -131,3 +131,133 @@ class DocentesDisponiblesView(generics.ListAPIView):
         print("Serialized data:", serializer.data)  # Debug
         
         return Response(serializer.data)
+    
+class EstudiantesDisponiblesView(generics.ListAPIView):
+    """Listar estudiantes activos"""
+    
+    def get(self, request):
+        estudiantes = Estudiante.objects.filter(usuario__estado='activo')
+        serializer = EstudianteSimpleSerializer(estudiantes, many=True)
+        return Response(serializer.data)
+
+class CursosDisponiblesView(generics.ListAPIView):
+    """Listar cursos activos para inscripción"""
+    
+    def get(self, request):
+        cursos = Curso.objects.filter(estado='activo')
+        serializer = CursoDisponibleSerializer(cursos, many=True)
+        return Response(serializer.data)
+
+class InscripcionListView(generics.ListAPIView):
+    """Listar todas las inscripciones con filtros"""
+    
+    def get(self, request):
+        inscripciones = Inscripcion.objects.all().order_by('-fecha_inscripcion')
+        
+        # Filtro por estado
+        estado = request.query_params.get('estado')
+        if estado:
+            inscripciones = inscripciones.filter(estado=estado)
+        
+        serializer = InscripcionSerializer(inscripciones, many=True)
+        return Response({
+            'inscripciones': serializer.data,
+            'total': inscripciones.count()
+        })
+
+class InscripcionCreateView(generics.CreateAPIView):
+    """Crear nueva inscripción"""
+    serializer_class = InscripcionCreateSerializer
+    
+    def create(self, request, *args, **kwargs):
+        print("📥 Datos recibidos en inscripción:", request.data)  # Debug
+        
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        inscripcion = serializer.save()
+        
+        print("✅ Inscripción creada:", inscripcion.id)  # Debug
+        
+        data = InscripcionSerializer(inscripcion).data
+        return Response({
+            'mensaje': 'Estudiante inscrito correctamente',
+            'inscripcion': data
+        }, status=status.HTTP_201_CREATED)
+
+class InscripcionCancelarView(APIView):
+    """Cancelar inscripción"""
+    
+    def patch(self, request, pk):
+        try:
+            inscripcion = Inscripcion.objects.get(pk=pk)
+            inscripcion.estado = 'cancelado'
+            inscripcion.save()
+            return Response({'mensaje': 'Inscripción cancelada correctamente'})
+        except Inscripcion.DoesNotExist:
+            return Response({'error': 'Inscripción no encontrada'}, status=404)
+        
+
+
+        # Añadir esta nueva vista
+class CursosActivosView(generics.ListAPIView):
+    """Listar cursos activos para inscripción (alias)"""
+    
+    def get(self, request):
+        cursos = Curso.objects.filter(estado='activo')
+        serializer = CursoDisponibleSerializer(cursos, many=True)
+        return Response(serializer.data)
+
+
+class InscripcionMasivaView(APIView):
+    def post(self, request):
+        curso_id = request.data.get('curso')
+        estudiantes_ids = request.data.get('estudiantes', [])
+        
+        if not curso_id:
+            return Response({'error': 'Debe seleccionar un curso'}, status=400)
+        
+        if not estudiantes_ids:
+            return Response({'error': 'Debe seleccionar al menos un estudiante'}, status=400)
+        
+        try:
+            curso = Curso.objects.get(id=curso_id, estado='activo')
+        except Curso.DoesNotExist:
+            return Response({'error': 'Curso no encontrado o no activo'}, status=404)
+        
+        inscritos = 0
+        errores = []
+        
+        for est_id in estudiantes_ids:
+            try:
+                estudiante = Estudiante.objects.get(id=est_id, usuario__estado='activo')
+                
+                # Verificar si ya existe inscripción (activa o cancelada)
+                if Inscripcion.objects.filter(estudiante=estudiante, curso=curso).exists():
+                    errores.append(f'{estudiante.usuario.nombre} {estudiante.usuario.apellido} ya tiene una inscripción en este curso')
+                    continue
+                
+                Inscripcion.objects.create(
+                    estudiante=estudiante,
+                    curso=curso,
+                    estado='activo'
+                )
+                inscritos += 1
+                
+            except Estudiante.DoesNotExist:
+                errores.append(f'Estudiante ID {est_id} no encontrado')
+        
+        if inscritos > 0:
+            mensaje = f'{inscritos} estudiantes inscritos correctamente'
+            if errores:
+                mensaje += f'. No se pudieron inscribir: {", ".join(errores[:5])}'
+            return Response({
+                'mensaje': mensaje,
+                'inscritos': inscritos,
+                'errores': errores
+            }, status=status.HTTP_201_CREATED)
+        else:
+            return Response({
+                'mensaje': f'No se pudo inscribir ningún estudiante. Errores: {", ".join(errores[:5])}',
+                'inscritos': 0,
+                'errores': errores
+            }, status=status.HTTP_400_BAD_REQUEST)
