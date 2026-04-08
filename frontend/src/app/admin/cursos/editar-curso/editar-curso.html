@@ -1,0 +1,94 @@
+<div class="container">
+  <h2>✏️ Editar Curso</h2>
+  <p class="subtitulo">Modifique los datos del curso</p>
+
+  <button class="btn-volver" (click)="volverCursos()">← Volver al listado</button>
+
+  <!-- Estado de carga -->
+  <div *ngIf="cargandoDatos" class="loading">
+    <div class="spinner"></div>
+    Cargando datos del curso...
+  </div>
+
+  <!-- Formulario de edición -->
+  <div class="formulario" *ngIf="!cargandoDatos">
+    <p class="mensaje-exito" *ngIf="mensaje">{{ mensaje }}</p>
+    <p class="mensaje-error" *ngIf="error">{{ error }}</p>
+
+    <!-- Nombre del curso -->
+    <div class="campo">
+      <label>Nombre del Curso *</label>
+      <input 
+        type="text" 
+        placeholder="Ej: Inglés Avanzado, Programación con IA" 
+        [(ngModel)]="curso.nombre" 
+        [disabled]="cargando"
+        maxlength="150" />
+      <small>Mínimo 3 caracteres</small>
+    </div>
+
+    <!-- Nivel -->
+    <div class="campo">
+      <label>Nivel *</label>
+      <select [(ngModel)]="curso.nivel" [disabled]="cargando">
+        <option [value]="''">Seleccionar nivel</option>
+        <option *ngFor="let nivel of niveles" [value]="nivel.value">{{ nivel.label }}</option>
+      </select>
+    </div>
+
+    <!-- Estado -->
+    <div class="campo">
+      <label>Estado</label>
+      <select [(ngModel)]="curso.estado" [disabled]="cargando">
+        <option *ngFor="let estado of estados" [value]="estado.value">{{ estado.label }}</option>
+      </select>
+    </div>
+
+    <!-- Docente -->
+    <div class="campo">
+      <label>Docente (opcional)</label>
+      <select [(ngModel)]="curso.docente" [disabled]="cargando">
+        <option [value]="null">Sin asignar</option>
+        <option *ngFor="let docente of docentes" [value]="docente.id">
+          {{ docente.nombre_completo }} - {{ docente.especialidad }}
+        </option>
+      </select>
+      <small *ngIf="docentes.length === 0" style="color: #ef4444;">
+        ⚠️ No hay docentes registrados.
+      </small>
+    </div>
+
+    <!-- Fechas en 2 columnas -->
+    <div class="row-2">
+      <div class="campo">
+        <label>Fecha de Inicio *</label>
+        <input 
+          type="date" 
+          [(ngModel)]="curso.fecha_inicio" 
+          [disabled]="cargando" />
+        <small>No puede ser anterior a hoy</small>
+      </div>
+
+      <div class="campo">
+        <label>Fecha de Fin *</label>
+        <input 
+          type="date" 
+          [(ngModel)]="curso.fecha_fin" 
+          [disabled]="cargando" />
+        <small>Debe ser posterior a la fecha de inicio</small>
+      </div>
+    </div>
+
+    <!-- Información de duración -->
+    <div class="info-duracion" *ngIf="curso.fecha_inicio && curso.fecha_fin">
+      <i class="info-icon">⏱️</i>
+      <span>Duración: {{ calcularDuracion() }} días (aprox. {{ calcularMeses() }} meses)</span>
+    </div>
+
+    <!-- Botón -->
+    <button class="btn-actualizar" [disabled]="cargando" (click)="actualizarCurso()">
+      <span *ngIf="cargando" class="spinner"></span>
+      {{ cargando ? 'Actualizando...' : '💾 Actualizar Curso' }}
+    </button>
+  </div>
+</div>
