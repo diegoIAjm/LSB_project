@@ -1,0 +1,75 @@
+<div class="container">
+  <!-- Header con título y botón -->
+  <div class="header-actions">
+    <h2>📚 Gestión de Cursos</h2>
+    <button class="btn-add" (click)="irACrearCurso()">+ Añadir Curso</button>
+  </div>
+
+  <!-- Mensaje de éxito -->
+  <p class="mensaje-exito" *ngIf="mensajeExito">{{ mensajeExito }}</p>
+
+  <!-- Filtros -->
+  <div class="filters">
+    <select [(ngModel)]="filtro.nivel" (change)="cargarCursos()">
+      <option *ngFor="let nivel of niveles" [value]="nivel.value">{{ nivel.label }}</option>
+    </select>
+    
+    <select [(ngModel)]="filtro.estado" (change)="cargarCursos()">
+      <option *ngFor="let estado of estados" [value]="estado.value">{{ estado.label }}</option>
+    </select>
+
+    <button class="btn-limpiar" (click)="limpiarFiltros()">🗑️ Limpiar filtros</button>
+  </div>
+
+  <!-- Tabla de cursos -->
+  <div class="table-responsive">
+    <table class="tabla-cursos">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Nivel</th>
+          <th>Docente</th>
+          <th>Fecha Inicio</th>
+          <th>Fecha Fin</th>
+          <th>Duración</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let curso of cursos">
+          <td><strong>{{ curso.nombre }}</strong></td>
+          <td>
+            <span class="nivel-badge" [class.nivel-basico]="curso.nivel === 'basico'" [class.nivel-avanzado]="curso.nivel === 'avanzado'">
+              {{ getNivelTexto(curso.nivel) }}
+            </span>
+          </td>
+          <td>{{ curso.docente_nombre || 'No asignado' }}</td>
+          <td>{{ curso.fecha_inicio | date:'dd/MM/yyyy' }}</td>
+          <td>{{ curso.fecha_fin | date:'dd/MM/yyyy' }}</td>
+          <td>{{ curso.duracion_meses }} meses</td>
+          <td>
+            <span class="estado-badge" [class]="getEstadoClass(curso.estado)">
+              {{ getEstadoTexto(curso.estado) }}
+            </span>
+          </td>
+          <td class="acciones">
+            <button class="btn-editar" (click)="irAEditarCurso(curso.id)" title="Editar curso">
+              ✏️ Editar
+            </button>
+            <button class="btn-estado" 
+                    [class.btn-activar]="curso.estado === 'inactivo'"
+                    [class.btn-desactivar]="curso.estado === 'activo'"
+                    (click)="toggleEstado(curso)"
+                    title="{{ curso.estado === 'activo' ? 'Desactivar' : 'Activar' }}">
+              {{ curso.estado === 'activo' ? '🔴 Desactivar' : '🟢 Activar' }}
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="cursos.length === 0">
+          <td colspan="9" class="sin-datos">No hay cursos registrados</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

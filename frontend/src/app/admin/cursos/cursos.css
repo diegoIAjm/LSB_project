@@ -1,0 +1,274 @@
+/* Contenedor principal */
+.container {
+  background: #f5f7fa;
+  padding: 30px;
+  border-radius: 16px;
+  max-width: 1400px;
+  margin: 20px auto;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header */
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.header-actions h2 {
+  color: #1f2937;
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.btn-add {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-add:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+/* Mensaje de éxito */
+.mensaje-exito {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  color: #065f46;
+  padding: 12px 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  border-left: 4px solid #22c55e;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Filtros */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 25px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.filters select {
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+  min-width: 180px;
+  background: white;
+  cursor: pointer;
+}
+
+.filters select:focus {
+  outline: none;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+.btn-limpiar {
+  background: #6b7280;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-limpiar:hover {
+  background: #4b5563;
+}
+
+/* Tabla */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.tabla-cursos {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.tabla-cursos thead tr {
+  background: linear-gradient(135deg, #1f2937, #374151);
+}
+
+.tabla-cursos th {
+  padding: 15px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: white;
+  font-size: 14px;
+}
+
+.tabla-cursos td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
+}
+
+.tabla-cursos tbody tr:hover {
+  background: #f9fafb;
+}
+
+/* Badges */
+.nivel-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.nivel-basico {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.nivel-avanzado {
+  background: #fed7aa;
+  color: #9b2c1d;
+}
+
+.estado-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.estado-activo {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.estado-inactivo {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.estado-finalizado {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+/* Botones de acción */
+.acciones {
+  display: flex;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.btn-editar {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.btn-editar:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.btn-estado {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.btn-activar {
+  background: #22c55e;
+  color: white;
+}
+
+.btn-activar:hover {
+  background: #16a34a;
+  transform: translateY(-1px);
+}
+
+.btn-desactivar {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-desactivar:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.sin-datos {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .filters {
+    flex-direction: column;
+  }
+  
+  .filters select, .btn-limpiar {
+    width: 100%;
+  }
+  
+  .tabla-cursos th, .tabla-cursos td {
+    font-size: 12px;
+    padding: 8px;
+  }
+  
+  .acciones {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
