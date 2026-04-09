@@ -1,17 +1,17 @@
 <div class="container">
 
-  <!-- Header con título y botón -->
   <div class="header-actions">
-    <h2>Gestión de Usuarios</h2>
-    <button class="btn-add" (click)="irACrearUsuario()">Añadir Usuario</button>
+    <h2>👥 Gestión de Usuarios</h2>
+    <button class="btn-add" (click)="irACrearUsuario()">
+      ➕ Añadir Usuario
+    </button>
   </div>
 
-  <!-- Mensaje de éxito -->
   <p class="mensaje-exito" *ngIf="mensajeExito">{{ mensajeExito }}</p>
 
-  <!-- Filtros -->
-<div class="filters">
+  <div class="filters">
     <input type="text" placeholder="Buscar por nombre..." [(ngModel)]="filtro.nombre" />
+
     <select [(ngModel)]="filtro.rol">
       <option value="">Todos los roles</option>
       <option value="1">Administrador</option>
@@ -19,12 +19,12 @@
       <option value="3">Estudiante</option>
     </select>
 
-    <button (click)="cargarUsuarios(filtro, 1)">Buscar</button>
-    <button (click)="limpiarFiltros()">Limpiar filtros</button>
+    <button class="btn-add" (click)="cargarUsuarios(filtro, 1)">🔍 Buscar</button>
+    <button class="btn-limpiar" (click)="limpiarFiltros()">🗑️ Limpiar</button>
   </div>
 
-  <!-- Tabla de usuarios -->
-  <table>
+  <!-- TU TABLA ORIGINAL (NO SE TOCA) -->
+  <table class="tabla-usuarios">
     <thead>
       <tr>
         <th>CI</th>
@@ -37,6 +37,7 @@
         <th>Acciones</th>
       </tr>
     </thead>
+
     <tbody>
       <tr *ngFor="let u of usuarios">
         <td>{{u.ci}}</td>
@@ -44,45 +45,38 @@
         <td>{{ u.apellido }}</td>
         <td>{{ u.email }}</td>
         <td>{{ u.rol }}</td>
-<td>{{ getValorEspecifico(u) }}</td>
+        <td>{{ getValorEspecifico(u) }}</td>
+
         <td>
-        <button 
+          <button 
             class="btn-estado"
             [ngClass]="{
-            'activo': u.estado === 'activo',
-            'inactivo': u.estado === 'inactivo'
+              'btn-activar': u.estado === 'activo',
+              'btn-desactivar': u.estado === 'inactivo'
             }"
             (click)="toggleEstado(u)">
             
-            {{ u.estado === 'activo' ? 'Activo' : 'Inactivo' }}
-        </button>
+            {{ u.estado === 'activo' ? '🔴 Activo' : '🟢 Inactivo' }}
+          </button>
         </td>
+
         <td class="acciones">
-          <button class="btn-editar" (click)="irAEditarUsuario(u.id)" title="Editar usuario">
+          <button class="btn-editar" (click)="irAEditarUsuario(u.id)">
             ✏️ Editar
           </button>
         </td>
       </tr>
     </tbody>
   </table>
-  <!-- Paginación -->
-<div class="pagination">
 
-  <button 
-    (click)="anteriorPagina()" 
-    [disabled]="paginaActual === 1">
-    ⬅ Anterior
-  </button>
+  <div class="pagination">
+    <button (click)="anteriorPagina()" [disabled]="paginaActual === 1">⬅</button>
 
-  <span class="page-info">
-    Página {{ paginaActual }} de {{ totalPaginas }}
-  </span>
+    <span class="page-info">
+      Página {{ paginaActual }} de {{ totalPaginas }}
+    </span>
 
-  <button 
-    (click)="siguientePagina()" 
-    [disabled]="paginaActual >= totalPaginas">
-    Siguiente ➡
-  </button>
+    <button (click)="siguientePagina()" [disabled]="paginaActual >= totalPaginas">➡</button>
+  </div>
 
-</div>
 </div>

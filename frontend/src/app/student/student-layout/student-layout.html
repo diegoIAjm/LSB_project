@@ -16,9 +16,9 @@
 
     <nav class="sidebar-nav">
       <a *ngFor="let item of menuItems"
-         class="nav-item"
-         [class.active]="activeMenu === item.id"
-         (click)="setActiveMenu(item.id)">
+         [routerLink]="item.path"
+         routerLinkActive="active"
+         class="nav-item">
         <span class="nav-icon">{{ item.icon }}</span>
         <span class="nav-label" *ngIf="sidebarOpen">{{ item.label }}</span>
       </a>

@@ -712,3 +712,232 @@ frontend
 └─ tsconfig.spec.json
 
 ```
+```
+frontend
+├─ .angular
+├─ .editorconfig
+├─ .prettierrc
+├─ angular.json
+├─ package-lock.json
+├─ package.json
+├─ public
+│  └─ favicon.ico
+├─ README.md
+├─ src
+│  ├─ app
+│  │  ├─ admin
+│  │  │  ├─ admin-module.ts
+│  │  │  ├─ cursos
+│  │  │  │  ├─ crear-curso
+│  │  │  │  │  ├─ crear-curso.css
+│  │  │  │  │  ├─ crear-curso.html
+│  │  │  │  │  └─ crear-curso.ts
+│  │  │  │  ├─ cursos.css
+│  │  │  │  ├─ cursos.html
+│  │  │  │  ├─ cursos.spec.ts
+│  │  │  │  ├─ cursos.ts
+│  │  │  │  └─ editar-curso
+│  │  │  │     ├─ editar-curso.css
+│  │  │  │     ├─ editar-curso.html
+│  │  │  │     └─ editar-curso.ts
+│  │  │  ├─ dashboard
+│  │  │  │  ├─ dashboard.css
+│  │  │  │  ├─ dashboard.html
+│  │  │  │  ├─ dashboard.spec.ts
+│  │  │  │  └─ dashboard.ts
+│  │  │  ├─ header
+│  │  │  │  ├─ header.css
+│  │  │  │  ├─ header.html
+│  │  │  │  ├─ header.spec.ts
+│  │  │  │  └─ header.ts
+│  │  │  ├─ inscripciones
+│  │  │  │  ├─ inscribir
+│  │  │  │  │  ├─ inscribir.css
+│  │  │  │  │  ├─ inscribir.html
+│  │  │  │  │  └─ inscribir.ts
+│  │  │  │  ├─ inscripciones.css
+│  │  │  │  ├─ inscripciones.html
+│  │  │  │  └─ inscripciones.ts
+│  │  │  ├─ layout
+│  │  │  │  ├─ layout.css
+│  │  │  │  ├─ layout.html
+│  │  │  │  ├─ layout.spec.ts
+│  │  │  │  └─ layout.ts
+│  │  │  ├─ sidebar
+│  │  │  │  ├─ sidebar.css
+│  │  │  │  ├─ sidebar.html
+│  │  │  │  ├─ sidebar.spec.ts
+│  │  │  │  └─ sidebar.ts
+│  │  │  └─ usuarios
+│  │  │     ├─ importar-docentes
+│  │  │     │  ├─ importar-docentes.css
+│  │  │     │  ├─ importar-docentes.html
+│  │  │     │  └─ importar-docentes.ts
+│  │  │     ├─ importar-estudiantes
+│  │  │     │  ├─ importar-estudiantes.css
+│  │  │     │  ├─ importar-estudiantes.html
+│  │  │     │  └─ importar-estudiantes.ts
+│  │  │     ├─ usuarios.css
+│  │  │     ├─ usuarios.html
+│  │  │     ├─ usuarios.spec.ts
+│  │  │     └─ usuarios.ts
+│  │  ├─ app.config.ts
+│  │  ├─ app.css
+│  │  ├─ app.html
+│  │  ├─ app.routes.ts
+│  │  ├─ app.spec.ts
+│  │  ├─ app.ts
+│  │  ├─ auth
+│  │  │  └─ auth-module.ts
+│  │  ├─ modules
+│  │  │  └─ usuarios
+│  │  │     ├─ editar-usuario
+│  │  │     │  ├─ editar-usuario.css
+│  │  │     │  ├─ editar-usuario.html
+│  │  │     │  └─ editar-usuario.ts
+│  │  │     └─ usuarios-crear
+│  │  │        ├─ usuarios-crear.css
+│  │  │        ├─ usuarios-crear.html
+│  │  │        └─ usuarios-crear.ts
+│  │  ├─ services
+│  │  │  ├─ cursos.service.ts
+│  │  │  ├─ usuarios.spec.ts
+│  │  │  └─ usuarios.ts
+│  │  ├─ shared
+│  │  │  └─ shared-module.ts
+│  │  └─ student
+│  │     ├─ dashboard
+│  │     │  ├─ dashboard.css
+│  │     │  ├─ dashboard.html
+│  │     │  └─ dashboard.ts
+│  │     └─ student-layout
+│  │        ├─ student-layout.css
+│  │        ├─ student-layout.html
+│  │        └─ student-layout.ts
+│  ├─ index.html
+│  ├─ main.ts
+│  └─ styles.css
+├─ tsconfig.app.json
+├─ tsconfig.json
+└─ tsconfig.spec.json
+
+```
+```
+frontend
+├─ .angular
+├─ .editorconfig
+├─ .prettierrc
+├─ angular.json
+├─ package-lock.json
+├─ package.json
+├─ public
+│  ├─ assets
+│  │  └─ models
+│  │     ├─ ModeloLSB.blend
+│  │     ├─ ModeloLSB.blend1
+│  │     └─ ModeloLSB.glb
+│  └─ favicon.ico
+├─ README.md
+├─ src
+│  ├─ app
+│  │  ├─ admin
+│  │  │  ├─ admin-module.ts
+│  │  │  ├─ cursos
+│  │  │  │  ├─ crear-curso
+│  │  │  │  │  ├─ crear-curso.css
+│  │  │  │  │  ├─ crear-curso.html
+│  │  │  │  │  └─ crear-curso.ts
+│  │  │  │  ├─ cursos.css
+│  │  │  │  ├─ cursos.html
+│  │  │  │  ├─ cursos.spec.ts
+│  │  │  │  ├─ cursos.ts
+│  │  │  │  └─ editar-curso
+│  │  │  │     ├─ editar-curso.css
+│  │  │  │     ├─ editar-curso.html
+│  │  │  │     └─ editar-curso.ts
+│  │  │  ├─ dashboard
+│  │  │  │  ├─ dashboard.css
+│  │  │  │  ├─ dashboard.html
+│  │  │  │  ├─ dashboard.spec.ts
+│  │  │  │  └─ dashboard.ts
+│  │  │  ├─ header
+│  │  │  │  ├─ header.css
+│  │  │  │  ├─ header.html
+│  │  │  │  ├─ header.spec.ts
+│  │  │  │  └─ header.ts
+│  │  │  ├─ inscripciones
+│  │  │  │  ├─ inscribir
+│  │  │  │  │  ├─ inscribir.css
+│  │  │  │  │  ├─ inscribir.html
+│  │  │  │  │  └─ inscribir.ts
+│  │  │  │  ├─ inscripciones.css
+│  │  │  │  ├─ inscripciones.html
+│  │  │  │  └─ inscripciones.ts
+│  │  │  ├─ layout
+│  │  │  │  ├─ layout.css
+│  │  │  │  ├─ layout.html
+│  │  │  │  ├─ layout.spec.ts
+│  │  │  │  └─ layout.ts
+│  │  │  ├─ sidebar
+│  │  │  │  ├─ sidebar.css
+│  │  │  │  ├─ sidebar.html
+│  │  │  │  ├─ sidebar.spec.ts
+│  │  │  │  └─ sidebar.ts
+│  │  │  └─ usuarios
+│  │  │     ├─ importar-docentes
+│  │  │     │  ├─ importar-docentes.css
+│  │  │     │  ├─ importar-docentes.html
+│  │  │     │  └─ importar-docentes.ts
+│  │  │     ├─ importar-estudiantes
+│  │  │     │  ├─ importar-estudiantes.css
+│  │  │     │  ├─ importar-estudiantes.html
+│  │  │     │  └─ importar-estudiantes.ts
+│  │  │     ├─ usuarios.css
+│  │  │     ├─ usuarios.html
+│  │  │     ├─ usuarios.spec.ts
+│  │  │     └─ usuarios.ts
+│  │  ├─ app.config.ts
+│  │  ├─ app.css
+│  │  ├─ app.html
+│  │  ├─ app.routes.ts
+│  │  ├─ app.spec.ts
+│  │  ├─ app.ts
+│  │  ├─ auth
+│  │  │  └─ auth-module.ts
+│  │  ├─ modules
+│  │  │  └─ usuarios
+│  │  │     ├─ editar-usuario
+│  │  │     │  ├─ editar-usuario.css
+│  │  │     │  ├─ editar-usuario.html
+│  │  │     │  └─ editar-usuario.ts
+│  │  │     └─ usuarios-crear
+│  │  │        ├─ usuarios-crear.css
+│  │  │        ├─ usuarios-crear.html
+│  │  │        └─ usuarios-crear.ts
+│  │  ├─ services
+│  │  │  ├─ cursos.service.ts
+│  │  │  ├─ usuarios.spec.ts
+│  │  │  └─ usuarios.ts
+│  │  ├─ shared
+│  │  │  └─ shared-module.ts
+│  │  └─ student
+│  │     ├─ dashboard
+│  │     │  ├─ dashboard.css
+│  │     │  ├─ dashboard.html
+│  │     │  └─ dashboard.ts
+│  │     ├─ diccionario
+│  │     │  ├─ diccionario.css
+│  │     │  ├─ diccionario.html
+│  │     │  └─ diccionario.ts
+│  │     └─ student-layout
+│  │        ├─ student-layout.css
+│  │        ├─ student-layout.html
+│  │        └─ student-layout.ts
+│  ├─ index.html
+│  ├─ main.ts
+│  └─ styles.css
+├─ tsconfig.app.json
+├─ tsconfig.json
+└─ tsconfig.spec.json
+
+```

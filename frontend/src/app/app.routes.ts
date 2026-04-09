@@ -63,33 +63,32 @@ export const routes: Routes = [
   loadComponent: () => import('./admin/inscripciones/inscribir/inscribir').then(m => m.InscribirComponent)
 }
 
-
-
-    
     ]
   },
 
+{
+  path: 'student',
+  loadComponent: () => import('./student/student-layout/student-layout').then(m => m.StudentLayout),
+  children: [
     {
-    path: 'student',
-        loadComponent: () => import('./student/student-layout/student-layout').then(m => m.StudentLayout),
-    children: [
-      {
-        path: 'dashboard',
-        loadComponent: () => import('./student/dashboard/dashboard').then(m => m.StudentDashboard)
-      },
-      {
-        path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full'
-      }
-    ]
-  },
-  {
-    path: '',
-    redirectTo: '/student',
-    pathMatch: 'full'
-  }
-
-
+      path: 'dashboard',
+      loadComponent: () => import('./student/dashboard/dashboard').then(m => m.StudentDashboard)
+    },
+    {
+      path: 'diccionario',
+      loadComponent: () => import('./student/diccionario/diccionario').then(m => m.DiccionarioComponent)
+    },
+    {
+      path: '',
+      redirectTo: 'dashboard',
+      pathMatch: 'full'
+    }
+  ]
+},
+{
+  path: '',
+  redirectTo: '/student',
+  pathMatch: 'full'
+}
 
 ];

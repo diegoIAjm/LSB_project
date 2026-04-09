@@ -1,0 +1,67 @@
+<p>diccionario works!</p>
+<div class="diccionario-container">
+  <!-- Sección del Avatar 3D -->
+  <div class="avatar-section">
+    <div class="avatar-header">
+      <h3>🤖 Avatar Interactivo</h3>
+      <p>Arrastra para rotar | Rueda para zoom</p>
+    </div>
+    <div #avatarContainer class="avatar-canvas"></div>
+  </div>
+
+  <!-- Sección del Diccionario -->
+  <div class="diccionario-section">
+    <div class="diccionario-header">
+      <h2>📚 Diccionario de Señas</h2>
+      <p>Aprende nuevas palabras con nuestro avatar 3D</p>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filtros">
+      <div class="campo-busqueda">
+        <input 
+          type="text" 
+          placeholder="🔍 Buscar palabra..." 
+          [(ngModel)]="terminoBusqueda"
+          (input)="filtrarPalabras()"
+        />
+      </div>
+      
+      <div class="campo-categoria">
+        <select [(ngModel)]="categoriaSeleccionada" (change)="filtrarPalabras()">
+          <option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</option>
+        </select>
+      </div>
+      
+      <button class="btn-limpiar" (click)="limpiarFiltros()">🗑️ Limpiar</button>
+    </div>
+
+    <!-- Lista de palabras -->
+    <div class="palabras-grid">
+      <div class="palabra-card" *ngFor="let palabra of palabrasFiltradas" (click)="seleccionarPalabra(palabra)">
+        <div class="palabra-icon">📖</div>
+        <div class="palabra-termino">{{ palabra.termino }}</div>
+        <div class="palabra-categoria">{{ palabra.categoria }}</div>
+      </div>
+      
+      <div *ngIf="palabrasFiltradas.length === 0" class="sin-resultados">
+        <p>No se encontraron palabras</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de detalle -->
+  <div class="modal" *ngIf="palabraSeleccionada" (click)="cerrarModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ palabraSeleccionada.termino }}</h3>
+        <button class="modal-close" (click)="cerrarModal()">✖</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-icon">🤟</div>
+        <p class="modal-significado">{{ palabraSeleccionada.significado }}</p>
+        <p class="modal-categoria"><strong>Categoría:</strong> {{ palabraSeleccionada.categoria }}</p>
+      </div>
+    </div>
+  </div>
+</div>
