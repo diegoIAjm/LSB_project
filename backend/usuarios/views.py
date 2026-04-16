@@ -49,8 +49,8 @@ class UsuarioCreateView(CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        usuario = serializer.save()  # password ya se cifra en validate_password
-        data = UsuarioSerializer(usuario).data  # usamos el serializer de lista para devolver info limpia
+        usuario = serializer.save()  
+        data = UsuarioSerializer(usuario).data  
         return Response(
             {"mensaje": "Usuario creado correctamente", "usuario": data},
             status=status.HTTP_201_CREATED
