@@ -133,11 +133,34 @@ class DocentesDisponiblesView(generics.ListAPIView):
         return Response(serializer.data)
     
 class EstudiantesDisponiblesView(generics.ListAPIView):
-    """Listar estudiantes activos"""
+    """Listar estudiantes activos que NO están inscritos en un curso específico"""
     
     def get(self, request):
+        curso_id = request.query_params.get('curso_id')
+        print(f"📥 EstudiantesDisponiblesView llamado con curso_id: {curso_id}")
+        
         estudiantes = Estudiante.objects.filter(usuario__estado='activo')
+        print(f"📊 Total estudiantes activos: {estudiantes.count()}")
+        
+        # Si se proporciona un curso_id, filtrar estudiantes que NO estén inscritos en ese curso
+        if curso_id:
+            try:
+                curso = Curso.objects.get(id=curso_id)
+                print(f"✅ Curso encontrado: {curso.nombre}")
+                
+                # Excluir estudiantes que ya tienen inscripción en este curso (activa o cancelada)
+                estudiantes_inscritos = Inscripcion.objects.filter(curso=curso).values_list('estudiante_id', flat=True)
+                print(f"📋 Estudiantes inscritos en este curso: {list(estudiantes_inscritos)}")
+                
+                estudiantes = estudiantes.exclude(id__in=estudiantes_inscritos)
+                print(f"✅ Estudiantes disponibles después de filtro: {estudiantes.count()}")
+                
+            except Curso.DoesNotExist:
+                print(f"❌ Curso no encontrado con ID: {curso_id}")
+                pass
+        
         serializer = EstudianteSimpleSerializer(estudiantes, many=True)
+        print(f"📤 Enviando {len(serializer.data)} estudiantes")
         return Response(serializer.data)
 
 class CursosDisponiblesView(generics.ListAPIView):

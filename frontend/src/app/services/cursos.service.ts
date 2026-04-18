@@ -68,8 +68,12 @@ export class CursosService {
   }
 
   // Obtener estudiantes disponibles (no inscritos en un curso específico o todos)
-getEstudiantesDisponibles(): Observable<any> {
-  return this.http.get('http://127.0.0.1:8000/api/estudiantes/disponibles/');
+getEstudiantesDisponibles(cursoId?: number): Observable<any> {
+  let params = new HttpParams();
+  if (cursoId) {
+    params = params.set('curso_id', cursoId.toString());
+  }
+  return this.http.get('http://127.0.0.1:8000/api/estudiantes/disponibles/', { params });
 }
 
 // Obtener cursos disponibles para inscripción

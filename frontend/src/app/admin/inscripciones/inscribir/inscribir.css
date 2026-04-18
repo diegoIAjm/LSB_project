@@ -184,3 +184,21 @@ h2 {
   padding: 40px;
   color: #6b7280;
 }
+
+
+
+.alerta-curso {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.sin-estudiantes {
+  text-align: center;
+  padding: 30px;
+  color: #6b7280;
+  font-style: italic;
+}

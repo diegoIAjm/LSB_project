@@ -12,17 +12,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./inscribir.css']
 })
 export class InscribirComponent implements OnInit {
-  modo: string = 'individual';
-  
-  inscripcionIndividual = {
-    estudiante: null as number | null,
-    curso: null as number | null
-  };
-  
-  inscripcionMasiva = {
-    curso: null as number | null,
-    estudiantes: [] as number[]
-  };
+  cursoSeleccionado: number | null = null;
+  estudiantesSeleccionados: number[] = [];
   
   estudiantes: any[] = [];
   cursos: any[] = [];
@@ -39,144 +30,130 @@ export class InscribirComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.cargarDatos();
+    this.cargarCursos();
   }
 
-cargarDatos() {
-  this.cargandoDatos = true;
-  
-  Promise.all([
-    this.cursosService.getEstudiantesDisponibles().toPromise(),
-    this.cursosService.getCursosDisponibles().toPromise()  // 🔹 Cambiar a getCursosDisponibles
-  ]).then(([estudiantesRes, cursosRes]: any) => {
-    this.estudiantes = estudiantesRes;
-    this.cursos = cursosRes;
-    this.cargandoDatos = false;
-    this.cd.detectChanges();
-  }).catch((err: any) => {
-    console.error('Error:', err);
-    this.error = 'Error al cargar los datos';
-    this.cargandoDatos = false;
-    this.cd.detectChanges();
-  });
-}
+  cargarCursos() {
+    this.cargandoDatos = true;
+    
+    this.cursosService.getCursosDisponibles().subscribe({
+      next: (cursosRes: any) => {
+        this.cursos = cursosRes;
+        this.cargandoDatos = false;
+        this.cd.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error:', err);
+        this.error = 'Error al cargar los cursos';
+        this.cargandoDatos = false;
+        this.cd.detectChanges();
+      }
+    });
+  }
+
+  cargarEstudiantesPorCurso(cursoId: number) {
+    if (!cursoId) return;
+    
+    this.cargandoDatos = true;
+    
+    this.cursosService.getEstudiantesDisponibles(cursoId).subscribe({
+      next: (estudiantesRes: any) => {
+        this.estudiantes = estudiantesRes;
+        this.estudiantesSeleccionados = [];
+        this.cargandoDatos = false;
+        this.cd.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al cargar estudiantes:', err);
+        this.cargandoDatos = false;
+        this.cd.detectChanges();
+      }
+    });
+  }
+
+  onCursoChange(cursoId: number) {
+    if (cursoId) {
+      this.cargarEstudiantesPorCurso(cursoId);
+    } else {
+      this.estudiantes = [];
+      this.estudiantesSeleccionados = [];
+    }
+  }
 
   volverInscripciones() {
     this.router.navigate(['/admin/inscripciones']);
   }
 
-  cambiarModo(modo: string) {
-    this.modo = modo;
-    this.mensaje = '';
-    this.error = '';
+  toggleEstudiante(estudianteId: number) {
+    const index = this.estudiantesSeleccionados.indexOf(estudianteId);
+    if (index === -1) {
+      this.estudiantesSeleccionados.push(estudianteId);
+    } else {
+      this.estudiantesSeleccionados.splice(index, 1);
+    }
   }
 
-  inscribirIndividual() {
-    if (!this.inscripcionIndividual.estudiante || !this.inscripcionIndividual.curso) {
-      this.error = 'Debe seleccionar un estudiante y un curso';
+  toggleTodosEstudiantes() {
+    if (this.estudiantesSeleccionados.length === this.estudiantes.length) {
+      this.estudiantesSeleccionados = [];
+    } else {
+      this.estudiantesSeleccionados = this.estudiantes.map(e => e.id);
+    }
+  }
+
+  estaSeleccionado(estudianteId: number): boolean {
+    return this.estudiantesSeleccionados.includes(estudianteId);
+  }
+
+  inscribir() {
+    if (!this.cursoSeleccionado) {
+      this.error = 'Debe seleccionar un curso';
+      return;
+    }
+
+    if (this.estudiantesSeleccionados.length === 0) {
+      this.error = 'Debe seleccionar al menos un estudiante';
       return;
     }
 
     this.cargando = true;
     this.error = '';
 
-    this.cursosService.inscribirEstudiante(this.inscripcionIndividual).subscribe({
+    const data = {
+      curso: Number(this.cursoSeleccionado),
+      estudiantes: this.estudiantesSeleccionados.map(id => Number(id))
+    };
+
+    console.log('📤 Enviando datos:', data);
+
+    this.cursosService.inscribirMasivo(data).subscribe({
       next: (res: any) => {
-        this.mensaje = res.mensaje;
-        this.cargando = false;
-        setTimeout(() => {
-          this.router.navigate(['/admin/inscripciones'], { 
-            state: { mensaje: 'Estudiante inscrito correctamente' } 
-          });
-        }, 1500);
+        console.log('✅ Respuesta:', res);
+        
+        if (res.inscritos > 0) {
+          this.mensaje = res.mensaje;
+          setTimeout(() => {
+            this.router.navigate(['/admin/inscripciones'], { 
+              state: { mensaje: res.mensaje } 
+            });
+          }, 1500);
+        } else {
+          this.error = res.mensaje;
+          this.cargando = false;
+        }
       },
       error: (err: any) => {
-        if (err.error?.non_field_errors) {
-          this.error = err.error.non_field_errors[0];
+        console.error('❌ Error:', err);
+        
+        if (err.error && typeof err.error === 'string' && err.error.includes('llave duplicada')) {
+          this.error = 'Uno o más estudiantes ya tienen una inscripción en este curso';
+        } else if (err.error?.mensaje) {
+          this.error = err.error.mensaje;
         } else {
-          this.error = err.error?.mensaje || 'Error al inscribir';
+          this.error = 'Error al inscribir estudiantes';
         }
         this.cargando = false;
       }
     });
   }
-
-  toggleEstudiante(estudianteId: number) {
-    const index = this.inscripcionMasiva.estudiantes.indexOf(estudianteId);
-    if (index === -1) {
-      this.inscripcionMasiva.estudiantes.push(estudianteId);
-    } else {
-      this.inscripcionMasiva.estudiantes.splice(index, 1);
-    }
-  }
-
-  toggleTodosEstudiantes() {
-    if (this.inscripcionMasiva.estudiantes.length === this.estudiantes.length) {
-      this.inscripcionMasiva.estudiantes = [];
-    } else {
-      this.inscripcionMasiva.estudiantes = this.estudiantes.map(e => e.id);
-    }
-  }
-
-  estaSeleccionado(estudianteId: number): boolean {
-    return this.inscripcionMasiva.estudiantes.includes(estudianteId);
-  }
-
-inscribirMasivo() {
-  if (!this.inscripcionMasiva.curso) {
-    this.error = 'Debe seleccionar un curso';
-    return;
-  }
-
-  if (this.inscripcionMasiva.estudiantes.length === 0) {
-    this.error = 'Debe seleccionar al menos un estudiante';
-    return;
-  }
-
-  this.cargando = true;
-  this.error = '';
-
-  const estudiantesNumeros = this.inscripcionMasiva.estudiantes.map(id => Number(id));
-
-  const data = {
-    curso: Number(this.inscripcionMasiva.curso),
-    estudiantes: estudiantesNumeros
-  };
-
-  console.log('📤 Enviando datos masivos:', data);
-
-  this.cursosService.inscribirMasivo(data).subscribe({
-    next: (res: any) => {
-      console.log('✅ Respuesta:', res);
-      
-      if (res.inscritos > 0) {
-        this.mensaje = res.mensaje;
-        setTimeout(() => {
-          this.router.navigate(['/admin/inscripciones'], { 
-            state: { mensaje: res.mensaje } 
-          });
-        }, 1500);
-      } else {
-        // Si no se inscribió nadie, mostrar errores
-        this.error = res.mensaje;
-        this.cargando = false;
-      }
-    },
-    error: (err: any) => {
-      console.error('❌ Error:', err);
-      
-      // 🔹 Manejar el error de duplicado de forma más amigable
-      if (err.error && typeof err.error === 'string' && err.error.includes('llave duplicada')) {
-        this.error = 'Uno o más estudiantes ya tienen una inscripción en este curso (activa o cancelada)';
-      } else if (err.error?.mensaje) {
-        this.error = err.error.mensaje;
-      } else if (err.error?.error) {
-        this.error = err.error.error;
-      } else {
-        this.error = 'Error al inscribir estudiantes. Verifique que no estén ya inscritos.';
-      }
-      this.cargando = false;
-    }
-  });
-}
 }
