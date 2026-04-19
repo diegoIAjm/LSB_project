@@ -285,3 +285,32 @@ class InscripcionMasivaView(APIView):
                 'errores': errores
             }, status=status.HTTP_400_BAD_REQUEST)
         
+class CursoEstudiantesView(APIView):
+    """Obtener estudiantes inscritos en un curso"""
+    
+    def get(self, request, pk):
+        try:
+            curso = Curso.objects.get(pk=pk)
+            inscripciones = Inscripcion.objects.filter(curso=curso).select_related('estudiante__usuario')
+            
+            estudiantes = []
+            for ins in inscripciones:
+                estudiantes.append({
+                    'id': ins.id,
+                    'estudiante_id': ins.estudiante.id,
+                    'nombre': f"{ins.estudiante.usuario.nombre} {ins.estudiante.usuario.apellido}",
+                    'email': ins.estudiante.usuario.email,
+                    'ci': ins.estudiante.usuario.ci,
+                    'fecha_inscripcion': ins.fecha_inscripcion,
+                    'estado': ins.estado,
+                    'nivel': ins.estudiante.nivel_actual,
+                    'progreso': 0  # Puedes calcular si tienes datos
+                })
+            
+            return Response({
+                'curso_nombre': curso.nombre,
+                'estudiantes': estudiantes,
+                'total': len(estudiantes)
+            })
+        except Curso.DoesNotExist:
+            return Response({'error': 'Curso no encontrado'}, status=404)

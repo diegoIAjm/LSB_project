@@ -1,0 +1,130 @@
+<div class="estudiantes-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <button class="btn-back" (click)="volver()">
+        ← Volver
+      </button>
+      <h1>📚 <span id="cursoNombreSpan">{{ cursoNombre || 'Cargando...' }}</span></h1>
+      <p>Gestión de estudiantes inscritos en el curso</p>
+    </div>
+    <div class="header-decoration">
+      <div class="decoration-circle"></div>
+      <div class="decoration-circle2"></div>
+    </div>
+  </div>
+
+  <!-- Estadísticas usando getters -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-info">
+        <h3>{{ totalEstudiantes }}</h3>
+        <p>Total Estudiantes</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-info">
+        <h3>{{ estudiantesActivos }}</h3>
+        <p>Activos</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">❌</div>
+      <div class="stat-info">
+        <h3>{{ estudiantesCancelados }}</h3>
+        <p>Cancelados</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
+      <div class="stat-info">
+        <h3>{{ promedioProgreso }}%</h3>
+        <p>Progreso Promedio</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-section">
+    <div class="search-bar">
+      <i class="search-icon">🔍</i>
+      <input 
+        type="text" 
+        placeholder="Buscar estudiante..." 
+        [(ngModel)]="filtroBusqueda"
+        (input)="filtrarEstudiantes()"
+      />
+    </div>
+    
+    <div class="filter-group">
+      <select [(ngModel)]="filtroEstado" (change)="filtrarEstudiantes()">
+        <option *ngFor="let estado of estados" [value]="estado.value">{{ estado.label }}</option>
+      </select>
+    </div>
+
+    <button class="btn-clear" (click)="limpiarFiltros()">
+      🗑️ Limpiar
+    </button>
+  </div>
+
+  <!-- Grid de estudiantes -->
+  <div *ngIf="cargando" class="loading-container">
+    <div class="spinner"></div>
+    <p>Cargando estudiantes...</p>
+  </div>
+
+  <div *ngIf="!cargando" class="estudiantes-grid">
+    <div *ngFor="let est of estudiantesFiltrados" class="estudiante-card">
+      <div class="card-header">
+        <div class="avatar">
+          <span class="avatar-initial">{{ est.nombre?.charAt(0) || '?' }}</span>
+        </div>
+        <div class="estado-badge" [class]="getEstadoClass(est.estado)">
+          {{ getEstadoTexto(est.estado) }}
+        </div>
+      </div>
+      
+      <h3 class="estudiante-nombre">{{ est.nombre }}</h3>
+      <p class="estudiante-email">{{ est.email }}</p>
+      
+      <div class="card-info">
+        <div class="info-item">
+          <span class="info-label">📅 Inscripción</span>
+          <span class="info-value">{{ est.fecha_inscripcion | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="info-item" *ngIf="est.progreso">
+          <span class="info-label">📊 Progreso</span>
+          <div class="progress-bar-mini">
+            <div class="progress-fill-mini" [style.width.%]="est.progreso"></div>
+          </div>
+          <span class="info-value">{{ est.progreso }}%</span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button 
+          *ngIf="est.estado === 'activo'" 
+          class="btn-cancelar" 
+          (click)="toggleEstado(est)">
+          ❌ Cancelar Inscripción
+        </button>
+        <button 
+          *ngIf="est.estado !== 'activo'" 
+          class="btn-activar" 
+          (click)="toggleEstado(est)">
+          🔄 Activar Inscripción
+        </button>
+      </div>
+    </div>
+
+    <!-- Mensaje sin resultados -->
+    <div *ngIf="estudiantesFiltrados.length === 0" class="empty-state">
+      <div class="empty-icon">👥</div>
+      <h3>No hay estudiantes</h3>
+      <p>No se encontraron estudiantes que coincidan con los filtros</p>
+      <button class="btn-clear" (click)="limpiarFiltros()">Limpiar filtros</button>
+    </div>
+  </div>
+</div>

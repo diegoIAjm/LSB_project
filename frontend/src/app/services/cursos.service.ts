@@ -116,4 +116,15 @@ cancelarInscripcion(id: number): Observable<any> {
 toggleEstadoInscripcion(id: number): Observable<any> {
   return this.http.patch(`http://127.0.0.1:8000/api/inscripciones/${id}/toggle-estado/`, {});
 }
+
+// Obtener estudiantes inscritos en un curso
+getEstudiantesByCurso(cursoId: number): Observable<any> {
+  return this.http.get(`http://127.0.0.1:8000/api/cursos/${cursoId}/estudiantes/`);
+}
+
+// Cambiar estado de inscripción (activo/cancelado)
+toggleInscripcionEstado(inscripcionId: number): Observable<any> {
+  return this.http.patch(`http://127.0.0.1:8000/api/inscripciones/${inscripcionId}/toggle-estado/`, {});
+}
+
 }

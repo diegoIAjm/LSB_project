@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -32,7 +32,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -218,23 +219,29 @@ export class LoginComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onSubmit(): void {
-    if (!this.email || !this.password) {
-      this.error = 'Por favor, complete todos los campos';
-      return;
-    }
-
-    this.loading = true;
-    this.error = '';
-
-    this.authService.login(this.email, this.password).subscribe({
-      next: () => {
-        this.redirigirPorRol();
-      },
-      error: (err: any) => {
-        this.error = err.error?.mensaje || 'Correo o contraseña incorrectos';
-        this.loading = false;
-      }
-    });
+onSubmit(): void {
+  this.error = '';
+  
+  if (!this.email || !this.password) {
+    this.error = 'Por favor, complete todos los campos';
+    return;
   }
+
+  this.loading = true;
+  this.cdr.detectChanges();
+
+  this.authService.login(this.email, this.password).subscribe({
+    next: () => {
+      this.loading = false;
+      this.cdr.detectChanges();
+      this.redirigirPorRol();
+    },
+    error: (err: any) => {
+      this.error = 'Correo o contraseña incorrectos';
+      this.loading = false;
+      this.password = '';
+      this.cdr.detectChanges();
+    }
+  });
+}
 }

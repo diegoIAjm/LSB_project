@@ -104,6 +104,11 @@ export const routes: Routes = [
       {
         path: 'mis-cursos',
         loadComponent: () => import('./teacher/mis-cursos/mis-cursos').then(m => m.MisCursosComponent)
+      },
+
+      {
+        path: 'curso/:id/estudiantes',
+        loadComponent: () => import('./teacher/curso-estudiantes/curso-estudiantes').then(m => m.CursoEstudiantesComponent)
       }
     ]
   },
