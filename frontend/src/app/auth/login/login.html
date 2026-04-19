@@ -1,0 +1,54 @@
+<div class="login-container">
+  <div #canvasContainer class="canvas-background"></div>
+
+  <div class="login-card">
+    <div class="login-header">
+      <div class="logo-3d">
+        <span class="logo-icon">🎓</span>
+        <span class="logo-text">EduLearn</span>
+      </div>
+      <h1>Bienvenido</h1>
+      <p>Inicia sesión para continuar</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      <div class="input-group">
+        <div class="input-icon">📧</div>
+        <input 
+          type="email" 
+          [(ngModel)]="email" 
+          name="email"
+          placeholder="Correo electrónico"
+          required
+          [disabled]="loading">
+      </div>
+
+      <div class="input-group">
+        <div class="input-icon">🔒</div>
+        <input 
+          [type]="mostrarPassword ? 'text' : 'password'"
+          [(ngModel)]="password" 
+          name="password"
+          placeholder="Contraseña"
+          required
+          [disabled]="loading">
+        <button type="button" class="toggle-password" (click)="togglePassword()">
+          {{ mostrarPassword ? '👁️' : '👁️‍🗨️' }}
+        </button>
+      </div>
+
+      <div *ngIf="error" class="error-message">
+        ⚠️ {{ error }}
+      </div>
+
+      <button type="submit" class="btn-login" [disabled]="loading">
+        <span *ngIf="loading" class="spinner"></span>
+        {{ loading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <p>¿No tienes cuenta? Contacta al administrador</p>
+    </div>
+  </div>
+</div>

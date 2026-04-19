@@ -4,20 +4,21 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth';
 
 @Component({
-  selector: 'app-student-layout',
+  selector: 'app-teacher-layout',
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
-  templateUrl: './student-layout.html',
-  styleUrls: ['./student-layout.css']
+  templateUrl: './teacher-layout.html',
+  styleUrls: ['./teacher-layout.css']
 })
-export class StudentLayout {
+export class TeacherLayout {
   sidebarOpen = true;
-  private authService: AuthService = inject(AuthService);
+  private authService: AuthService = inject(AuthService);  
 
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;
   }
-    logout(): void {
+
+  logout(): void {
     this.authService.logout();
   }
 }

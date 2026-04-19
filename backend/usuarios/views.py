@@ -6,6 +6,7 @@ from .serializers import UsuarioSerializer, UsuarioCreateSerializer, UsuarioUpda
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from .services.import_service import ImportService
+from django.contrib.auth.hashers import check_password
 
 
 
@@ -162,3 +163,61 @@ class ImportarDocentesView(APIView):
                 {'error': f'Error al procesar el archivo: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+class LoginView(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        
+        print(f"📥 Intento de login - Email: {email}")
+        
+        if not email or not password:
+            print("❌ Email o password vacío")
+            return Response(
+                {'mensaje': 'Correo y contraseña son requeridos'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            usuario = Usuario.objects.get(email=email, estado='activo')
+            print(f"✅ Usuario encontrado: {usuario.email}, rol_id: {usuario.rol_id}")
+        except Usuario.DoesNotExist:
+            print(f"❌ Usuario no encontrado con email: {email}")
+            return Response(
+                {'mensaje': 'Credenciales inválidas'}, 
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        # Verificar contraseña
+        print(f"🔐 Verificando contraseña para: {email}")
+        print(f"   Password recibida: {password}")
+        print(f"   Hash almacenado: {usuario.password}")
+        
+        if check_password(password, usuario.password):
+            print("✅ Contraseña correcta")
+            
+            rol_nombre = usuario.rol.nombre if usuario.rol else None
+            
+            response_data = {
+                'user': {
+                    'id': usuario.id,
+                    'nombre': usuario.nombre,
+                    'apellido': usuario.apellido,
+                    'email': usuario.email,
+                    'ci': usuario.ci,
+                    'rol': rol_nombre,
+                    'rol_id': usuario.rol.id if usuario.rol else None,
+                    'estado': usuario.estado
+                },
+                'token': f'token_{usuario.id}_{usuario.rol.id}'
+            }
+            
+            print(f"✅ Login exitoso - Enviando respuesta: {response_data}")
+            return Response(response_data)
+        
+        print("❌ Contraseña incorrecta")
+        return Response(
+            {'mensaje': 'Credenciales inválidas'}, 
+            status=status.HTTP_401_UNAUTHORIZED
+        )

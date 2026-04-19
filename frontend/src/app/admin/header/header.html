@@ -13,19 +13,20 @@
 
   <!-- RIGHT -->
   <div class="right">
+    <button class="notification-btn">🔔</button>
 
     <div class="user">
-      <div class="avatar">A</div>
+      <div class="avatar">{{ usuario.nombre.charAt(0) }}</div>
       <div class="info">
-        <span class="name">{{usuario.nombre}}</span>
-        <span class="role">{{usuario.rol}}</span>
+        <span class="name">{{ usuario.nombre }}</span>
+        <span class="role">{{ usuario.rol }}</span>
       </div>
     </div>
 
-    <button class="logout" (click)="logout()">
-      Salir
+    <!-- 🔹 BOTÓN DE CERRAR SESIÓN ESTILO HEADER (icono redondo) -->
+    <button class="logout-header" (click)="logout()" title="Cerrar sesión">
+      <i class="bi bi-box-arrow-right"></i>
     </button>
-
   </div>
 
 </header>

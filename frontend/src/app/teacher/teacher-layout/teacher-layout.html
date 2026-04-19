@@ -1,0 +1,79 @@
+<div class="app-container">
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.sidebar-collapsed]="!sidebarOpen">
+    <div class="sidebar-header">
+      <div class="logo" *ngIf="sidebarOpen">
+        <span class="logo-icon">👨‍🏫</span>
+        <span class="logo-text">EduTeach</span>
+      </div>
+      <div class="logo-icon-only" *ngIf="!sidebarOpen">
+        <span class="logo-icon">👨‍🏫</span>
+      </div>
+      <button class="toggle-btn" (click)="toggleSidebar()">
+        {{ sidebarOpen ? '◀' : '▶' }}
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/teacher/dashboard" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label" *ngIf="sidebarOpen">Dashboard</span>
+      </a>
+      <a routerLink="/teacher/mis-cursos" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📚</span>
+        <span class="nav-label" *ngIf="sidebarOpen">Mis Cursos</span>
+      </a>
+      <a routerLink="/teacher/estudiantes" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label" *ngIf="sidebarOpen">Estudiantes</span>
+      </a>
+      <a routerLink="/teacher/evaluaciones" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📝</span>
+        <span class="nav-label" *ngIf="sidebarOpen">Evaluaciones</span>
+      </a>
+      <a routerLink="/teacher/horario" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📅</span>
+        <span class="nav-label" *ngIf="sidebarOpen">Horario</span>
+      </a>
+      <a routerLink="/teacher/recursos" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📎</span>
+        <span class="nav-label" *ngIf="sidebarOpen">Recursos</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer" *ngIf="sidebarOpen">
+      <div class="user-info">
+        <div class="user-avatar">
+          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Avatar">
+        </div>
+        <div class="user-details">
+          <span class="user-name">Carlos Gómez</span>
+          <span class="user-role">Docente</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content" [class.content-expanded]="!sidebarOpen">
+    <header class="top-bar">
+      <div class="welcome-message">
+        <h1>¡Bienvenido, Carlos! 👨‍🏫</h1>
+        <p>Un nuevo día para inspirar y enseñar</p>
+      </div>
+      <div class="header-actions">
+        <button class="notification-btn">🔔</button>
+        <button class="logout-header" (click)="logout()" title="Cerrar sesión">
+        <i class="bi bi-box-arrow-right"></i>
+        </button>
+        <div class="user-menu">
+          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Avatar" class="avatar">
+        </div>
+      </div>
+    </header>
+
+    <div class="content-area">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

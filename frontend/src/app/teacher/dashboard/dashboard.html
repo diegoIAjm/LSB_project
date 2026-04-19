@@ -1,0 +1,17 @@
+<div class="dashboard-container">
+  <div class="stats-grid">
+    <div class="stat-card" *ngFor="let stat of stats" [style.border-left-color]="stat.color">
+      <div class="stat-icon">{{ stat.icon }}</div>
+      <div class="stat-info">
+        <h3>{{ stat.value }}</h3>
+        <p>{{ stat.label }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="welcome-card">
+    <h2>📌 Resumen del Día</h2>
+    <p>Tienes 3 clases programadas para hoy</p>
+    <p>2 entregas pendientes por revisar</p>
+  </div>
+</div>
