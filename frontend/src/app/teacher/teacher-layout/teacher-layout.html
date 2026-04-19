@@ -44,11 +44,12 @@
     <div class="sidebar-footer" *ngIf="sidebarOpen">
       <div class="user-info">
         <div class="user-avatar">
-          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Avatar">
+          <!-- 🔹 Mostrar inicial del nombre -->
+          <span>{{ usuario?.nombre?.charAt(0) || 'U' }}</span>
         </div>
         <div class="user-details">
-          <span class="user-name">Carlos Gómez</span>
-          <span class="user-role">Docente</span>
+          <span class="user-name">{{ usuario?.nombre || 'Usuario' }} {{ usuario?.apellido || '' }}</span>
+          <span class="user-role">{{ usuario?.rol || 'Docente' }}</span>
         </div>
       </div>
     </div>
@@ -58,16 +59,16 @@
   <main class="main-content" [class.content-expanded]="!sidebarOpen">
     <header class="top-bar">
       <div class="welcome-message">
-        <h1>¡Bienvenido, Carlos! 👨‍🏫</h1>
+        <h1>¡Bienvenido, {{ usuario?.nombre || 'Docente' }}! 👨‍🏫</h1>
         <p>Un nuevo día para inspirar y enseñar</p>
       </div>
       <div class="header-actions">
         <button class="notification-btn">🔔</button>
         <button class="logout-header" (click)="logout()" title="Cerrar sesión">
-        <i class="bi bi-box-arrow-right"></i>
+          <i class="bi bi-box-arrow-right"></i>
         </button>
         <div class="user-menu">
-          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Avatar" class="avatar">
+          <div class="avatar-circle">{{ usuario?.nombre?.charAt(0) || 'D' }}</div>
         </div>
       </div>
     </header>

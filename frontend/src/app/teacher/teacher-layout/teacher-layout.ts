@@ -1,7 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthService } from '../../services/auth';
+import { AuthService, User } from '../../services/auth';
 
 @Component({
   selector: 'app-teacher-layout',
@@ -10,9 +10,15 @@ import { AuthService } from '../../services/auth';
   templateUrl: './teacher-layout.html',
   styleUrls: ['./teacher-layout.css']
 })
-export class TeacherLayout {
+export class TeacherLayout implements OnInit {
   sidebarOpen = true;
-  private authService: AuthService = inject(AuthService);  
+  private authService: AuthService = inject(AuthService);
+  usuario: User | null = null;
+
+  ngOnInit(): void {
+    this.usuario = this.authService.getCurrentUser();
+    console.log('Usuario logueado:', this.usuario);
+  }
 
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;

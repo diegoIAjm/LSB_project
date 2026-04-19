@@ -352,3 +352,64 @@
   color: #ef4444;
   transform: scale(1.05);
 }
+
+
+/* Avatar circular en el header */
+.avatar-circle {
+  width: 45px;
+  height: 45px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.avatar-circle:hover {
+  transform: scale(1.05);
+}
+
+/* Avatar en el sidebar */
+.user-avatar span {
+  width: 45px;
+  height: 45px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* Botón de cerrar sesión en el sidebar */
+.logout-btn-sidebar {
+  width: 100%;
+  margin-top: 15px;
+  padding: 10px;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 10px;
+  color: #fca5a5;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.logout-btn-sidebar:hover {
+  background: rgba(239, 68, 68, 0.4);
+  border-color: #ef4444;
+  color: #ffffff;
+  transform: translateY(-2px);
+}

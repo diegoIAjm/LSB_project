@@ -44,11 +44,11 @@
     <div class="sidebar-footer" *ngIf="sidebarOpen">
       <div class="user-info">
         <div class="user-avatar">
-          <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Avatar">
+          <span>{{ usuario?.nombre?.charAt(0) || 'E' }}</span>
         </div>
         <div class="user-details">
-          <span class="user-name">María González</span>
-          <span class="user-role">Estudiante</span>
+          <span class="user-name">{{ usuario?.nombre || 'Estudiante' }} {{ usuario?.apellido || '' }}</span>
+          <span class="user-role">{{ usuario?.rol || 'Estudiante' }}</span>
         </div>
       </div>
     </div>
@@ -58,7 +58,7 @@
   <main class="main-content" [class.content-expanded]="!sidebarOpen">
     <header class="top-bar">
       <div class="welcome-message">
-        <h1>¡Hola, María! 👋</h1>
+        <h1>¡Hola, {{ usuario?.nombre || 'Estudiante' }}! 👋</h1>
         <p>¿Lista para seguir aprendiendo hoy?</p>
       </div>
       <div class="header-actions">
@@ -67,7 +67,7 @@
           <i class="bi bi-box-arrow-right"></i>
         </button>
         <div class="user-menu">
-          <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Avatar" class="avatar">
+          <div class="avatar-circle">{{ usuario?.nombre?.charAt(0) || 'E' }}</div>
         </div>
       </div>
     </header>

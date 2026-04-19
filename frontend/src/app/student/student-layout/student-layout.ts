@@ -1,7 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthService } from '../../services/auth';
+import { AuthService, User } from '../../services/auth';
 
 @Component({
   selector: 'app-student-layout',
@@ -10,14 +10,21 @@ import { AuthService } from '../../services/auth';
   templateUrl: './student-layout.html',
   styleUrls: ['./student-layout.css']
 })
-export class StudentLayout {
+export class StudentLayout implements OnInit {
   sidebarOpen = true;
   private authService: AuthService = inject(AuthService);
+  usuario: User | null = null;
+
+  ngOnInit(): void {
+    this.usuario = this.authService.getCurrentUser();
+    console.log('Usuario logueado:', this.usuario);
+  }
 
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;
   }
-    logout(): void {
+
+  logout(): void {
     this.authService.logout();
   }
 }

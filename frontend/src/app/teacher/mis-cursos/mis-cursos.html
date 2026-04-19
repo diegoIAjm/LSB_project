@@ -1,0 +1,86 @@
+<div class="mis-cursos-container">
+  <!-- Header con gradiente -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>📚 Mis Cursos</h1>
+      <p>Gestiona y da seguimiento a tus cursos asignados</p>
+    </div>
+    <div class="header-decoration">
+      <div class="decoration-circle"></div>
+      <div class="decoration-circle2"></div>
+    </div>
+  </div>
+
+  <!-- Filtros y búsqueda -->
+  <div class="filters-section">
+    <div class="search-bar">
+      <i class="search-icon">🔍</i>
+      <input 
+        type="text" 
+        placeholder="Buscar curso..." 
+        [(ngModel)]="filtroBusqueda"
+        (input)="filtrarCursos()"
+      />
+    </div>
+    
+    <div class="filter-group">
+      <select [(ngModel)]="filtroEstado" (change)="filtrarCursos()">
+        <option *ngFor="let estado of estados" [value]="estado.value">{{ estado.label }}</option>
+      </select>
+    </div>
+
+    <button class="btn-clear" (click)="limpiarFiltros()">
+      🗑️ Limpiar
+    </button>
+  </div>
+
+  <!-- Grid de cursos -->
+  <div *ngIf="cargando" class="loading-container">
+    <div class="spinner"></div>
+    <p>Cargando tus cursos...</p>
+  </div>
+
+  <div *ngIf="!cargando" class="cursos-grid">
+    <div *ngFor="let curso of cursosFiltrados" class="curso-card">
+      <div class="card-badge" [class]="getEstadoClass(curso.estado)">
+        {{ getEstadoTexto(curso.estado) }}
+      </div>
+      
+      <div class="card-icon">
+        {{ curso.nivel === 'basico' ? '🌟' : '🚀' }}
+      </div>
+      
+      <h3>{{ curso.nombre }}</h3>
+      
+      <div class="card-info">
+        <div class="info-item">
+          <span class="info-label">Nivel</span>
+          <span class="info-value">{{ getNivelTexto(curso.nivel) }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Duración</span>
+          <span class="info-value">{{ getDuracionTexto(curso.fecha_inicio, curso.fecha_fin) }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Docente</span>
+          <span class="info-value">{{ curso.docente_nombre || 'No asignado' }}</span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <a [routerLink]="['/teacher/curso', curso.id]" class="btn-ver">
+          <span>Ver Curso</span>
+          <i class="arrow">→</i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Mensaje sin resultados -->
+    <div *ngIf="cursosFiltrados.length === 0" class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>No hay cursos</h3>
+      <p>No se encontraron cursos que coincidan con los filtros</p>
+      <button class="btn-clear" (click)="limpiarFiltros()">Limpiar filtros</button>
+    </div>
+  </div>
+</div>

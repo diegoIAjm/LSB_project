@@ -1,7 +1,7 @@
 from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Usuario
+from .models import Usuario, Docente
 from .serializers import UsuarioSerializer, UsuarioCreateSerializer, UsuarioUpdateSerializer, ImportacionResponseSerializer
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -221,3 +221,24 @@ class LoginView(APIView):
             {'mensaje': 'Credenciales inválidas'}, 
             status=status.HTTP_401_UNAUTHORIZED
         )
+    
+# usuarios/views.py - Añade esto al final del archivo
+
+class DocentePorUsuarioView(APIView):
+    def get(self, request, usuario_id):
+        print(f"🔍 Buscando docente con usuario_id: {usuario_id}")
+        
+        try:
+            docente = Docente.objects.get(usuario_id=usuario_id)
+            print(f"✅ Docente encontrado: ID {docente.id}")
+            return Response({
+                'id': docente.id,
+                'usuario_id': docente.usuario_id,
+                'especialidad': docente.especialidad
+            })
+        except Docente.DoesNotExist:
+            print(f"❌ Docente NO encontrado para usuario_id: {usuario_id}")
+            # Listar todos los docentes para debug
+            todos = Docente.objects.all().values('id', 'usuario_id')
+            print(f"Docentes existentes: {list(todos)}")
+            return Response({'error': 'Docente no encontrado'}, status=404)

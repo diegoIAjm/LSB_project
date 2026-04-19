@@ -284,3 +284,4 @@ class InscripcionMasivaView(APIView):
                 'inscritos': 0,
                 'errores': errores
             }, status=status.HTTP_400_BAD_REQUEST)
+        

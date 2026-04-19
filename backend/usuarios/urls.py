@@ -1,6 +1,6 @@
 # usuarios/urls.py
 from django.urls import path
-from .views import UsuarioListView, UsuarioCreateView, UsuarioToggleEstadoView, UsuarioUpdateView, ImportarEstudiantesView, ImportarDocentesView, LoginView
+from .views import UsuarioListView, UsuarioCreateView, UsuarioToggleEstadoView, UsuarioUpdateView, ImportarEstudiantesView, ImportarDocentesView, LoginView, DocentePorUsuarioView 
 from .serializers import UsuarioCreateSerializer, UsuarioSerializer, UsuarioUpdateSerializer, ImportacionResponseSerializer
 
 
@@ -12,4 +12,5 @@ urlpatterns = [
     path('usuarios/importar/estudiantes/', ImportarEstudiantesView.as_view(), name='importar-estudiantes'),
     path('usuarios/importar/docentes/', ImportarDocentesView.as_view(), name='importar-docentes'),
     path('auth/login/', LoginView.as_view(), name='auth-login'),
+    path('docente/usuario/<int:usuario_id>/', DocentePorUsuarioView.as_view(), name='docente-por-usuario'),
 ]

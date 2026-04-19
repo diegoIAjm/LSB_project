@@ -99,6 +99,11 @@ export const routes: Routes = [
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'
+      },
+
+      {
+        path: 'mis-cursos',
+        loadComponent: () => import('./teacher/mis-cursos/mis-cursos').then(m => m.MisCursosComponent)
       }
     ]
   },

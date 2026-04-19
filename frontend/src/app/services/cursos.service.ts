@@ -81,6 +81,12 @@ getCursosDisponibles(): Observable<any> {
   return this.http.get('http://127.0.0.1:8000/api/cursos/disponibles/');
 }
 
+// Obtener docente por ID de usuario
+getDocenteByUsuarioId(usuarioId: number): Observable<any> {
+  // 🔹 CORREGIDO: quitar 'usuarios/' de la URL
+  return this.http.get(`http://127.0.0.1:8000/api/docente/usuario/${usuarioId}/`);
+}
+
   getCursosActivos(): Observable<any> {
     return this.http.get('http://127.0.0.1:8000/api/cursos/activos/');
   }
