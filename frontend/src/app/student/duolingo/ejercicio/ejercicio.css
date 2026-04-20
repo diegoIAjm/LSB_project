@@ -1,0 +1,259 @@
+.ejercicio-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.btn-back {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(-3px);
+}
+
+.progreso-header {
+  flex: 1;
+  max-width: 300px;
+}
+
+.progreso-header span {
+  font-size: 14px;
+  color: #94a3b8;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.progreso-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progreso-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #58cc71, #3a9b4e);
+  border-radius: 10px;
+  transition: width 0.3s;
+}
+
+/* Ejercicio Card */
+.ejercicio-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 32px;
+  padding: 40px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.avatar-3d {
+  margin-bottom: 30px;
+}
+
+.avatar-placeholder {
+  width: 150px;
+  height: 150px;
+  background: linear-gradient(135deg, #58cc71, #3a9b4e);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px;
+  font-size: 64px;
+  box-shadow: 0 10px 30px rgba(88, 204, 113, 0.3);
+}
+
+.avatar-text {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.pregunta h2 {
+  font-size: 28px;
+  color: white;
+  margin-bottom: 30px;
+}
+
+.btn-camera {
+  background: linear-gradient(135deg, #58cc71, #3a9b4e);
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 40px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 20px;
+}
+
+.btn-camera:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 5px 20px rgba(88, 204, 113, 0.4);
+}
+
+.btn-camera:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.info-adicional {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+/* Resultado Card */
+.resultado-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 32px;
+  padding: 40px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.resultado-card.color-verde {
+  border-color: #58cc71;
+  background: rgba(88, 204, 113, 0.1);
+}
+
+.resultado-card.color-amarillo {
+  border-color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.resultado-card.color-rojo {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.resultado-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.resultado-card h2 {
+  font-size: 32px;
+  margin-bottom: 20px;
+}
+
+.color-verde h2 { color: #58cc71; }
+.color-amarillo h2 { color: #fbbf24; }
+.color-rojo h2 { color: #ef4444; }
+
+.precision {
+  margin: 20px 0;
+}
+
+.precision-valor {
+  font-size: 48px;
+  font-weight: bold;
+  display: block;
+}
+
+.precision-label {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.puntos {
+  margin: 15px 0;
+  font-size: 20px;
+  color: #fbbf24;
+}
+
+.feedback {
+  margin: 20px 0;
+  text-align: left;
+}
+
+.feedback h3 {
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.feedback-items {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.feedback-item {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.feedback-item.verde {
+  background: rgba(88, 204, 113, 0.2);
+  color: #58cc71;
+}
+
+.feedback-item.amarillo {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+}
+
+.feedback-item.rojo {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.btn-siguiente {
+  background: linear-gradient(135deg, #58cc71, #3a9b4e);
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 40px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 20px;
+}
+
+.btn-siguiente:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 20px rgba(88, 204, 113, 0.4);
+}
+
+.loading {
+  text-align: center;
+  padding: 60px;
+  color: white;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #58cc71;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 15px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

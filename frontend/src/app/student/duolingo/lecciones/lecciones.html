@@ -1,0 +1,33 @@
+<div class="lecciones-container">
+  <div class="header">
+    <button class="btn-back" (click)="volver()">
+      ← Volver a Unidades
+    </button>
+    <h1>📖 Lecciones</h1>
+    <p>Completa cada lección para avanzar</p>
+  </div>
+
+  <div *ngIf="cargando" class="loading">
+    <div class="spinner"></div>
+    <p>Cargando lecciones...</p>
+  </div>
+
+  <div class="lecciones-timeline" *ngIf="!cargando">
+    <div *ngFor="let leccion of lecciones; let i = index" class="leccion-item" [class.completada]="leccion.progreso?.completado">
+      <div class="leccion-conector" *ngIf="i > 0"></div>
+      <div class="leccion-card" (click)="seleccionarLeccion(leccion)">
+        <div class="leccion-icon">
+          {{ leccion.progreso?.completado ? '✅' : '📘' }}
+        </div>
+        <div class="leccion-info">
+          <h3>{{ leccion.titulo }}</h3>
+          <p>Lección {{ leccion.orden }}</p>
+        </div>
+<div class="leccion-progreso" *ngIf="getPrecision(leccion) !== null">
+  <span>{{ getPrecision(leccion) }}%</span>
+</div>
+        <div class="leccion-arrow">→</div>
+      </div>
+    </div>
+  </div>
+</div>

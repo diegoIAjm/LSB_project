@@ -1,0 +1,86 @@
+<div class="ejercicio-container">
+  <!-- Header -->
+  <div class="header">
+    <button class="btn-back" (click)="volver()">
+      ← Volver a Lecciones
+    </button>
+    <div class="progreso-header">
+      <span>Ejercicio {{ indiceActual + 1 }} de {{ ejercicios.length }}</span>
+      <div class="progreso-bar">
+        <div class="progreso-fill" [style.width.%]="((indiceActual + 1) / ejercicios.length) * 100"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado de carga -->
+  <div *ngIf="cargando" class="loading">
+    <div class="spinner"></div>
+    <p>Cargando ejercicio...</p>
+  </div>
+
+  <!-- Ejercicio -->
+  <div *ngIf="!cargando && ejercicioActual && !resultado" class="ejercicio-card">
+    <div class="avatar-3d">
+      <div class="avatar-placeholder">
+        <span>🦉</span>
+      </div>
+      <p class="avatar-text">¡Intenta hacer la seña!</p>
+    </div>
+
+    <div class="pregunta">
+      <h2>{{ ejercicioActual.pregunta }}</h2>
+    </div>
+
+    <div class="acciones">
+      <button class="btn-camera" (click)="simularEvaluacion()" [disabled]="evaluando">
+        {{ evaluando ? 'Evaluando...' : '📷 Iniciar Cámara' }}
+      </button>
+    </div>
+
+    <div class="info-adicional" *ngIf="ejercicioActual.sena_info">
+      <p><strong>Seña:</strong> {{ ejercicioActual.sena_info.nombre }}</p>
+    </div>
+  </div>
+
+  <!-- Resultado -->
+  <div *ngIf="resultado" class="resultado-card" [class]="getColorClass(resultado.color)">
+    <div class="resultado-icon">
+      <span *ngIf="resultado.color === 'verde'">🎉</span>
+      <span *ngIf="resultado.color === 'amarillo'">👍</span>
+      <span *ngIf="resultado.color === 'rojo'">💪</span>
+    </div>
+    
+    <h2 *ngIf="resultado.color === 'verde'">¡Excelente!</h2>
+    <h2 *ngIf="resultado.color === 'amarillo'">¡Buen intento!</h2>
+    <h2 *ngIf="resultado.color === 'rojo'">¡Sigue practicando!</h2>
+    
+    <div class="precision">
+      <span class="precision-valor">{{ resultado.precision }}%</span>
+      <span class="precision-label">Precisión</span>
+    </div>
+    
+    <div class="puntos">
+      <span>⭐ +{{ resultado.puntos_ganados }} puntos</span>
+    </div>
+
+    <div class="feedback" *ngIf="resultado.feedback">
+      <h3>Detalles:</h3>
+      <div class="feedback-items">
+        <div class="feedback-item" [class.verde]="resultado.feedback.mano === 'verde'"
+                                   [class.amarillo]="resultado.feedback.mano === 'amarillo'"
+                                   [class.rojo]="resultado.feedback.mano === 'rojo'">
+          <span>✋ Posición de mano</span>
+        </div>
+        <div class="feedback-item" [class.verde]="resultado.feedback.movimiento === 'verde'"
+                                   [class.amarillo]="resultado.feedback.movimiento === 'amarillo'"
+                                   [class.rojo]="resultado.feedback.movimiento === 'rojo'">
+          <span>🔄 Movimiento</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-siguiente" (click)="siguienteEjercicio()">
+      {{ indiceActual + 1 < ejercicios.length ? 'Siguiente Ejercicio →' : 'Completar Lección 🎉' }}
+    </button>
+  </div>
+</div>

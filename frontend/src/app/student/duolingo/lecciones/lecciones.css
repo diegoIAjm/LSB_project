@@ -1,0 +1,131 @@
+.lecciones-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  margin-bottom: 40px;
+}
+
+.btn-back {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: all 0.3s;
+}
+
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(-3px);
+}
+
+.header h1 {
+  font-size: 32px;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.header p {
+  color: #94a3b8;
+  font-size: 16px;
+}
+
+.lecciones-timeline {
+  position: relative;
+}
+
+.leccion-item {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.leccion-conector {
+  position: absolute;
+  left: 30px;
+  top: -20px;
+  width: 2px;
+  height: 40px;
+  background: linear-gradient(to bottom, #58cc71, #3a9b4e);
+}
+
+.leccion-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.leccion-card:hover {
+  transform: translateX(10px);
+  background: rgba(88, 204, 113, 0.1);
+  border-color: #58cc71;
+}
+
+.leccion-item.completada .leccion-card {
+  background: rgba(88, 204, 113, 0.15);
+  border-color: #58cc71;
+}
+
+.leccion-icon {
+  font-size: 32px;
+}
+
+.leccion-info {
+  flex: 1;
+}
+
+.leccion-info h3 {
+  font-size: 18px;
+  color: white;
+  margin-bottom: 5px;
+}
+
+.leccion-info p {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.leccion-progreso {
+  background: #58cc71;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.leccion-arrow {
+  font-size: 20px;
+  color: #58cc71;
+}
+
+.loading {
+  text-align: center;
+  padding: 60px;
+  color: white;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #58cc71;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 15px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

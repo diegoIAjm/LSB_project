@@ -1,0 +1,20 @@
+<div class="niveles-container">
+  <div class="header">
+    <h1>🌟 Selecciona tu Nivel</h1>
+    <p>Elige el nivel que mejor se adapte a ti</p>
+  </div>
+
+  <div *ngIf="cargando" class="loading">
+    <div class="spinner"></div>
+    <p>Cargando niveles...</p>
+  </div>
+
+  <div class="niveles-grid" *ngIf="!cargando">
+    <div *ngFor="let nivel of niveles" class="nivel-card" (click)="seleccionarNivel(nivel)">
+      <div class="nivel-icon">📘</div>
+      <h3>{{ nivel.nombre }}</h3>
+      <p>Comienza tu viaje de aprendizaje</p>
+      <button class="btn-start">Comenzar →</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+<div class="unidades-container">
+  <div class="header">
+    <button class="btn-back" (click)="volver()">
+      ← Volver a Niveles
+    </button>
+    <h1>📚 Unidades</h1>
+    <p>Selecciona una unidad para continuar</p>
+  </div>
+
+  <div *ngIf="cargando" class="loading">
+    <div class="spinner"></div>
+    <p>Cargando unidades...</p>
+  </div>
+
+  <div class="unidades-list" *ngIf="!cargando">
+    <div *ngFor="let unidad of unidades; let i = index" class="unidad-card" (click)="seleccionarUnidad(unidad)">
+      <div class="unidad-numero">{{ i + 1 }}</div>
+      <div class="unidad-info">
+        <h3>{{ unidad.nombre }}</h3>
+        <p>Unidad {{ unidad.orden }}</p>
+      </div>
+      <div class="unidad-icon">→</div>
+    </div>
+  </div>
+</div>

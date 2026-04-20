@@ -1,0 +1,71 @@
+<div class="duolingo-container">
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.sidebar-collapsed]="!sidebarOpen">
+    <div class="sidebar-header">
+      <div class="logo" *ngIf="sidebarOpen">
+        <span class="logo-icon">🦉</span>
+        <span class="logo-text">DuoLearn</span>
+      </div>
+      <div class="logo-icon-only" *ngIf="!sidebarOpen">
+        <span class="logo-icon">🦉</span>
+      </div>
+      <button class="toggle-btn" (click)="toggleSidebar()">
+        {{ sidebarOpen ? '◀' : '▶' }}
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a *ngFor="let item of menuItems"
+         [routerLink]="item.path"
+         routerLinkActive="active"
+         class="nav-item">
+        <span class="nav-icon">{{ item.icon }}</span>
+        <span class="nav-label" *ngIf="sidebarOpen">{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer" *ngIf="sidebarOpen">
+      <div class="puntos-info">
+        <span class="puntos-icon">⭐</span>
+        <span class="puntos-valor">{{ puntos?.puntos_totales || 0 }}</span>
+        <span class="racha-icon">🔥</span>
+        <span class="racha-valor">{{ puntos?.racha_dias || 0 }}</span>
+      </div>
+      <div class="user-info">
+        <div class="user-avatar">
+          <span>{{ (authService.getCurrentUser()?.nombre?.charAt(0) || 'U') }}</span>
+        </div>
+        <div class="user-details">
+          <span class="user-name">{{ authService.getCurrentUser()?.nombre || 'Usuario' }}</span>
+          <span class="user-role">Estudiante</span>
+        </div>
+      </div>
+      <button class="logout-btn" (click)="authService.logout()">
+        <i class="bi bi-box-arrow-right"></i>
+        <span>Cerrar Sesión</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content" [class.content-expanded]="!sidebarOpen">
+    <header class="top-bar">
+      <div class="welcome-message">
+        <h1>🦉 Duolingo</h1>
+        <p>Aprende Lengua de Señas de forma divertida</p>
+      </div>
+      <div class="header-actions">
+        <div class="puntos-header">
+          <span class="puntos-icon">⭐</span>
+          <span class="puntos-valor">{{ puntos?.puntos_totales || 0 }}</span>
+          <span class="racha-icon">🔥</span>
+          <span class="racha-valor">{{ puntos?.racha_dias || 0 }}</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content-area">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

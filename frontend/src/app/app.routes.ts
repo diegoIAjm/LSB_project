@@ -81,7 +81,34 @@ export const routes: Routes = [
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'
-      }
+      },
+      {
+  path: 'duolingo',
+  loadComponent: () => import('./student/duolingo/duolingo-layout/duolingo-layout').then(m => m.DuolingoLayoutComponent),
+  children: [
+    {
+      path: 'niveles',
+      loadComponent: () => import('./student/duolingo/niveles/niveles').then(m => m.DuolingoNivelesComponent)
+    },
+    {
+      path: 'unidades/:nivelId',
+      loadComponent: () => import('./student/duolingo/unidades/unidades').then(m => m.DuolingoUnidadesComponent)
+    },
+    {
+      path: 'lecciones/:unidadId',
+      loadComponent: () => import('./student/duolingo/lecciones/lecciones').then(m => m.DuolingoLeccionesComponent)
+    },
+    {
+      path: 'ejercicio/:leccionId',
+      loadComponent: () => import('./student/duolingo/ejercicio/ejercicio').then(m => m.DuolingoEjercicioComponent)
+    },
+    {
+      path: '',
+      redirectTo: 'niveles',
+      pathMatch: 'full'
+    }
+  ]
+}
     ]
   },
 
