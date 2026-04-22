@@ -17,6 +17,7 @@ export class EditarCursoComponent implements OnInit {
     id: 0,
     nombre: '',
     nivel: '',
+    modalidad: 'Virtual',
     fecha_inicio: '',
     fecha_fin: '',
     docente: null as number | null,
@@ -78,6 +79,7 @@ export class EditarCursoComponent implements OnInit {
           id: resultado.curso.id,
           nombre: resultado.curso.nombre,
           nivel: resultado.curso.nivel,
+          modalidad: resultado.curso.modalidad || 'Virtual',
           fecha_inicio: resultado.curso.fecha_inicio,
           fecha_fin: resultado.curso.fecha_fin,
           docente: resultado.curso.docente || null,
@@ -120,9 +122,9 @@ export class EditarCursoComponent implements OnInit {
     this.error = '';
     this.cargando = true;
 
-    const { nombre, nivel, fecha_inicio, fecha_fin, docente, estado } = this.curso;
+    const { nombre, nivel, modalidad, fecha_inicio, fecha_fin, docente, estado } = this.curso;
 
-    if (!nombre || !nivel || !fecha_inicio || !fecha_fin) {
+    if (!nombre || !nivel || !modalidad || !fecha_inicio || !fecha_fin) {
       this.error = 'Todos los campos son obligatorios';
       this.cargando = false;
       return;
@@ -161,6 +163,7 @@ export class EditarCursoComponent implements OnInit {
     const datosEnviar = {
       nombre: nombre,
       nivel: nivel,
+      modalidad: modalidad,
       fecha_inicio: fecha_inicio,
       fecha_fin: fecha_fin,
       docente: docente || null,

@@ -1,9 +1,6 @@
 <div class="ejercicio-container">
-  <!-- Header -->
   <div class="header">
-    <button class="btn-back" (click)="volver()">
-      ← Volver a Lecciones
-    </button>
+    <button class="btn-back" (click)="volver()">← Volver a Lecciones</button>
     <div class="progreso-header">
       <span>Ejercicio {{ indiceActual + 1 }} de {{ ejercicios.length }}</span>
       <div class="progreso-bar">
@@ -12,14 +9,13 @@
     </div>
   </div>
 
-  <!-- Estado de carga -->
   <div *ngIf="cargando" class="loading">
     <div class="spinner"></div>
     <p>Cargando ejercicio...</p>
   </div>
 
-  <!-- Ejercicio -->
-  <div *ngIf="!cargando && ejercicioActual && !resultado" class="ejercicio-card">
+  <!-- Cámara -->
+  <div *ngIf="!cargando && ejercicioActual && !resultado && !camaraActiva" class="ejercicio-card">
     <div class="avatar-3d">
       <div class="avatar-placeholder">
         <span>🦉</span>
@@ -32,13 +28,28 @@
     </div>
 
     <div class="acciones">
-      <button class="btn-camera" (click)="simularEvaluacion()" [disabled]="evaluando">
-        {{ evaluando ? 'Evaluando...' : '📷 Iniciar Cámara' }}
+      <button class="btn-camera" (click)="iniciarCamara()" [disabled]="evaluando">
+        📷 Iniciar Cámara
       </button>
     </div>
+  </div>
 
-    <div class="info-adicional" *ngIf="ejercicioActual.sena_info">
-      <p><strong>Seña:</strong> {{ ejercicioActual.sena_info.nombre }}</p>
+  <!-- Vista de cámara -->
+  <div *ngIf="camaraActiva && !resultado" class="camera-container">
+    <div class="video-wrapper">
+      <video #videoElement class="video-preview" autoplay playsinline></video>
+      <canvas #canvasElement class="canvas-overlay"></canvas>
+    </div>
+    <div class="instruccion">
+      <p>✋ Muestra tu mano frente a la cámara</p>
+    </div>
+    <div class="acciones-camara">
+      <button class="btn-capturar" (click)="capturarYEvaluar()" [disabled]="evaluando">
+        {{ evaluando ? 'Evaluando...' : '✅ Evaluar Seña' }}
+      </button>
+      <button class="btn-cerrar-camara" (click)="cerrarCamara()">
+        ❌ Cerrar Cámara
+      </button>
     </div>
   </div>
 

@@ -271,4 +271,23 @@
     flex-direction: column;
     gap: 5px;
   }
+
+  /* Modalidad badges */
+.modalidad-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.modalidad-virtual {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.modalidad-presencial {
+  background: #fed7aa;
+  color: #9b2c1d;
+}
 }

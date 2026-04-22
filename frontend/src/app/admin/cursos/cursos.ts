@@ -17,7 +17,8 @@ export class CursosComponent implements OnInit {
   
   filtro = {
     nivel: '',
-    estado: ''
+    estado: '',
+    modalidad: ''
   };
   
   niveles = [
@@ -57,6 +58,7 @@ export class CursosComponent implements OnInit {
     const filtros: any = {};
     if (this.filtro.nivel) filtros.nivel = this.filtro.nivel;
     if (this.filtro.estado) filtros.estado = this.filtro.estado;
+    if (this.filtro.modalidad) filtros.modalidad = this.filtro.modalidad;
     
     this.cursosService.getCursos(filtros).subscribe({
       next: (res: any) => {
@@ -70,7 +72,7 @@ export class CursosComponent implements OnInit {
   }
 
   limpiarFiltros() {
-    this.filtro = { nivel: '', estado: '' };
+    this.filtro = { nivel: '', estado: '', modalidad:'' };
     this.cargarCursos();
   }
 

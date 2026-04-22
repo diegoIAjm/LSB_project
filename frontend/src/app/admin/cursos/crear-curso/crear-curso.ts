@@ -15,6 +15,7 @@ export class CrearCursoComponent implements OnInit {
   curso = {
     nombre: '',
     nivel: '',
+    modalidad: 'Virtual',
     fecha_inicio: '',
     fecha_fin: '',
     docente: null as number | null
@@ -77,10 +78,10 @@ crearCurso() {
   this.error = '';
   this.cargando = true;
 
-  const { nombre, nivel, fecha_inicio, fecha_fin, docente } = this.curso;
+  const { nombre, nivel, modalidad, fecha_inicio, fecha_fin, docente } = this.curso;
 
   // Validaciones
-  if (!nombre || !nivel || !fecha_inicio || !fecha_fin) {
+  if (!nombre || !nivel || !modalidad|| !fecha_inicio || !fecha_fin) {
     this.error = 'Todos los campos son obligatorios';
     this.cargando = false;
     return;
@@ -119,6 +120,7 @@ crearCurso() {
   const datosEnviar = {
     nombre: nombre,
     nivel: nivel,
+    modalidad: modalidad,
     fecha_inicio: fecha_inicio,
     fecha_fin: fecha_fin,
     docente: docente || null

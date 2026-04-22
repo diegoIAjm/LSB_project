@@ -28,6 +28,14 @@
       </select>
     </div>
 
+    <div class="campo">
+      <label>Modalidad</label>
+      <select [(ngModel)]="curso.modalidad" [disabled]="cargando">
+        <option [value]="'Virtual'">Virtual</option>
+        <option [value]="'Presencial'">Presencial</option>
+      </select>
+    </div>
+
 <div class="campo">
   <label>Docente</label>
   <select [(ngModel)]="curso.docente" [disabled]="cargando">

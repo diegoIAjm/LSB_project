@@ -30,7 +30,7 @@ class CursoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Curso
         fields = [
-            'id', 'nombre', 'nivel', 'fecha_inicio', 'fecha_fin', 
+            'id', 'nombre', 'nivel', 'modalidad', 'fecha_inicio', 'fecha_fin', 
             'estado', 'docente', 'docente_nombre', 'docente_info', 
             'duracion_meses', 'created_at', 'updated_at'
         ]
@@ -49,7 +49,7 @@ class CursoSerializer(serializers.ModelSerializer):
 class CursoCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Curso
-        fields = ['nombre', 'nivel', 'fecha_inicio', 'fecha_fin', 'estado', 'docente']
+        fields = ['nombre', 'nivel', 'modalidad', 'fecha_inicio', 'fecha_fin', 'estado', 'docente']
     
     def validate(self, data):
         fecha_inicio = data.get('fecha_inicio')
@@ -69,6 +69,18 @@ class CursoCreateUpdateSerializer(serializers.ModelSerializer):
                 })
         
         return data
+
+class CursoDisponibleSerializer(serializers.ModelSerializer):
+    docente_nombre = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Curso
+        fields = ['id', 'nombre', 'nivel', 'modalidad', 'fecha_inicio', 'fecha_fin', 'docente_nombre']  # 🔹 Añadido modalidad
+    
+    def get_docente_nombre(self, obj):
+        if obj.docente and obj.docente.usuario:
+            return f"{obj.docente.usuario.nombre} {obj.docente.usuario.apellido}"
+        return 'No asignado'
     
 class EstudianteSimpleSerializer(serializers.ModelSerializer):
     nombre_completo = serializers.SerializerMethodField()

@@ -6,6 +6,11 @@ class Curso(models.Model):
         ('basico', 'Básico'),
         ('avanzado', 'Avanzado'),
     ]
+
+    MODALIDAD_CHOICES = [  # 🔹 NUEVO
+        ('Virtual', 'Virtual'),
+        ('Presencial', 'Presencial'),
+    ]
     
     ESTADO_CHOICES = [
         ('activo', 'Activo'),
@@ -19,6 +24,7 @@ class Curso(models.Model):
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
     estado = models.CharField(max_length=50, default='activo', choices=ESTADO_CHOICES)
+    modalidad = models.CharField(max_length=20, choices=MODALIDAD_CHOICES, default='Virtual')
     docente = models.ForeignKey(Docente, on_delete=models.SET_NULL, null=True, blank=True, related_name='cursos')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

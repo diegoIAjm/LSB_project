@@ -6,6 +6,7 @@ export interface Curso {
   id: number;
   nombre: string;
   nivel: string;
+  modalidad: string;
   fecha_inicio: string;
   fecha_fin: string;
   estado: string;

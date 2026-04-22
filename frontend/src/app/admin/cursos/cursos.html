@@ -18,6 +18,12 @@
       <option *ngFor="let estado of estados" [value]="estado.value">{{ estado.label }}</option>
     </select>
 
+    <select [(ngModel)]="filtro.modalidad" (change)="cargarCursos()">
+      <option value="">Todas las modalidades</option>
+      <option value="Virtual">Virtual</option>
+      <option value="Presencial">Presencial</option>
+    </select>
+
     <button class="btn-limpiar" (click)="limpiarFiltros()">🗑️ Limpiar filtros</button>
   </div>
 
@@ -28,6 +34,7 @@
         <tr>
           <th>Nombre</th>
           <th>Nivel</th>
+          <th>Modalidad</th>
           <th>Docente</th>
           <th>Fecha Inicio</th>
           <th>Fecha Fin</th>
@@ -42,6 +49,11 @@
           <td>
             <span class="nivel-badge" [class.nivel-basico]="curso.nivel === 'basico'" [class.nivel-avanzado]="curso.nivel === 'avanzado'">
               {{ getNivelTexto(curso.nivel) }}
+            </span>
+          </td>
+          <td>
+            <span class="modalidad-badge" [class.modalidad-virtual]="curso.modalidad === 'Virtual'" [class.modalidad-presencial]="curso.modalidad === 'Presencial'">
+              {{ curso.modalidad || 'Virtual' }}
             </span>
           </td>
           <td>{{ curso.docente_nombre || 'No asignado' }}</td>

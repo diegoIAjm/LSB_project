@@ -1,14 +1,15 @@
 .ejercicio-container {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
 }
 
+/* Header más compacto */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
   gap: 15px;
 }
@@ -17,10 +18,11 @@
   background: rgba(255, 255, 255, 0.1);
   border: none;
   color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
+  padding: 8px 20px;
+  border-radius: 30px;
   cursor: pointer;
   transition: all 0.3s;
+  font-size: 14px;
 }
 
 .btn-back:hover {
@@ -30,18 +32,18 @@
 
 .progreso-header {
   flex: 1;
-  max-width: 300px;
+  max-width: 250px;
 }
 
 .progreso-header span {
-  font-size: 14px;
+  font-size: 13px;
   color: #94a3b8;
   margin-bottom: 5px;
   display: block;
 }
 
 .progreso-bar {
-  height: 8px;
+  height: 6px;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   overflow: hidden;
@@ -54,73 +56,143 @@
   transition: width 0.3s;
 }
 
-/* Ejercicio Card */
+/* Área de cámara - MÁS GRANDE */
+.camera-container {
+  background: #0a0a1a;
+  border-radius: 24px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  border-radius: 20px;
+  overflow: hidden;
+  aspect-ratio: 16/9;
+  background: #000;
+}
+
+.video-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.canvas-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(-1);
+}
+
+.instruccion {
+  text-align: center;
+  margin: 15px 0;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+/* Botones de cámara */
+.acciones-camara {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.btn-capturar {
+  background: linear-gradient(135deg, #58cc71, #3a9b4e);
+  color: white;
+  border: none;
+  padding: 10px 28px;
+  border-radius: 40px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-capturar:hover:not(:disabled) {
+  transform: scale(1.02);
+  box-shadow: 0 5px 20px rgba(88, 204, 113, 0.4);
+}
+
+.btn-cerrar-camara {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  padding: 10px 28px;
+  border-radius: 40px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.3s;
+}
+
+.btn-cerrar-camara:hover {
+  background: rgba(239, 68, 68, 0.4);
+}
+
+/* Ejercicio Card - más compacta */
 .ejercicio-card {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border-radius: 32px;
-  padding: 40px;
+  padding: 30px;
   text-align: center;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 500px;
+  margin: 30px auto;
 }
 
 .avatar-3d {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .avatar-placeholder {
-  width: 150px;
-  height: 150px;
+  width: 100px;
+  height: 100px;
   background: linear-gradient(135deg, #58cc71, #3a9b4e);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 15px;
-  font-size: 64px;
-  box-shadow: 0 10px 30px rgba(88, 204, 113, 0.3);
+  margin: 0 auto 12px;
+  font-size: 48px;
+  box-shadow: 0 8px 20px rgba(88, 204, 113, 0.2);
 }
 
 .avatar-text {
   color: #94a3b8;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .pregunta h2 {
-  font-size: 28px;
+  font-size: 24px;
   color: white;
-  margin-bottom: 30px;
+  margin-bottom: 25px;
 }
 
 .btn-camera {
   background: linear-gradient(135deg, #58cc71, #3a9b4e);
   color: white;
   border: none;
-  padding: 15px 40px;
+  padding: 12px 35px;
   border-radius: 40px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
-  margin-bottom: 20px;
 }
 
 .btn-camera:hover:not(:disabled) {
-  transform: scale(1.05);
+  transform: scale(1.02);
   box-shadow: 0 5px 20px rgba(88, 204, 113, 0.4);
-}
-
-.btn-camera:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.info-adicional {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  color: #94a3b8;
-  font-size: 14px;
 }
 
 /* Resultado Card */
@@ -128,9 +200,11 @@
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border-radius: 32px;
-  padding: 40px;
+  padding: 30px;
   text-align: center;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 500px;
+  margin: 30px auto;
 }
 
 .resultado-card.color-verde {
@@ -149,13 +223,13 @@
 }
 
 .resultado-icon {
-  font-size: 64px;
-  margin-bottom: 20px;
+  font-size: 56px;
+  margin-bottom: 15px;
 }
 
 .resultado-card h2 {
-  font-size: 32px;
-  margin-bottom: 20px;
+  font-size: 28px;
+  margin-bottom: 15px;
 }
 
 .color-verde h2 { color: #58cc71; }
@@ -163,78 +237,63 @@
 .color-rojo h2 { color: #ef4444; }
 
 .precision {
-  margin: 20px 0;
+  margin: 15px 0;
 }
 
 .precision-valor {
-  font-size: 48px;
+  font-size: 42px;
   font-weight: bold;
   display: block;
 }
 
 .precision-label {
-  font-size: 14px;
+  font-size: 13px;
   color: #94a3b8;
 }
 
 .puntos {
-  margin: 15px 0;
-  font-size: 20px;
+  margin: 12px 0;
+  font-size: 18px;
   color: #fbbf24;
 }
 
 .feedback {
-  margin: 20px 0;
+  margin: 15px 0;
   text-align: left;
 }
 
 .feedback h3 {
-  margin-bottom: 15px;
-  font-size: 16px;
+  margin-bottom: 12px;
+  font-size: 15px;
 }
 
 .feedback-items {
   display: flex;
-  gap: 15px;
+  gap: 12px;
   justify-content: center;
 }
 
 .feedback-item {
-  padding: 8px 16px;
+  padding: 6px 14px;
   border-radius: 20px;
-  font-size: 14px;
-}
-
-.feedback-item.verde {
-  background: rgba(88, 204, 113, 0.2);
-  color: #58cc71;
-}
-
-.feedback-item.amarillo {
-  background: rgba(251, 191, 36, 0.2);
-  color: #fbbf24;
-}
-
-.feedback-item.rojo {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+  font-size: 13px;
 }
 
 .btn-siguiente {
   background: linear-gradient(135deg, #58cc71, #3a9b4e);
   color: white;
   border: none;
-  padding: 15px 40px;
+  padding: 12px 35px;
   border-radius: 40px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
-  margin-top: 20px;
+  margin-top: 15px;
 }
 
 .btn-siguiente:hover {
-  transform: scale(1.05);
+  transform: scale(1.02);
   box-shadow: 0 5px 20px rgba(88, 204, 113, 0.4);
 }
 
@@ -256,4 +315,49 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ejercicio-container {
+    padding: 15px;
+  }
+  
+  .video-wrapper {
+    aspect-ratio: 4/3;
+  }
+  
+  .ejercicio-card, .resultado-card {
+    padding: 20px;
+    margin: 20px auto;
+  }
+  
+  .pregunta h2 {
+    font-size: 20px;
+  }
+  
+  .btn-capturar, .btn-cerrar-camara, .btn-camera, .btn-siguiente {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  /* Asegurar que el video sea visible */
+.video-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  display: block;
+}
+
+/* El canvas debe estar encima del video para dibujar los puntos */
+.canvas-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(-1);
+  pointer-events: none;
+}
 }

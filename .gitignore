@@ -1,19 +1,34 @@
-# Python
+# ===== Python =====
+venv/
 backend/venv/
+ia-training/venv/
 __pycache__/
 *.pyc
+
+# ===== Django =====
 db.sqlite3
 
-# Node
+# ===== Node / Angular =====
+node_modules/
 frontend/node_modules/
 dist/
 
-# Entornos
+# ===== IA / Archivos pesados =====
+ia-training/data/
+ia-training/models/
+*.h5
+*.pt
+*.mp4
+
+# ===== Entornos =====
 .env
 
-# Blender (todos los archivos)
+# ===== Blender =====
 *.blend
 *.blend1
 *.blend2
 *.fbx
 *.obj
+
+# ===== VS Code =====
+.vscode/
