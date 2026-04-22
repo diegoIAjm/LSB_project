@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Curso, Inscripcion
+from .models import Curso, Inscripcion, Horario 
 from usuarios.models import Docente, Usuario, Estudiante
 
 class DocenteSimpleSerializer(serializers.ModelSerializer):
@@ -137,5 +137,39 @@ class InscripcionCreateSerializer(serializers.ModelSerializer):
         # Verificar si ya existe inscripción activa
         if Inscripcion.objects.filter(estudiante=estudiante, curso=curso, estado='activo').exists():
             raise serializers.ValidationError("El estudiante ya está inscrito en este curso")
+        
+        return data
+    
+class HorarioSerializer(serializers.ModelSerializer):
+    dia_label = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Horario
+        fields = [
+            'id', 'curso', 'dia', 'dia_label', 'hora_inicio', 'hora_fin', 
+            'aula', 'enlace_virtual', 'created_at', 'updated_at'
+        ]
+    
+    def get_dia_label(self, obj):
+        dict_dias = {
+            'lunes': 'Lunes', 'martes': 'Martes', 'miercoles': 'Miércoles',
+            'jueves': 'Jueves', 'viernes': 'Viernes', 'sabado': 'Sábado',
+            'domingo': 'Domingo'
+        }
+        return dict_dias.get(obj.dia, obj.dia)
+
+class HorarioCreateUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Horario
+        fields = ['curso', 'dia', 'hora_inicio', 'hora_fin', 'aula', 'enlace_virtual']
+    
+    def validate(self, data):
+        hora_inicio = data.get('hora_inicio')
+        hora_fin = data.get('hora_fin')
+        
+        if hora_inicio and hora_fin and hora_fin <= hora_inicio:
+            raise serializers.ValidationError({
+                'hora_fin': 'La hora de fin debe ser posterior a la hora de inicio'
+            })
         
         return data

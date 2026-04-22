@@ -1,43 +1,75 @@
 <div class="container">
+  <h2>📝 Registrar Usuario</h2>
+  <p class="subtitulo">Complete los datos para crear un nuevo usuario</p>
 
-  <h2>Registrar Usuario</h2>
+  <button class="btn-volver" (click)="volverUsuarios()">
+    ← Volver al listado
+  </button>
 
-  <button class="btn-volver" (click)="volverUsuarios()">← Volver al listado</button>
-
+  <!-- Formulario -->
   <div class="formulario">
-
     <p class="mensaje-exito" *ngIf="mensaje">{{ mensaje }}</p>
     <p class="mensaje-error" *ngIf="error">{{ error }}</p>
 
-    <input type="text" placeholder="Nombre" [(ngModel)]="usuario.nombre" />
-    <input type="text" placeholder="Apellido" [(ngModel)]="usuario.apellido" />
-    <input type="email" placeholder="Correo electrónico" [(ngModel)]="usuario.email" />
-    <input type="text" placeholder="Cédula de Identidad (CI)" [(ngModel)]="usuario.ci" />
-    <input type="password" placeholder="Contraseña" [(ngModel)]="usuario.password" />
+    <div class="row-2">
+      <div class="campo">
+        <label>Nombre *</label>
+        <input type="text" placeholder="Ej: Juan" [(ngModel)]="usuario.nombre" [disabled]="cargando" />
+      </div>
 
-    <select [(ngModel)]="usuario.rol">
-    <option [ngValue]="0">Seleccionar rol</option>
-    <option [ngValue]="1">Administrador</option>
-    <option [ngValue]="2">Docente</option>
-    <option [ngValue]="3">Estudiante</option>
-    </select>
+      <div class="campo">
+        <label>Apellido *</label>
+        <input type="text" placeholder="Ej: Pérez" [(ngModel)]="usuario.apellido" [disabled]="cargando" />
+      </div>
+    </div>
 
-        <div *ngIf="usuario.rol === 3" class="campo-especifico">
-      <label>Nivel Actual:</label>
+    <div class="campo">
+      <label>Correo electrónico *</label>
+      <input type="email" placeholder="ejemplo@correo.com" [(ngModel)]="usuario.email" [disabled]="cargando" />
+    </div>
+
+    <div class="row-2">
+      <div class="campo">
+        <label>Cédula de Identidad (CI) *</label>
+        <input type="text" placeholder="12345678" [(ngModel)]="usuario.ci" [disabled]="cargando" maxlength="15" />
+      </div>
+
+      <div class="campo">
+        <label>Contraseña *</label>
+        <input type="password" placeholder="Mínimo 6 caracteres" [(ngModel)]="usuario.password" [disabled]="cargando" />
+      </div>
+    </div>
+
+    <div class="campo">
+      <label>Rol *</label>
+      <select [(ngModel)]="usuario.rol" [disabled]="cargando">
+        <option [ngValue]="0">Seleccionar rol</option>
+        <option [ngValue]="1">Administrador</option>
+        <option [ngValue]="2">Docente</option>
+        <option [ngValue]="3">Estudiante</option>
+      </select>
+    </div>
+
+    <!-- Campo para Estudiante -->
+    <div *ngIf="usuario.rol === 3" class="campo-especifico">
+      <label>Nivel Actual</label>
       <select [(ngModel)]="usuario.nivel_actual" [disabled]="cargando">
         <option [value]="''">Seleccionar nivel</option>
         <option *ngFor="let nivel of niveles" [value]="nivel">{{ nivel }}</option>
       </select>
+      <small>Selecciona el nivel del estudiante</small>
     </div>
 
+    <!-- Campo para Docente -->
     <div *ngIf="usuario.rol === 2" class="campo-especifico">
-      <label>Especialidad:</label>
-      <input type="text" placeholder="Ej: Matemáticas, Inglés, Programación" [(ngModel)]="usuario.especialidad" [disabled]="cargando" />
+      <label>Especialidad</label>
+      <input type="text" placeholder="Ej: Matemáticas, Programación, Inglés" [(ngModel)]="usuario.especialidad" [disabled]="cargando" />
+      <small>Área de especialización del docente</small>
     </div>
 
-    <button [disabled]="cargando" (click)="crearUsuario()">
-      {{ cargando ? 'Creando...' : 'Registrar' }}
+    <button class="btn-registrar" [disabled]="cargando" (click)="crearUsuario()">
+      <span *ngIf="cargando" class="spinner"></span>
+      {{ cargando ? 'Registrando...' : '📌 Registrar Usuario' }}
     </button>
   </div>
-
 </div>

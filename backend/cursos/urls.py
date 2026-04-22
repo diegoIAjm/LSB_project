@@ -14,7 +14,12 @@ from .views import (
     CursosDisponiblesView,
     CursosActivosView,
     InscripcionMasivaView,
-    CursoEstudiantesView
+    CursoEstudiantesView,
+    HorarioListView,
+    HorarioCreateView,
+    HorarioDetailView,
+    HorarioUpdateView,
+    HorarioDeleteView
 )
 
 urlpatterns = [
@@ -33,4 +38,9 @@ urlpatterns = [
     path('inscripciones/masivo/', InscripcionMasivaView.as_view(), name='inscripciones-masivo'),
     path('inscripciones/<int:pk>/cancelar/', InscripcionCancelarView.as_view(), name='inscripciones-cancelar'),
     path('cursos/<int:pk>/estudiantes/', CursoEstudiantesView.as_view(), name='curso-estudiantes'),
+    path('cursos/horarios/', HorarioListView.as_view(), name='horarios-list'),
+    path('cursos/horarios/crear/', HorarioCreateView.as_view(), name='horarios-create'),
+    path('cursos/horarios/<int:pk>/', HorarioDetailView.as_view(), name='horarios-detail'),
+    path('cursos/horarios/editar/<int:pk>/', HorarioUpdateView.as_view(), name='horarios-update'),
+    path('cursos/horarios/eliminar/<int:pk>/', HorarioDeleteView.as_view(), name='horarios-delete'),
 ]

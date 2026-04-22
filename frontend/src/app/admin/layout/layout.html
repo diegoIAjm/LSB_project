@@ -1,19 +1,161 @@
-<div class="layout">
+<div class="app-container">
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.sidebar-collapsed]="!sidebarOpen">
+    <div class="sidebar-header">
+      <div class="logo" *ngIf="sidebarOpen">
+        <i class="bi bi-grid-fill logo-icon"></i>
+        <span class="logo-text">LSB Admin</span>
+      </div>
+      <div class="logo-icon-only" *ngIf="!sidebarOpen">
+        <i class="bi bi-grid-fill logo-icon"></i>
+      </div>
+      <button class="toggle-btn" (click)="toggleSidebar()">
+        {{ sidebarOpen ? '◀' : '▶' }}
+      </button>
+    </div>
 
-  <!-- SIDEBAR -->
-  <app-sidebar [collapsed]="sidebarCollapsed()"></app-sidebar>
+    <nav class="sidebar-nav">
+      <!-- DASHBOARD -->
+      <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item">
+        <i class="bi bi-speedometer2 nav-icon"></i>
+        <span class="nav-label" *ngIf="sidebarOpen">Dashboard</span>
+      </a>
 
-  <!-- MAIN -->
-  <div class="main">
+      <!-- USUARIOS (con submenú) -->
+      <div class="nav-menu">
+        <div class="nav-item menu-title" (click)="toggleMenu('usuarios')">
+          <div class="left">
+            <i class="bi bi-people nav-icon"></i>
+            <span class="nav-label" *ngIf="sidebarOpen">Usuarios</span>
+          </div>
+          <i class="bi bi-chevron-down arrow" *ngIf="sidebarOpen" [class.open]="menu.usuarios"></i>
+        </div>
 
-    <!-- HEADER -->
-    <app-header (toggleSidebar)="toggleSidebar()"></app-header>
+        <div *ngIf="menu.usuarios && sidebarOpen" class="submenu">
+          <a routerLink="/admin/usuarios" routerLinkActive="active">
+            <i class="bi bi-person"></i> Usuarios
+          </a>
+          <a routerLink="/admin/usuarios/importar/estudiantes" routerLinkActive="active">
+            <i class="bi bi-person-plus"></i> Importar Estudiantes
+          </a>
+          <a routerLink="/admin/usuarios/importar/docentes" routerLinkActive="active">
+            <i class="bi bi-person-badge-plus"></i> Importar Docentes
+          </a>
+          <a routerLink="/admin/roles" routerLinkActive="active">
+            <i class="bi bi-shield-lock"></i> Roles
+          </a>
+        </div>
+      </div>
 
-    <!-- CONTENT -->
-    <main class="content">
+      <!-- CURSOS (con submenú) -->
+      <div class="nav-menu">
+        <div class="nav-item menu-title" (click)="toggleMenu('academico')">
+          <div class="left">
+            <i class="bi bi-journal-bookmark nav-icon"></i>
+            <span class="nav-label" *ngIf="sidebarOpen">Cursos</span>
+          </div>
+          <i class="bi bi-chevron-down arrow" *ngIf="sidebarOpen" [class.open]="menu.academico"></i>
+        </div>
+
+        <div *ngIf="menu.academico && sidebarOpen" class="submenu">
+          <a routerLink="/admin/cursos" routerLinkActive="active">
+            <i class="bi bi-book"></i> Cursos
+          </a>
+          <a routerLink="/admin/inscripciones" routerLinkActive="active">
+            <i class="bi bi-pencil-square"></i> Inscripciones
+          </a>
+          <a routerLink="/admin/materiales" routerLinkActive="active">
+            <i class="bi bi-folder"></i> Materiales
+          </a>
+        </div>
+      </div>
+
+      <!-- CONTENIDO (con submenú) -->
+      <div class="nav-menu">
+        <div class="nav-item menu-title" (click)="toggleMenu('duolingo')">
+          <div class="left">
+            <i class="bi bi-lightbulb nav-icon"></i>
+            <span class="nav-label" *ngIf="sidebarOpen">Contenido</span>
+          </div>
+          <i class="bi bi-chevron-down arrow" *ngIf="sidebarOpen" [class.open]="menu.duolingo"></i>
+        </div>
+
+        <div *ngIf="menu.duolingo && sidebarOpen" class="submenu">
+          <a routerLink="/admin/niveles" routerLinkActive="active">
+            <i class="bi bi-bar-chart"></i> Niveles
+          </a>
+          <a routerLink="/admin/unidades" routerLinkActive="active">
+            <i class="bi bi-layers"></i> Unidades
+          </a>
+          <a routerLink="/admin/lecciones" routerLinkActive="active">
+            <i class="bi bi-journal-text"></i> Lecciones
+          </a>
+          <a routerLink="/admin/ejercicios" routerLinkActive="active">
+            <i class="bi bi-pencil"></i> Ejercicios
+          </a>
+        </div>
+      </div>
+
+      <!-- SIMPLES -->
+      <a routerLink="/admin/senas" routerLinkActive="active" class="nav-item">
+        <i class="bi bi-hand-index nav-icon"></i>
+        <span class="nav-label" *ngIf="sidebarOpen">Señas</span>
+      </a>
+
+      <a routerLink="/admin/conversaciones" routerLinkActive="active" class="nav-item">
+        <i class="bi bi-cpu nav-icon"></i>
+        <span class="nav-label" *ngIf="sidebarOpen">Conversaciones</span>
+      </a>
+
+      <a routerLink="/admin/evaluaciones" routerLinkActive="active" class="nav-item">
+        <i class="bi bi-graph-up nav-icon"></i>
+        <span class="nav-label" *ngIf="sidebarOpen">Evaluaciones</span>
+      </a>
+
+      <a routerLink="/admin/reportes" routerLinkActive="active" class="nav-item">
+        <i class="bi bi-file-earmark-text nav-icon"></i>
+        <span class="nav-label" *ngIf="sidebarOpen">Reportes</span>
+      </a>
+
+      <a routerLink="/admin/notificaciones" routerLinkActive="active" class="nav-item">
+        <i class="bi bi-bell nav-icon"></i>
+        <span class="nav-label" *ngIf="sidebarOpen">Notificaciones</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer" *ngIf="sidebarOpen">
+      <div class="user-info">
+        <div class="user-avatar">
+          <span>{{ usuario?.nombre?.charAt(0) || 'A' }}</span>
+        </div>
+        <div class="user-details">
+          <span class="user-name">{{ usuario?.nombre || 'Administrador' }} {{ usuario?.apellido || '' }}</span>
+          <span class="user-role">{{ usuario?.rol || 'Admin' }}</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content" [class.content-expanded]="!sidebarOpen">
+    <header class="top-bar">
+      <div class="welcome-message">
+        <h1>¡Bienvenido, {{ usuario?.nombre || 'Administrador' }}! 👑</h1>
+        <p>Gestiona el sistema desde aquí</p>
+      </div>
+      <div class="header-actions">
+        <button class="notification-btn">🔔</button>
+        <button class="logout-header" (click)="logout()" title="Cerrar sesión">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+        <div class="user-menu">
+          <div class="avatar-circle">{{ usuario?.nombre?.charAt(0) || 'A' }}</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content-area">
       <router-outlet></router-outlet>
-    </main>
-
-  </div>
-
+    </div>
+  </main>
 </div>

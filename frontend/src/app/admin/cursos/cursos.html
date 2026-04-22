@@ -69,6 +69,10 @@
             <button class="btn-editar" (click)="irAEditarCurso(curso.id)" title="Editar curso">
               ✏️ Editar
             </button>
+
+            <a [routerLink]="['/admin/cursos/horarios', curso.id]" class="btn-horarios" title="Gestionar horarios">
+              📅 Horarios
+            </a>
             <button class="btn-estado" 
                     [class.btn-activar]="curso.estado === 'inactivo'"
                     [class.btn-desactivar]="curso.estado === 'activo'"

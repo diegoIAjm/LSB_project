@@ -1,8 +1,8 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Curso, Inscripcion
-from .serializers import CursoSerializer, CursoCreateUpdateSerializer, CursoDisponibleSerializer, DocenteSimpleSerializer,EstudianteSimpleSerializer, InscripcionCreateSerializer, InscripcionSerializer
+from .models import Curso, Inscripcion, Horario
+from .serializers import CursoSerializer, CursoCreateUpdateSerializer, CursoDisponibleSerializer, DocenteSimpleSerializer,EstudianteSimpleSerializer, InscripcionCreateSerializer, InscripcionSerializer, HorarioSerializer, HorarioCreateUpdateSerializer
 from usuarios.models import Docente, Estudiante
 
 class CursoListView(generics.ListAPIView):
@@ -314,3 +314,66 @@ class CursoEstudiantesView(APIView):
             })
         except Curso.DoesNotExist:
             return Response({'error': 'Curso no encontrado'}, status=404)
+        
+
+class HorarioListView(generics.ListAPIView):
+    """Listar horarios de un curso"""
+    serializer_class = HorarioSerializer
+    
+    def get_queryset(self):
+        curso_id = self.request.query_params.get('curso_id')
+        if curso_id:
+            return Horario.objects.filter(curso_id=curso_id)
+        return Horario.objects.all()
+
+class HorarioCreateView(generics.CreateAPIView):
+    """Crear un nuevo horario"""
+    serializer_class = HorarioCreateUpdateSerializer
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        horario = serializer.save()
+        
+        data = HorarioSerializer(horario).data
+        return Response({
+            'mensaje': 'Horario creado correctamente',
+            'horario': data
+        }, status=status.HTTP_201_CREATED)
+
+class HorarioDetailView(generics.RetrieveAPIView):
+    """Obtener detalle de un horario"""
+    queryset = Horario.objects.all()
+    serializer_class = HorarioSerializer
+    lookup_field = 'pk'
+
+class HorarioUpdateView(generics.UpdateAPIView):
+    """Actualizar un horario"""
+    queryset = Horario.objects.all()
+    serializer_class = HorarioCreateUpdateSerializer
+    lookup_field = 'pk'
+    
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        horario = serializer.save()
+        
+        data = HorarioSerializer(horario).data
+        return Response({
+            'mensaje': 'Horario actualizado correctamente',
+            'horario': data
+        }, status=status.HTTP_200_OK)
+
+class HorarioDeleteView(generics.DestroyAPIView):
+    """Eliminar un horario"""
+    queryset = Horario.objects.all()
+    lookup_field = 'pk'
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+        return Response({
+            'mensaje': 'Horario eliminado correctamente'
+        }, status=status.HTTP_200_OK)

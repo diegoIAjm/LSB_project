@@ -1,0 +1,116 @@
+<div class="horarios-container">
+  <div class="header">
+    <button class="btn-back" (click)="volver()">
+      ← Volver a Cursos
+    </button>
+    <h1>📅 Horarios - {{ cursoNombre }}</h1>
+    <p>Gestiona los horarios de este curso</p>
+  </div>
+
+  <div class="actions">
+    <button class="btn-add" (click)="mostrarFormularioNuevo()">
+      + Agregar Horario
+    </button>
+  </div>
+
+  <div *ngIf="mensaje" class="mensaje-exito">{{ mensaje }}</div>
+  <div *ngIf="error" class="mensaje-error">{{ error }}</div>
+
+  <!-- Tabla de horarios -->
+  <div *ngIf="cargando" class="loading">
+    <div class="spinner"></div>
+    <p>Cargando horarios...</p>
+  </div>
+
+  <div *ngIf="!cargando" class="table-responsive">
+    <table class="tabla-horarios">
+      <thead>
+        <tr>
+          <th>Día</th>
+          <th>Hora Inicio</th>
+          <th>Hora Fin</th>
+          <th>Aula</th>
+          <th>Enlace Virtual</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let horario of horarios">
+          <td><strong>{{ horario.dia_label }}</strong></td>
+          <td>{{ horario.hora_inicio.substring(0,5) }}</td>
+          <td>{{ horario.hora_fin.substring(0,5) }}</td>
+          <td>{{ horario.aula || '—' }}</td>
+          <td>
+            <a *ngIf="horario.enlace_virtual" [href]="horario.enlace_virtual" target="_blank" class="enlace">
+              🔗 Ver enlace
+            </a>
+            <span *ngIf="!horario.enlace_virtual">—</span>
+        </td>
+          <td class="acciones">
+            <button class="btn-editar" (click)="editarHorario(horario)" title="Editar horario">
+              ✏️
+            </button>
+            <button class="btn-eliminar" (click)="eliminarHorario(horario.id)" title="Eliminar horario">
+              🗑️
+            </button>
+        </td>
+        </tr>
+        <tr *ngIf="horarios.length === 0">
+          <td colspan="6" class="sin-datos">No hay horarios registrados para este curso</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para crear/editar horario -->
+  <div class="modal-overlay" *ngIf="mostrarFormulario" (click)="cancelarFormulario()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ editando ? '✏️ Editar Horario' : '📝 Nuevo Horario' }}</h3>
+        <button class="modal-close" (click)="cancelarFormulario()">✖</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="row-2">
+          <div class="campo">
+            <label>Día *</label>
+            <select [(ngModel)]="nuevoHorario.dia" [disabled]="cargandoForm">
+              <option [value]="''">Seleccionar día</option>
+              <option *ngFor="let dia of dias" [value]="dia.value">{{ dia.label }}</option>
+            </select>
+          </div>
+          
+          <div class="campo">
+            <label>Aula (opcional)</label>
+            <input type="text" placeholder="Ej: Aula 101, Laboratorio 2" [(ngModel)]="nuevoHorario.aula" [disabled]="cargandoForm" />
+          </div>
+        </div>
+
+        <div class="row-2">
+          <div class="campo">
+            <label>Hora Inicio *</label>
+            <input type="time" [(ngModel)]="nuevoHorario.hora_inicio" [disabled]="cargandoForm" />
+          </div>
+          
+          <div class="campo">
+            <label>Hora Fin *</label>
+            <input type="time" [(ngModel)]="nuevoHorario.hora_fin" [disabled]="cargandoForm" />
+            <small>Debe ser posterior a la hora de inicio</small>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label>Enlace Virtual (opcional)</label>
+          <input type="text" placeholder="https://meet.google.com/..." [(ngModel)]="nuevoHorario.enlace_virtual" [disabled]="cargandoForm" />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancelar" (click)="cancelarFormulario()" [disabled]="cargandoForm">Cancelar</button>
+        <button class="btn-guardar" (click)="guardarHorario()" [disabled]="cargandoForm">
+          {{ cargandoForm ? 'Guardando...' : (editando ? 'Actualizar' : 'Guardar') }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

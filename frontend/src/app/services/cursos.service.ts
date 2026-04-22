@@ -15,6 +15,27 @@ export interface Curso {
   duracion_meses: number;
 }
 
+export interface Horario {
+  id: number;
+  curso: number;
+  dia: string;
+  dia_label: string;
+  hora_inicio: string;
+  hora_fin: string;
+  aula: string | null;
+  enlace_virtual: string | null;
+}
+
+export interface NuevoHorario {
+  curso: number;
+  dia: string;
+  hora_inicio: string;
+  hora_fin: string;
+  aula?: string;
+  enlace_virtual?: string;
+}
+
+
 export interface Docente {
   id: number;
   nombre_completo: string;
@@ -126,6 +147,27 @@ getEstudiantesByCurso(cursoId: number): Observable<any> {
 // Cambiar estado de inscripción (activo/cancelado)
 toggleInscripcionEstado(inscripcionId: number): Observable<any> {
   return this.http.patch(`http://127.0.0.1:8000/api/inscripciones/${inscripcionId}/toggle-estado/`, {});
+}
+
+
+getHorarios(cursoId: number): Observable<Horario[]> {
+  let params = new HttpParams().set('curso_id', cursoId.toString());
+  return this.http.get<Horario[]>(`${this.api}horarios/`, { params });
+}
+
+// Crear horario
+crearHorario(horario: NuevoHorario): Observable<any> {
+  return this.http.post(`${this.api}horarios/crear/`, horario);
+}
+
+// Actualizar horario
+actualizarHorario(id: number, horario: NuevoHorario): Observable<any> {
+  return this.http.put(`${this.api}horarios/editar/${id}/`, horario);
+}
+
+// Eliminar horario
+eliminarHorario(id: number): Observable<any> {
+  return this.http.delete(`${this.api}horarios/eliminar/${id}/`);
 }
 
 }
