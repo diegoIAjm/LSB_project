@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Capturar Keypoints</title>
+</head>
+<body>
+    <h1>Capturar Keypoints de Mano</h1>
+    
+    <video id="inputVideo" autoplay playsinline style="width: 640px; height: 480px; border: 1px solid black;"></video>
+    <canvas id="outputCanvas" style="position: absolute; width: 640px; height: 480px;"></canvas>
+    
+    <br>
+    <button id="startBtn">Iniciar Cámara</button>
+    <button id="captureBtn" disabled>Iniciar Captura</button>
+    
+    <p>
+        Estado: <span id="estadoCamara">Cámara no iniciada</span><br>
+        Manos: <span id="manosDetectadas">0</span><br>
+        Frames capturados: <span id="framesCapturados">0</span>
+    </p>
+    
+    <input type="text" id="senaNombre" placeholder="Nombre de la seña" value="seña">
+    
+    <div id="mensaje" style="position: fixed; bottom: 20px; right: 20px; background: green; color: white; padding: 10px; display: none;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
+    <script>
+        const videoElement = document.getElementById('inputVideo');
+        const canvasElement = document.getElementById('outputCanvas');
+        const canvasCtx = canvasElement.getContext('2d');
+        
+        const startBtn = document.getElementById('startBtn');
+        const captureBtn = document.getElementById('captureBtn');
+        const senaNombreInput = document.getElementById('senaNombre');
+        
+        const estadoCamaraSpan = document.getElementById('estadoCamara');
+        const manosDetectadasSpan = document.getElementById('manosDetectadas');
+        const framesCapturadosSpan = document.getElementById('framesCapturados');
+        const mensajeDiv = document.getElementById('mensaje');
+
+        let camera = null;
+        let capturandoKeypoints = false;
+        let keypointsSequence = [];
+
+        // Inicializar MediaPipe Hands
+        const hands = new Hands({
+            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+        });
+
+        hands.setOptions({
+            maxNumHands: 2,
+            modelComplexity: 1,
+            minDetectionConfidence: 0.5,
+            minTrackingConfidence: 0.5
+        });
+
+        hands.onResults((results) => {
+            canvasCtx.save();
+            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+            canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+            
+            if (results.multiHandLandmarks) {
+                manosDetectadasSpan.textContent = results.multiHandLandmarks.length;
+                
+                if (capturandoKeypoints) {
+                    const frameKeypoints = [];
+                    for (let idx = 0; idx < results.multiHandLandmarks.length; idx++) {
+                        const landmarks = results.multiHandLandmarks[idx];
+                        const points = [];
+                        for (const lm of landmarks) {
+                            points.push([lm.x, lm.y, lm.z]);
+                        }
+                        frameKeypoints.push(points);
+                    }
+                    keypointsSequence.push(frameKeypoints);
+                    framesCapturadosSpan.textContent = keypointsSequence.length;
+                }
+                
+                // Dibujar puntos
+                for (const landmarks of results.multiHandLandmarks) {
+                    for (const lm of landmarks) {
+                        const x = lm.x * canvasElement.width;
+                        const y = lm.y * canvasElement.height;
+                        canvasCtx.beginPath();
+                        canvasCtx.arc(x, y, 4, 0, 2 * Math.PI);
+                        canvasCtx.fillStyle = '#00ff00';
+                        canvasCtx.fill();
+                    }
+                }
+            } else {
+                manosDetectadasSpan.textContent = '0';
+            }
+            
+            canvasCtx.restore();
+        });
+
+        canvasElement.width = 640;
+        canvasElement.height = 480;
+
+        // Iniciar cámara
+        startBtn.onclick = async () => {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            videoElement.srcObject = stream;
+            
+            camera = new Camera(videoElement, {
+                onFrame: async () => {
+                    await hands.send({ image: videoElement });
+                },
+                width: 640,
+                height: 480
+            });
+            camera.start();
+            
+            estadoCamaraSpan.textContent = 'Cámara activa';
+            startBtn.disabled = true;
+            captureBtn.disabled = false;
+        };
+
+        // Capturar
+        let capturando = false;
+        captureBtn.onclick = () => {
+            if (!capturando) {
+                keypointsSequence = [];
+                capturandoKeypoints = true;
+                capturando = true;
+                framesCapturadosSpan.textContent = '0';
+                captureBtn.textContent = 'Detener Captura';
+                console.log("🎬 Inició captura");
+            } else {
+                capturandoKeypoints = false;
+                capturando = false;
+                captureBtn.textContent = 'Iniciar Captura';
+                
+                if (keypointsSequence.length === 0) {
+                    alert('No se capturaron keypoints');
+                    return;
+                }
+                
+                const nombre = senaNombreInput.value || 'seña';
+                const timestamp = Date.now();
+                const jsonData = JSON.stringify(keypointsSequence, null, 2);
+                
+                // Descargar archivo
+                const blob = new Blob([jsonData], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${nombre}_${timestamp}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                console.log(`✅ Guardado: ${keypointsSequence.length} frames`);
+                alert(`✅ ${keypointsSequence.length} frames guardados`);
+            }
+        };
+    </script>
+</body>
+</html>

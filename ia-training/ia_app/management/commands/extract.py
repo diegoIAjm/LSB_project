@@ -19,8 +19,18 @@ class Command(BaseCommand):
         
         self.stdout.write(f'📹 Procesando: {video_path}')
         
-        # Crear opciones para HandLandmarker - CORREGIDO
-        base_options = python.BaseOptions(model_asset_path='models/hand_landmarker.task')
+        # Verificar que el video existe
+        if not os.path.exists(video_path):
+            self.stdout.write(self.style.ERROR(f'❌ Video no encontrado: {video_path}'))
+            return
+        
+        # Crear opciones para HandLandmarker
+        model_path = 'models/hand_landmarker.task'
+        if not os.path.exists(model_path):
+            self.stdout.write(self.style.ERROR(f'❌ Modelo no encontrado: {model_path}'))
+            return
+        
+        base_options = python.BaseOptions(model_asset_path=model_path)
         options = vision.HandLandmarkerOptions(
             base_options=base_options,
             num_hands=2
@@ -28,15 +38,27 @@ class Command(BaseCommand):
         detector = vision.HandLandmarker.create_from_options(options)
         
         cap = cv2.VideoCapture(video_path)
+        
+        if not cap.isOpened():
+            self.stdout.write(self.style.ERROR(f'❌ No se pudo abrir el video: {video_path}'))
+            return
+        
+        # Obtener información del video
+        fps = cap.get(cv2.CAP_PROP_FPS)
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        self.stdout.write(f'   FPS: {fps}, Total frames: {total_frames}')
+        
         keypoints = []
         frame_count = 0
-        max_frames = 30
+        max_frames = min(30, total_frames) if total_frames > 0 else 30
+        manos_detectadas = 0
         
         while cap.isOpened() and frame_count < max_frames:
             ret, frame = cap.read()
             if not ret:
                 break
             
+            # Redimensionar para mejor rendimiento
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame_rgb)
             results = detector.detect(mp_image)
@@ -45,6 +67,7 @@ class Command(BaseCommand):
             left_hand = [0.0] * 63
             
             if results.hand_landmarks:
+                manos_detectadas += 1
                 for idx, hand_landmarks in enumerate(results.hand_landmarks):
                     if idx < len(results.handedness):
                         handedness = results.handedness[idx][0].category_name
@@ -64,10 +87,16 @@ class Command(BaseCommand):
             }
             keypoints.append(frame_data)
             frame_count += 1
-            self.stdout.write(f'   Frame {frame_count}/{max_frames}', ending='\r')
+            self.stdout.write(f'   Frame {frame_count}/{max_frames} - Manos: {len(results.hand_landmarks) if results.hand_landmarks else 0}', ending='\r')
         
         cap.release()
         detector.close()
+        
+        self.stdout.write('')  # Nueva línea
+        self.stdout.write(f'   📊 Manos detectadas en {manos_detectadas}/{frame_count} frames')
+        
+        if manos_detectadas == 0:
+            self.stdout.write(self.style.WARNING('⚠️ No se detectaron manos. Verifica que el video muestre manos claramente.'))
         
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         
