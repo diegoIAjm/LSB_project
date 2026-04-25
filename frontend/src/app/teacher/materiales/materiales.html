@@ -1,0 +1,114 @@
+<div class="materiales-container">
+  <div class="header">
+    <button class="btn-back" (click)="volver()">← Volver a Cursos</button>
+    <h1>📎 Materiales - {{ cursoNombre }}</h1>
+    <p>Gestiona los materiales educativos del curso</p>
+  </div>
+
+  <div class="actions">
+    <button class="btn-add" (click)="abrirModalSubir()">
+      + Subir Material
+    </button>
+  </div>
+
+  <!-- Modal de subida -->
+  <div class="modal-overlay" *ngIf="mostrarModal" (click)="cerrarModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>📤 Subir Material</h3>
+        <button class="modal-close" (click)="cerrarModal()">✖</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="campo">
+          <label>Título *</label>
+          <input type="text" placeholder="Ej: Guía de estudio" [(ngModel)]="nuevoMaterial.titulo" />
+        </div>
+
+        <div class="campo">
+          <label>Tipo *</label>
+          <select [(ngModel)]="nuevoMaterial.tipo">
+            <option [value]="''">Seleccionar tipo</option>
+            <option *ngFor="let tipo of tipos" [value]="tipo.value">{{ tipo.label }}</option>
+          </select>
+        </div>
+
+        <!-- SUBIDA DE ARCHIVO -->
+        <div class="campo">
+          <label>Archivo</label>
+          <div class="drop-area" (dragover)="onDragOver($event)" (drop)="onDrop($event)" (click)="fileInput.click()">
+            <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none" accept=".pdf,.jpg,.png,.mp4,.docx">
+            <div *ngIf="!archivoSeleccionado" class="drop-placeholder">
+              📁 Arrastra o haz clic para subir archivo
+            </div>
+            <div *ngIf="archivoSeleccionado" class="archivo-seleccionado">
+              📄 {{ archivoSeleccionado.name }} ({{ archivoSeleccionado.size | number }} bytes)
+              <button class="btn-remover" (click)="removerArchivo($event)">✖</button>
+            </div>
+          </div>
+          <small>O usa una URL externa</small>
+        </div>
+
+        <!-- URL externa (opcional) -->
+        <div class="campo">
+          <label>URL del archivo</label>
+          <input type="text" placeholder="https://drive.google.com/... o https://..." [(ngModel)]="nuevoMaterial.archivo_url" />
+          <small>Enlace a Google Drive, YouTube, o archivo directo</small>
+        </div>
+
+        <!-- Selección de lección -->
+        <div class="campo">
+          <label>Lección (opcional)</label>
+          <select [(ngModel)]="nuevoMaterial.leccion_id">
+            <option [value]="null">Sin lección (material general)</option>
+            <option *ngFor="let leccion of lecciones" [value]="leccion.id">
+              {{ leccion.titulo }}
+            </option>
+          </select>
+          <small>Asocia este material a una lección específica</small>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+        <button class="btn-guardar" (click)="guardarMaterial()" [disabled]="cargandoForm">
+          {{ cargandoForm ? 'Subiendo...' : 'Subir Material' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de materiales -->
+  <div class="materiales-grid">
+    <div *ngFor="let material of materiales" class="material-card">
+      <div class="material-icon">{{ getTipoIcono(material.tipo) }}</div>
+      <div class="material-info">
+        <h3>{{ material.titulo }}</h3>
+        <p class="material-tipo">{{ getTipoLabel(material.tipo) }}</p>
+        <p class="material-leccion" *ngIf="material.leccion_id">
+          📖 Lección ID: {{ material.leccion_id }}
+        </p>
+        <p class="material-fecha">📅 {{ material.fecha_formateada }}</p>
+      </div>
+      <div class="material-actions">
+        <button class="btn-ver" (click)="abrirArchivo(material)" title="Ver archivo">
+          👁️
+        </button>
+      
+        <button class="btn-descargar" (click)="descargarArchivo(material)" title="Descargar">
+          ⬇️
+        </button>
+      
+        <button class="btn-eliminar" (click)="eliminarMaterial(material.id)" title="Eliminar">
+          🗑️
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="materiales.length === 0 && !cargando" class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>No hay materiales</h3>
+      <p>Sube el primer material para este curso</p>
+    </div>
+  </div>
+</div>

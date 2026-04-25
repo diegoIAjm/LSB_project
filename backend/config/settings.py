@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'cursos',
     'duolingo',
+    'apps.materiales',
 ]
 
 MIDDLEWARE = [
@@ -126,9 +127,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+# Configuración para archivos media (subidos por usuarios)
+MEDIA_URL = '/media/'  # La URL base para acceder a los archivos
+MEDIA_ROOT = BASE_DIR / 'media'  # La carpeta física donde se guardan
 
+# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [

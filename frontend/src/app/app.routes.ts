@@ -142,6 +142,10 @@ export const routes: Routes = [
       {
         path: 'curso/:id/estudiantes',
         loadComponent: () => import('./teacher/curso-estudiantes/curso-estudiantes').then(m => m.CursoEstudiantesComponent)
+      },
+      {
+        path: 'materiales/:id',
+        loadComponent: () => import('./teacher/materiales/materiales').then(m => m.MaterialesComponent)
       }
     ]
   },

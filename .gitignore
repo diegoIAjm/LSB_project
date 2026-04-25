@@ -4,31 +4,183 @@ backend/venv/
 ia-training/venv/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
 
 # ===== Django =====
 db.sqlite3
+*.log
+*.pot
+*.pyc
+local_settings.py
+dump.rdb
+staticfiles/
+static/
+media/           # 👈 NO subir archivos subidos por usuarios
+mediafiles/
+
+# ===== Archivos multimedia (PDF, imágenes, videos, audios) =====
+# Imágenes
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.webp
+*.ico
+*.svg
+
+# PDFs y documentos
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+*.txt
+
+# Videos
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.flv
+*.mkv
+*.webm
+*.m4v
+*.mpg
+*.mpeg
+*.3gp
+
+# Audios
+*.mp3
+*.wav
+*.ogg
+*.flac
+*.aac
+*.m4a
+
+# Archivos comprimidos
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+*.bz2
 
 # ===== Node / Angular =====
 node_modules/
 frontend/node_modules/
 dist/
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# ===== IA / Archivos pesados =====
+# ===== IA / Machine Learning =====
 ia-training/data/
 ia-training/models/
+ia-training/datasets/
+ia-training/checkpoints/
 *.h5
+*.hdf5
 *.pt
-*.mp4
+*.pth
+*.pkl
+*.joblib
+*.pb
+*.onnx
+*.caffemodel
+*.npy
+*.npz
 
-# ===== Entornos =====
+# ===== Entornos y secretos =====
 .env
+.env.*
+!.env.example
+secrets.json
+config/secrets.json
+*.key
+*.pem
+*.crt
 
-# ===== Blender =====
+# ===== Blender / 3D =====
 *.blend
 *.blend1
 *.blend2
+*.blend3
+*.blend4
+*.blend5
 *.fbx
 *.obj
+*.mtl
+*.3ds
+*.dae
+*.gltf
+*.glb
+*.stl
 
-# ===== VS Code =====
+# ===== IDEs y editores =====
 .vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.suo
+*.user
+*.sln
+*.csproj
+
+# ===== Backup files =====
+*.bak
+*.backup
+*.old
+*.orig
+
+# ===== Logs y bases de datos =====
+*.log
+*.sql
+*.sqlite
+*.db
+
+# ===== Archivos de sistema =====
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# ===== Archivos temporales =====
+*.tmp
+temp/
+tmp/
+*.cache
+*.temp
+
+# ===== Testing =====
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ===== Docker =====
+*.pid
+docker-compose.override.yml

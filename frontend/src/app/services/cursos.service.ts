@@ -5,7 +5,8 @@ import { Observable } from 'rxjs';
 export interface Curso {
   id: number;
   nombre: string;
-  nivel: string;
+  nivel: number;           // ID del nivel
+  nivel_nombre: string;
   modalidad: string;
   fecha_inicio: string;
   fecha_fin: string;
@@ -168,6 +169,11 @@ actualizarHorario(id: number, horario: NuevoHorario): Observable<any> {
 // Eliminar horario
 eliminarHorario(id: number): Observable<any> {
   return this.http.delete(`${this.api}horarios/eliminar/${id}/`);
+}
+
+// Obtener lecciones de duolingo (sin relación con cursos, solo para mostrar)
+getLeccionesDuolingo(): Observable<any[]> {
+  return this.http.get<any[]>('http://127.0.0.1:8000/api/duolingo/lecciones/');
 }
 
 }

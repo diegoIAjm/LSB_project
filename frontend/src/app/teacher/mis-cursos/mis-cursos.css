@@ -449,3 +449,25 @@
     grid-template-columns: 1fr;
   }
 }
+
+.btn-materiales {
+  background: #f59e0b;
+  color: white;
+  text-decoration: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s;
+  flex: 1;
+}
+
+.btn-materiales:hover {
+  background: #d97706;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}

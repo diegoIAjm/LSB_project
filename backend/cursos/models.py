@@ -1,13 +1,9 @@
 from django.db import models
 from usuarios.models import Docente  # Importar Docente desde usuarios app
+from duolingo.models import Nivel
 
 class Curso(models.Model):
-    NIVEL_CHOICES = [
-        ('basico', 'Básico'),
-        ('avanzado', 'Avanzado'),
-    ]
-
-    MODALIDAD_CHOICES = [  # 🔹 NUEVO
+    MODALIDAD_CHOICES = [
         ('Virtual', 'Virtual'),
         ('Presencial', 'Presencial'),
     ]
@@ -20,7 +16,8 @@ class Curso(models.Model):
     
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=150)
-    nivel = models.CharField(max_length=50, choices=NIVEL_CHOICES)
+    # 🔹 SOLO UN nivel, el ForeignKey
+    nivel = models.ForeignKey(Nivel, on_delete=models.PROTECT, related_name='cursos')
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
     estado = models.CharField(max_length=50, default='activo', choices=ESTADO_CHOICES)
@@ -34,10 +31,9 @@ class Curso(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"{self.nombre} ({self.nivel})"
+        return f"{self.nombre} ({self.nivel.nombre})"  # 🔹 Acceder al nombre del nivel
 
     def save(self, *args, **kwargs):
-        # Validar que fecha_fin sea mayor que fecha_inicio
         if self.fecha_inicio and self.fecha_fin and self.fecha_fin < self.fecha_inicio:
             raise ValueError("La fecha de fin no puede ser menor a la fecha de inicio")
         super().save(*args, **kwargs)
@@ -91,3 +87,4 @@ class Horario(models.Model):
     
     def __str__(self):
         return f"{self.curso.nombre} - {self.dia} {self.hora_inicio}-{self.hora_fin}"
+    
