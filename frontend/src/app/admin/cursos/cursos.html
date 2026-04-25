@@ -1,3 +1,4 @@
+<!-- cursos.component.html -->
 <div class="container">
   <!-- Header con título y botón -->
   <div class="header-actions">
@@ -10,8 +11,12 @@
 
   <!-- Filtros -->
   <div class="filters">
+    <!-- 👈 FILTRO DE NIVEL ACTUALIZADO -->
     <select [(ngModel)]="filtro.nivel" (change)="cargarCursos()">
-      <option *ngFor="let nivel of niveles" [value]="nivel.value">{{ nivel.label }}</option>
+      <option value="">Todos los niveles</option>
+      <option *ngFor="let nivel of niveles" [value]="nivel.id">
+        {{ nivel.nombre }}
+      </option>
     </select>
     
     <select [(ngModel)]="filtro.estado" (change)="cargarCursos()">
@@ -47,12 +52,15 @@
         <tr *ngFor="let curso of cursos">
           <td><strong>{{ curso.nombre }}</strong></td>
           <td>
-            <span class="nivel-badge" [class.nivel-basico]="curso.nivel === 'basico'" [class.nivel-avanzado]="curso.nivel === 'avanzado'">
-              {{ getNivelTexto(curso.nivel) }}
+            <!-- 👈 NIVEL ACTUALIZADO: usa nivel_nombre -->
+            <span class="nivel-badge">
+              {{ curso.nivel_nombre || 'Sin nivel' }}
             </span>
           </td>
           <td>
-            <span class="modalidad-badge" [class.modalidad-virtual]="curso.modalidad === 'Virtual'" [class.modalidad-presencial]="curso.modalidad === 'Presencial'">
+            <span class="modalidad-badge" 
+                  [class.modalidad-virtual]="curso.modalidad === 'Virtual'" 
+                  [class.modalidad-presencial]="curso.modalidad === 'Presencial'">
               {{ curso.modalidad || 'Virtual' }}
             </span>
           </td>

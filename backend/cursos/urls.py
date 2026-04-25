@@ -19,7 +19,8 @@ from .views import (
     HorarioCreateView,
     HorarioDetailView,
     HorarioUpdateView,
-    HorarioDeleteView
+    HorarioDeleteView,
+    NivelesDisponiblesView
 )
 
 urlpatterns = [
@@ -29,6 +30,7 @@ urlpatterns = [
     path('cursos/editar/<int:pk>/', CursoUpdateView.as_view(), name='curso-update'),
     path('cursos/eliminar/<int:pk>/', CursoDeleteView.as_view(), name='curso-delete'),
     path('cursos/toggle-estado/<int:pk>/', CursoToggleEstadoView.as_view(), name='curso-toggle-estado'),
+    path('niveles/', NivelesDisponiblesView.as_view(), name='niveles-list'),
     path('docentes/disponibles/', DocentesDisponiblesView.as_view(), name='docentes-disponibles'),
     path('estudiantes/disponibles/', EstudiantesDisponiblesView.as_view(), name='estudiantes-disponibles'),
     path('cursos/disponibles/', CursosDisponiblesView.as_view(), name='cursos-disponibles'),

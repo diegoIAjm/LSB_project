@@ -16,13 +16,24 @@ class Curso(models.Model):
     
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=150)
-    # 🔹 SOLO UN nivel, el ForeignKey
-    nivel = models.ForeignKey(Nivel, on_delete=models.PROTECT, related_name='cursos')
+    # 🔹 CAMBIADO: Ahora es ForeignKey, no CharField
+    nivel = models.ForeignKey(
+        Nivel, 
+        on_delete=models.PROTECT, 
+        related_name='cursos',
+        null=False  # Ahora es obligatorio
+    )
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
     estado = models.CharField(max_length=50, default='activo', choices=ESTADO_CHOICES)
     modalidad = models.CharField(max_length=20, choices=MODALIDAD_CHOICES, default='Virtual')
-    docente = models.ForeignKey(Docente, on_delete=models.SET_NULL, null=True, blank=True, related_name='cursos')
+    docente = models.ForeignKey(
+        Docente, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='cursos'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

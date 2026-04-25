@@ -1,7 +1,8 @@
+// cursos.component.ts
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CursosService, Curso } from '../../services/cursos.service';
+import { CursosService, Curso, Nivel } from '../../services/cursos.service';
 import { Router, RouterLink } from '@angular/router';
 
 @Component({
@@ -13,6 +14,7 @@ import { Router, RouterLink } from '@angular/router';
 })
 export class CursosComponent implements OnInit {
   cursos: Curso[] = [];
+  niveles: Nivel[] = [];  // 👈 NUEVO: Array de niveles desde la API
   mensajeExito: string = '';
   
   filtro = {
@@ -21,11 +23,12 @@ export class CursosComponent implements OnInit {
     modalidad: ''
   };
   
-  niveles = [
-    { value: '', label: 'Todos los niveles' },
-    { value: 'basico', label: 'Básico' },
-    { value: 'avanzado', label: 'Avanzado' }
-  ];
+  // 👈 ELIMINADO: niveles fijos (ahora vienen de la API)
+  // niveles = [
+  //   { value: '', label: 'Todos los niveles' },
+  //   { value: 'basico', label: 'Básico' },
+  //   { value: 'avanzado', label: 'Avanzado' }
+  // ];
   
   estados = [
     { value: '', label: 'Todos los estados' },
@@ -41,6 +44,7 @@ export class CursosComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.cargarNiveles();  // 👈 NUEVO: Cargar niveles primero
     this.cargarCursos();
     
     const historyState = history.state;
@@ -54,6 +58,20 @@ export class CursosComponent implements OnInit {
     }
   }
 
+  // 👈 NUEVO: Cargar niveles desde la API
+  cargarNiveles() {
+    this.cursosService.getNiveles().subscribe({
+      next: (data: Nivel[]) => {
+        this.niveles = data;
+        console.log('Niveles cargados:', this.niveles);
+        this.cd.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error al cargar niveles', error);
+      }
+    });
+  }
+
   cargarCursos() {
     const filtros: any = {};
     if (this.filtro.nivel) filtros.nivel = this.filtro.nivel;
@@ -63,6 +81,7 @@ export class CursosComponent implements OnInit {
     this.cursosService.getCursos(filtros).subscribe({
       next: (res: any) => {
         this.cursos = res.cursos;
+        console.log('Cursos cargados:', this.cursos);
         this.cd.detectChanges();
       },
       error: (error) => {
@@ -72,7 +91,7 @@ export class CursosComponent implements OnInit {
   }
 
   limpiarFiltros() {
-    this.filtro = { nivel: '', estado: '', modalidad:'' };
+    this.filtro = { nivel: '', estado: '', modalidad: '' };
     this.cargarCursos();
   }
 
@@ -126,11 +145,7 @@ export class CursosComponent implements OnInit {
     }
   }
 
-  getNivelTexto(nivel: string): string {
-    switch(nivel) {
-      case 'basico': return 'Básico';
-      case 'avanzado': return 'Avanzado';
-      default: return nivel;
-    }
+  getNivelTexto(curso: Curso): string {
+    return curso.nivel_nombre || 'Sin nivel';
   }
 }

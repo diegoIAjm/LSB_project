@@ -1,9 +1,10 @@
+// editar-curso.component.ts
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { forkJoin } from 'rxjs';  // 🔹 Importar forkJoin
-import { CursosService, Docente } from '../../../services/cursos.service';
+import { forkJoin } from 'rxjs';
+import { CursosService, Docente, Nivel } from '../../../services/cursos.service';
 
 @Component({
   selector: 'app-editar-curso',
@@ -16,7 +17,7 @@ export class EditarCursoComponent implements OnInit {
   curso = {
     id: 0,
     nombre: '',
-    nivel: '',
+    nivel: null as number | null,
     modalidad: 'Virtual',
     fecha_inicio: '',
     fecha_fin: '',
@@ -24,10 +25,9 @@ export class EditarCursoComponent implements OnInit {
     estado: ''
   };
 
-  niveles = [
-    { value: 'basico', label: 'Básico' },
-    { value: 'avanzado', label: 'Avanzado' }
-  ];
+  niveles: Nivel[] = [];
+  duracionDias: number = 0;
+  duracionMeses: number = 0;
 
   estados = [
     { value: 'activo', label: 'Activo' },
@@ -58,33 +58,35 @@ export class EditarCursoComponent implements OnInit {
     }
   }
 
-  // 🔹 Cargar curso y docentes en paralelo
   cargarDatos(id: number): void {
     this.cargandoDatos = true;
     
-    // Usar forkJoin para cargar ambas cosas en paralelo
     forkJoin({
       curso: this.cursosService.getCurso(id),
+      niveles: this.cursosService.getNiveles(),
       docentes: this.cursosService.getDocentesDisponibles()
     }).subscribe({
       next: (resultado: any) => {
         console.log('Curso recibido:', resultado.curso);
-        console.log('Docentes recibidos:', resultado.docentes);
         
-        // Asignar docentes
+        this.niveles = resultado.niveles;
         this.docentes = resultado.docentes;
         
-        // Asignar curso
         this.curso = {
           id: resultado.curso.id,
           nombre: resultado.curso.nombre,
           nivel: resultado.curso.nivel,
           modalidad: resultado.curso.modalidad || 'Virtual',
-          fecha_inicio: resultado.curso.fecha_inicio,
-          fecha_fin: resultado.curso.fecha_fin,
+          fecha_inicio: resultado.curso.fecha_inicio || '',
+          fecha_fin: resultado.curso.fecha_fin || '',
           docente: resultado.curso.docente || null,
           estado: resultado.curso.estado || 'activo'
         };
+        
+        // Calcular duración inicial
+        setTimeout(() => {
+          this.calcularDuracion();
+        }, 100);
         
         this.cargandoDatos = false;
         this.cd.detectChanges();
@@ -98,23 +100,55 @@ export class EditarCursoComponent implements OnInit {
     });
   }
 
-  volverCursos() {
-    this.router.navigate(['/admin/cursos']);
+  // 👈 Método para cuando cambia fecha_inicio
+  onFechaInicioChange(nuevaFecha: string): void {
+    console.log('🔄 Cambió fecha inicio:', nuevaFecha);
+    this.curso.fecha_inicio = nuevaFecha;
+    this.calcularDuracion();
   }
 
-  calcularDuracion(): number {
+  // 👈 Método para cuando cambia fecha_fin
+  onFechaFinChange(nuevaFecha: string): void {
+    console.log('🔄 Cambió fecha fin:', nuevaFecha);
+    this.curso.fecha_fin = nuevaFecha;
+    this.calcularDuracion();
+  }
+
+  calcularDuracion(): void {
+    console.log('🔹 Calculando duración...');
+    console.log('  fecha_inicio:', this.curso.fecha_inicio);
+    console.log('  fecha_fin:', this.curso.fecha_fin);
+    
     if (this.curso.fecha_inicio && this.curso.fecha_fin) {
       const inicio = new Date(this.curso.fecha_inicio);
       const fin = new Date(this.curso.fecha_fin);
-      const diffDays = Math.ceil((fin.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24));
-      return diffDays;
+      
+      if (isNaN(inicio.getTime()) || isNaN(fin.getTime())) {
+        console.log('❌ Fechas inválidas');
+        this.duracionDias = 0;
+        this.duracionMeses = 0;
+        return;
+      }
+      
+      const diffTime = fin.getTime() - inicio.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      this.duracionDias = diffDays > 0 ? diffDays : 0;
+      this.duracionMeses = Math.round(this.duracionDias / 30);
+      
+      console.log(`✅ Duración calculada: ${this.duracionDias} días (${this.duracionMeses} meses)`);
+      
+      // Forzar actualización de la vista
+      this.cd.detectChanges();
+    } else {
+      console.log('⚠️ Fechas incompletas');
+      this.duracionDias = 0;
+      this.duracionMeses = 0;
     }
-    return 0;
   }
 
-  calcularMeses(): number {
-    const dias = this.calcularDuracion();
-    return Math.round(dias / 30);
+  volverCursos() {
+    this.router.navigate(['/admin/cursos']);
   }
 
   actualizarCurso() {
@@ -141,6 +175,12 @@ export class EditarCursoComponent implements OnInit {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
+    if (isNaN(fechaInicio.getTime()) || isNaN(fechaFin.getTime())) {
+      this.error = 'Las fechas no son válidas';
+      this.cargando = false;
+      return;
+    }
+
     if (fechaInicio < hoy) {
       this.error = 'La fecha de inicio no puede ser anterior a hoy';
       this.cargando = false;
@@ -154,8 +194,9 @@ export class EditarCursoComponent implements OnInit {
     }
 
     const diffDays = Math.ceil((fechaFin.getTime() - fechaInicio.getTime()) / (1000 * 60 * 60 * 24));
+    
     if (diffDays < 90 || diffDays > 150) {
-      this.error = 'El curso debe tener una duración aproximada de 4 meses (90-150 días)';
+      this.error = `El curso debe tener una duración aproximada de 4 meses (90-150 días). Actual: ${diffDays} días`;
       this.cargando = false;
       return;
     }
@@ -181,27 +222,9 @@ export class EditarCursoComponent implements OnInit {
       },
       error: (err) => {
         console.error('❌ Error:', err);
-        
-        if (err.error?.nombre) {
-          this.error = err.error.nombre;
-        } else if (err.error?.nivel) {
-          this.error = err.error.nivel;
-        } else if (err.error?.fecha_inicio) {
-          this.error = err.error.fecha_inicio;
-        } else if (err.error?.fecha_fin) {
-          this.error = err.error.fecha_fin;
-        } else if (err.error?.fechas) {
-          this.error = err.error.fechas;
-        } else if (err.error?.docente) {
-          this.error = err.error.docente;
-        } else if (err.error?.estado) {
-          this.error = err.error.estado;
-        } else if (typeof err.error === 'string') {
-          this.error = err.error;
-        } else {
-          this.error = err.error?.mensaje || 'Error al actualizar el curso';
-        }
+        this.error = err.error?.mensaje || err.error?.fechas || 'Error al actualizar el curso';
         this.cargando = false;
+        this.cd.detectChanges();
       }
     });
   }

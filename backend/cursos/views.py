@@ -1,9 +1,16 @@
+# cursos/views.py
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.db.models import Q  # 👈 Para búsquedas avanzadas
 from .models import Curso, Inscripcion, Horario
-from .serializers import CursoSerializer, CursoCreateUpdateSerializer, CursoDisponibleSerializer, DocenteSimpleSerializer,EstudianteSimpleSerializer, InscripcionCreateSerializer, InscripcionSerializer, HorarioSerializer, HorarioCreateUpdateSerializer
+from .serializers import (
+    CursoSerializer, CursoCreateUpdateSerializer, CursoDisponibleSerializer, 
+    DocenteSimpleSerializer, EstudianteSimpleSerializer, InscripcionCreateSerializer, 
+    InscripcionSerializer, HorarioSerializer, HorarioCreateUpdateSerializer
+)
 from usuarios.models import Docente, Estudiante
+from duolingo.models import Nivel  # 👈 IMPORTAR Nivel
 
 class CursoListView(generics.ListAPIView):
     """Listar todos los cursos con filtros"""
@@ -12,17 +19,35 @@ class CursoListView(generics.ListAPIView):
     def get_queryset(self):
         queryset = Curso.objects.all()
         
-        # Filtros
-        nivel = self.request.query_params.get('nivel')
+        # 🔹 FILTROS ACTUALIZADOS
+        nivel_id = self.request.query_params.get('nivel')  # Ahora es ID del nivel
         estado = self.request.query_params.get('estado')
         docente_id = self.request.query_params.get('docente')
+        search = self.request.query_params.get('search')  # Búsqueda por nombre
         
-        if nivel:
-            queryset = queryset.filter(nivel=nivel)
+        # Filtrar por nivel (ahora por ID)
+        if nivel_id:
+            try:
+                nivel_id = int(nivel_id)
+                queryset = queryset.filter(nivel_id=nivel_id)
+            except ValueError:
+                pass  # Si no es número, ignorar
+        
         if estado:
             queryset = queryset.filter(estado=estado)
+        
         if docente_id:
-            queryset = queryset.filter(docente_id=docente_id)
+            try:
+                docente_id = int(docente_id)
+                queryset = queryset.filter(docente_id=docente_id)
+            except ValueError:
+                pass
+        
+        if search:
+            queryset = queryset.filter(
+                Q(nombre__icontains=search) |
+                Q(nivel__nombre__icontains=search)  # 🔹 Buscar por nombre del nivel
+            )
         
         return queryset
     
@@ -31,30 +56,47 @@ class CursoListView(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response({
             'cursos': serializer.data,
-            'total': queryset.count()
+            'total': queryset.count(),
+            'filtros': {
+                'nivel': request.query_params.get('nivel'),
+                'estado': request.query_params.get('estado'),
+                'docente': request.query_params.get('docente')
+            }
         })
+
 
 class CursoCreateView(generics.CreateAPIView):
     """Crear un nuevo curso"""
     serializer_class = CursoCreateUpdateSerializer
     
     def create(self, request, *args, **kwargs):
+        # 🔹 Verificar que el nivel existe antes de crear
+        nivel_id = request.data.get('nivel')
+        if nivel_id:
+            try:
+                nivel = Nivel.objects.get(id=nivel_id)
+            except Nivel.DoesNotExist:
+                return Response({
+                    'error': f'El nivel con id {nivel_id} no existe'
+                }, status=status.HTTP_400_BAD_REQUEST)
+        
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         curso = serializer.save()
         
-        # Devolver datos completos
         data = CursoSerializer(curso).data
         return Response({
             'mensaje': 'Curso creado correctamente',
             'curso': data
         }, status=status.HTTP_201_CREATED)
 
+
 class CursoDetailView(generics.RetrieveAPIView):
     """Obtener detalle de un curso"""
     queryset = Curso.objects.all()
     serializer_class = CursoSerializer
     lookup_field = 'pk'
+
 
 class CursoUpdateView(generics.UpdateAPIView):
     """Actualizar un curso"""
@@ -63,6 +105,16 @@ class CursoUpdateView(generics.UpdateAPIView):
     lookup_field = 'pk'
     
     def update(self, request, *args, **kwargs):
+        # 🔹 Verificar que el nivel existe si se está actualizando
+        nivel_id = request.data.get('nivel')
+        if nivel_id:
+            try:
+                nivel = Nivel.objects.get(id=nivel_id)
+            except Nivel.DoesNotExist:
+                return Response({
+                    'error': f'El nivel con id {nivel_id} no existe'
+                }, status=status.HTTP_400_BAD_REQUEST)
+        
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -75,6 +127,7 @@ class CursoUpdateView(generics.UpdateAPIView):
             'curso': data
         }, status=status.HTTP_200_OK)
 
+
 class CursoDeleteView(generics.DestroyAPIView):
     """Eliminar (desactivar) un curso"""
     queryset = Curso.objects.all()
@@ -82,12 +135,12 @@ class CursoDeleteView(generics.DestroyAPIView):
     
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        # En lugar de eliminar, cambiar estado a 'inactivo'
         instance.estado = 'inactivo'
         instance.save()
         return Response({
             'mensaje': 'Curso desactivado correctamente'
         }, status=status.HTTP_200_OK)
+
 
 class CursoToggleEstadoView(APIView):
     """Activar/Desactivar un curso"""
@@ -100,7 +153,6 @@ class CursoToggleEstadoView(APIView):
             if nuevo_estado and nuevo_estado in ['activo', 'inactivo', 'finalizado']:
                 curso.estado = nuevo_estado
             else:
-                # Toggle entre activo e inactivo
                 curso.estado = 'inactivo' if curso.estado == 'activo' else 'activo'
             
             curso.save()
@@ -114,54 +166,44 @@ class CursoToggleEstadoView(APIView):
                 'error': 'Curso no encontrado'
             }, status=status.HTTP_404_NOT_FOUND)
 
+
+# 👈 NUEVA VISTA: Obtener niveles disponibles para filtrar
+class NivelesDisponiblesView(generics.ListAPIView):
+    """Listar niveles disponibles para filtros"""
+    
+    def get(self, request):
+        niveles = Nivel.objects.all().values('id', 'nombre')
+        return Response(list(niveles))
+
+
 class DocentesDisponiblesView(generics.ListAPIView):
     """Listar docentes disponibles para asignar a cursos"""
     
     def get(self, request):
-        from usuarios.models import Docente
-        from .serializers import DocenteSimpleSerializer
-        
         docentes = Docente.objects.filter(usuario__estado='activo')
-        print("Docentes encontrados:", docentes)  # Debug
-        
-        for docente in docentes:
-            print(f"Docente ID: {docente.id}, Usuario: {docente.usuario.nombre} {docente.usuario.apellido}")
-        
         serializer = DocenteSimpleSerializer(docentes, many=True)
-        print("Serialized data:", serializer.data)  # Debug
-        
         return Response(serializer.data)
-    
+
+
 class EstudiantesDisponiblesView(generics.ListAPIView):
     """Listar estudiantes activos que NO están inscritos en un curso específico"""
     
     def get(self, request):
         curso_id = request.query_params.get('curso_id')
-        print(f"📥 EstudiantesDisponiblesView llamado con curso_id: {curso_id}")
         
         estudiantes = Estudiante.objects.filter(usuario__estado='activo')
-        print(f"📊 Total estudiantes activos: {estudiantes.count()}")
         
-        # Si se proporciona un curso_id, filtrar estudiantes que NO estén inscritos en ese curso
         if curso_id:
             try:
                 curso = Curso.objects.get(id=curso_id)
-                print(f"✅ Curso encontrado: {curso.nombre}")
-                
-                # Excluir estudiantes que ya tienen inscripción en este curso (activa o cancelada)
                 estudiantes_inscritos = Inscripcion.objects.filter(curso=curso).values_list('estudiante_id', flat=True)
-                print(f"📋 Estudiantes inscritos en este curso: {list(estudiantes_inscritos)}")
-                
                 estudiantes = estudiantes.exclude(id__in=estudiantes_inscritos)
-                print(f"✅ Estudiantes disponibles después de filtro: {estudiantes.count()}")
-                
             except Curso.DoesNotExist:
-                print(f"❌ Curso no encontrado con ID: {curso_id}")
                 pass
         
         serializer = EstudianteSimpleSerializer(estudiantes, many=True)
-        print(f"📤 Enviando {len(serializer.data)} estudiantes")
         return Response(serializer.data)
+
 
 class CursosDisponiblesView(generics.ListAPIView):
     """Listar cursos activos para inscripción"""
@@ -171,13 +213,13 @@ class CursosDisponiblesView(generics.ListAPIView):
         serializer = CursoDisponibleSerializer(cursos, many=True)
         return Response(serializer.data)
 
+
 class InscripcionListView(generics.ListAPIView):
     """Listar todas las inscripciones con filtros"""
     
     def get(self, request):
         inscripciones = Inscripcion.objects.all().order_by('-fecha_inscripcion')
         
-        # Filtro por estado
         estado = request.query_params.get('estado')
         if estado:
             inscripciones = inscripciones.filter(estado=estado)
@@ -188,24 +230,22 @@ class InscripcionListView(generics.ListAPIView):
             'total': inscripciones.count()
         })
 
+
 class InscripcionCreateView(generics.CreateAPIView):
     """Crear nueva inscripción"""
     serializer_class = InscripcionCreateSerializer
     
     def create(self, request, *args, **kwargs):
-        print("📥 Datos recibidos en inscripción:", request.data)  # Debug
-        
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         inscripcion = serializer.save()
-        
-        print("✅ Inscripción creada:", inscripcion.id)  # Debug
         
         data = InscripcionSerializer(inscripcion).data
         return Response({
             'mensaje': 'Estudiante inscrito correctamente',
             'inscripcion': data
         }, status=status.HTTP_201_CREATED)
+
 
 class InscripcionCancelarView(APIView):
     """Cancelar inscripción"""
@@ -218,10 +258,8 @@ class InscripcionCancelarView(APIView):
             return Response({'mensaje': 'Inscripción cancelada correctamente'})
         except Inscripcion.DoesNotExist:
             return Response({'error': 'Inscripción no encontrada'}, status=404)
-        
 
 
-        # Añadir esta nueva vista
 class CursosActivosView(generics.ListAPIView):
     """Listar cursos activos para inscripción (alias)"""
     
@@ -232,6 +270,8 @@ class CursosActivosView(generics.ListAPIView):
 
 
 class InscripcionMasivaView(APIView):
+    """Inscribir múltiples estudiantes a un curso"""
+    
     def post(self, request):
         curso_id = request.data.get('curso')
         estudiantes_ids = request.data.get('estudiantes', [])
@@ -254,7 +294,6 @@ class InscripcionMasivaView(APIView):
             try:
                 estudiante = Estudiante.objects.get(id=est_id, usuario__estado='activo')
                 
-                # Verificar si ya existe inscripción (activa o cancelada)
                 if Inscripcion.objects.filter(estudiante=estudiante, curso=curso).exists():
                     errores.append(f'{estudiante.usuario.nombre} {estudiante.usuario.apellido} ya tiene una inscripción en este curso')
                     continue
@@ -284,7 +323,8 @@ class InscripcionMasivaView(APIView):
                 'inscritos': 0,
                 'errores': errores
             }, status=status.HTTP_400_BAD_REQUEST)
-        
+
+
 class CursoEstudiantesView(APIView):
     """Obtener estudiantes inscritos en un curso"""
     
@@ -304,17 +344,18 @@ class CursoEstudiantesView(APIView):
                     'fecha_inscripcion': ins.fecha_inscripcion,
                     'estado': ins.estado,
                     'nivel': ins.estudiante.nivel_actual,
-                    'progreso': 0  # Puedes calcular si tienes datos
+                    'progreso': 0
                 })
             
             return Response({
                 'curso_nombre': curso.nombre,
+                'curso_nivel': curso.nivel.nombre,  # 🔹 Añadido nivel del curso
                 'estudiantes': estudiantes,
                 'total': len(estudiantes)
             })
         except Curso.DoesNotExist:
             return Response({'error': 'Curso no encontrado'}, status=404)
-        
+
 
 class HorarioListView(generics.ListAPIView):
     """Listar horarios de un curso"""
@@ -325,6 +366,7 @@ class HorarioListView(generics.ListAPIView):
         if curso_id:
             return Horario.objects.filter(curso_id=curso_id)
         return Horario.objects.all()
+
 
 class HorarioCreateView(generics.CreateAPIView):
     """Crear un nuevo horario"""
@@ -341,11 +383,13 @@ class HorarioCreateView(generics.CreateAPIView):
             'horario': data
         }, status=status.HTTP_201_CREATED)
 
+
 class HorarioDetailView(generics.RetrieveAPIView):
     """Obtener detalle de un horario"""
     queryset = Horario.objects.all()
     serializer_class = HorarioSerializer
     lookup_field = 'pk'
+
 
 class HorarioUpdateView(generics.UpdateAPIView):
     """Actualizar un horario"""
@@ -365,6 +409,7 @@ class HorarioUpdateView(generics.UpdateAPIView):
             'mensaje': 'Horario actualizado correctamente',
             'horario': data
         }, status=status.HTTP_200_OK)
+
 
 class HorarioDeleteView(generics.DestroyAPIView):
     """Eliminar un horario"""

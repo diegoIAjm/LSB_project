@@ -2,11 +2,20 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+
+export interface Nivel {
+  id: number;
+  nombre: string;
+  descripcion?: string;
+}
+
 export interface Curso {
   id: number;
   nombre: string;
-  nivel: number;           // ID del nivel
-  nivel_nombre: string;
+  nivel: number;           // ID del nivel (para enviar al backend)
+  nivel_id: number;        // ID del nivel (respuesta)
+  nivel_nombre: string;    // Nombre del nivel (respuesta)
+  nivel_info?: Nivel;      // Info completa del nivel
   modalidad: string;
   fecha_inicio: string;
   fecha_fin: string;
@@ -14,6 +23,8 @@ export interface Curso {
   docente: number | null;
   docente_nombre: string;
   duracion_meses: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface Horario {
@@ -48,10 +59,17 @@ export interface Docente {
 })
 export class CursosService {
   private api = 'http://127.0.0.1:8000/api/cursos/';
+  private baseApi = 'http://127.0.0.1:8000/api/';
 
   constructor(private http: HttpClient) {}
 
-  // Obtener todos los cursos
+  // ==================== NIVELES ====================
+  // 🔹 NUEVO: Obtener todos los niveles disponibles
+  getNiveles(): Observable<Nivel[]> {
+    return this.http.get<Nivel[]>(`${this.baseApi}niveles/`);
+  }
+
+  // ==================== CURSOS ====================
   getCursos(filtros: any = {}): Observable<any> {
     let params = new HttpParams();
     Object.keys(filtros).forEach(key => {
@@ -60,29 +78,24 @@ export class CursosService {
     return this.http.get<any>(this.api, { params });
   }
 
-  // Crear curso
   crearCurso(curso: any): Observable<any> {
     return this.http.post(`${this.api}crear/`, curso);
   }
 
-  // Obtener curso por ID
   getCurso(id: number): Observable<any> {
     return this.http.get(`${this.api}${id}/`);
   }
 
-  // Editar curso
   editarCurso(id: number, curso: any): Observable<any> {
     return this.http.put(`${this.api}editar/${id}/`, curso);
   }
 
-  // Cambiar estado (activar/desactivar)
   toggleEstado(id: number): Observable<any> {
-    return this.http.patch(`${this.api}toggle-estado/${id}/`, {});
+    return this.http.patch(`${this.api}${id}/toggle-estado/`, {});
   }
 
-  // Eliminar curso
   eliminarCurso(id: number): Observable<any> {
-    return this.http.delete(`${this.api}eliminar/${id}/`);
+    return this.http.delete(`${this.api}${id}/eliminar/`);
   }
 
   // Obtener docentes disponibles

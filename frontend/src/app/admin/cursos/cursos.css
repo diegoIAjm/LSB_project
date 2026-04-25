@@ -405,3 +405,14 @@
     justify-content: center;
   }
 }
+
+/* cursos.component.css */
+.nivel-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #e0e7ff;
+  color: #4338ca;
+}

@@ -10,7 +10,7 @@
 
     <!-- Nombre del curso -->
     <div class="campo">
-      <label>Nombre del Curso</label>
+      <label>Nombre del Curso *</label>
       <input 
         type="text" 
         [(ngModel)]="curso.nombre" 
@@ -19,63 +19,73 @@
       <small>Mínimo 3 caracteres</small>
     </div>
 
-    <!-- Nivel -->
+    <!-- 🔹 Nivel - ahora con opciones dinámicas desde API -->
     <div class="campo">
-      <label>Nivel</label>
+      <label>Nivel *</label>
       <select [(ngModel)]="curso.nivel" [disabled]="cargando">
-        <option [value]="''">Seleccionar nivel</option>
-        <option *ngFor="let nivel of niveles" [value]="nivel.value">{{ nivel.label }}</option>
+        <option [value]="null">Seleccionar nivel</option>
+        <option *ngFor="let nivel of niveles" [value]="nivel.id">
+          {{ nivel.nombre }}
+        </option>
       </select>
+      <small *ngIf="niveles.length === 0" style="color: #ef4444;">
+        ⚠️ No hay niveles registrados.
+      </small>
     </div>
 
+    <!-- Modalidad -->
     <div class="campo">
-      <label>Modalidad</label>
+      <label>Modalidad *</label>
       <select [(ngModel)]="curso.modalidad" [disabled]="cargando">
-        <option [value]="'Virtual'">Virtual</option>
-        <option [value]="'Presencial'">Presencial</option>
+        <option value="Virtual">Virtual</option>
+        <option value="Presencial">Presencial</option>
       </select>
     </div>
 
-<div class="campo">
-  <label>Docente</label>
-  <select [(ngModel)]="curso.docente" [disabled]="cargando">
-    <option [value]="null">Sin asignar</option>
-    <option *ngFor="let docente of docentes" [value]="docente.id">
-      {{ docente.nombre_completo }} - {{ docente.especialidad }}
-    </option>
-  </select>
-  
-  <!-- Mensaje si no hay docentes -->
-  <small *ngIf="docentes.length === 0" style="color: #ef4444;">
-    ⚠️ No hay docentes registrados. Debes registrar docentes primero.
-  </small>
-</div>
+    <!-- Docente -->
+    <div class="campo">
+      <label>Docente (opcional)</label>
+      <select [(ngModel)]="curso.docente" [disabled]="cargando">
+        <option [value]="null">Sin asignar</option>
+        <option *ngFor="let docente of docentes" [value]="docente.id">
+          {{ docente.nombre_completo }} - {{ docente.especialidad }}
+        </option>
+      </select>
+      <small *ngIf="docentes.length === 0" style="color: #ef4444;">
+        ⚠️ No hay docentes registrados. Debes registrar docentes primero.
+      </small>
+    </div>
 
-    <!-- Fechas en 2 columnas -->
+    <!-- 👇 Fechas con eventos (input) -->
     <div class="row-2">
       <div class="campo">
-        <label>Fecha de Inicio </label>
+        <label>Fecha de Inicio *</label>
         <input 
           type="date" 
-          [(ngModel)]="curso.fecha_inicio" 
+          [value]="curso.fecha_inicio" 
+          (input)="onFechaInicioChange($any($event.target).value)"
           [disabled]="cargando" />
         <small>No puede ser anterior a hoy</small>
       </div>
 
       <div class="campo">
-        <label>Fecha de Fin </label>
+        <label>Fecha de Fin *</label>
         <input 
           type="date" 
-          [(ngModel)]="curso.fecha_fin" 
+          [value]="curso.fecha_fin" 
+          (input)="onFechaFinChange($any($event.target).value)"
           [disabled]="cargando" />
         <small>Debe ser posterior a la fecha de inicio</small>
       </div>
     </div>
 
-    <!-- Información de duración -->
-    <div class="info-duracion" *ngIf="curso.fecha_inicio && curso.fecha_fin">
+    <!-- Información de duración en tiempo real -->
+    <div class="info-duracion" *ngIf="curso.fecha_inicio && curso.fecha_fin && duracionDias > 0">
       <i class="info-icon">⏱️</i>
-      <span>Duración estimada: {{ calcularDuracion() }} días (aprox. {{ calcularMeses() }} meses)</span>
+      <span>Duración: {{ duracionDias }} días (aprox. {{ duracionMeses }} meses)</span>
+      <span *ngIf="duracionDias < 90 || duracionDias > 150" class="error-duracion">
+        ⚠️ La duración debe ser de 90-150 días (4 meses aprox.)
+      </span>
     </div>
 
     <!-- Botón -->
