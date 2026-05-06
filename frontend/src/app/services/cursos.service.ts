@@ -78,6 +78,14 @@ export class CursosService {
     return this.http.get<any>(this.api, { params });
   }
 
+    getCursosByDocente(docenteId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseApi}cursos/?docente_id=${docenteId}`);
+  }
+
+  getLeccionesByCurso(cursoId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseApi}duolingo/lecciones/?curso_id=${cursoId}`);
+  }
+
   crearCurso(curso: any): Observable<any> {
     return this.http.post(`${this.api}crear/`, curso);
   }

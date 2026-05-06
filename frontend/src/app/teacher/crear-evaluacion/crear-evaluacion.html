@@ -1,0 +1,81 @@
+<!-- src/app/teacher/crear-evaluacion/crear-evaluacion.html -->
+
+<div class="crear-evaluacion-container">
+  <!-- Header -->
+  <div class="page-header">
+    <button class="btn-back" (click)="volver()">
+      ← Volver
+    </button>
+    <h1>📝 Asignar Nueva Práctica</h1>
+    <p>Curso: <strong>{{ cursoNombre || 'Cargando...' }}</strong></p>
+  </div>
+
+  <!-- Formulario -->
+  <div class="form-card">
+    <div class="form-body">
+      <form [formGroup]="evaluacionForm" (ngSubmit)="onSubmit()">
+        
+        <!-- Curso (solo lectura) -->
+        <div class="form-group">
+          <label class="form-label">📚 Curso</label>
+          <input type="text" class="form-control" [value]="cursoNombre" disabled>
+        </div>
+
+        <!-- Lección -->
+        <div class="form-group">
+          <label class="form-label">📖 Lección *</label>
+          <select formControlName="leccion_id" class="form-control">
+            <option value="">Seleccionar lección</option>
+            @for (leccion of lecciones; track leccion.id) {
+              <option [value]="leccion.id">{{ leccion.titulo }}</option>
+            }
+          </select>
+          @if (evaluacionForm.get('leccion_id')?.invalid && evaluacionForm.get('leccion_id')?.touched) {
+            <div class="error-message">Seleccione una lección</div>
+          }
+        </div>
+
+        <!-- Título -->
+        <div class="form-group">
+          <label class="form-label">🏷️ Título de la Práctica *</label>
+          <input type="text" formControlName="titulo" class="form-control" 
+                 placeholder="Ej: Evaluación de señas - Unidad 1">
+          @if (evaluacionForm.get('titulo')?.invalid && evaluacionForm.get('titulo')?.touched) {
+            <div class="error-message">El título es requerido</div>
+          }
+        </div>
+
+        <!-- Descripción -->
+        <div class="form-group">
+          <label class="form-label">📝 Descripción *</label>
+          <textarea formControlName="descripcion" rows="4" class="form-control" 
+                    placeholder="Describe lo que los estudiantes deben hacer, qué señas deben grabar, etc..."></textarea>
+          @if (evaluacionForm.get('descripcion')?.invalid && evaluacionForm.get('descripcion')?.touched) {
+            <div class="error-message">La descripción es requerida</div>
+          }
+        </div>
+
+        <!-- Fecha límite -->
+        <div class="form-group">
+          <label class="form-label">⏰ Fecha Límite *</label>
+          <input type="date" formControlName="fecha_limite" class="form-control">
+          @if (evaluacionForm.get('fecha_limite')?.invalid && evaluacionForm.get('fecha_limite')?.touched) {
+            <div class="error-message">Seleccione una fecha límite</div>
+          }
+        </div>
+
+        <!-- Botones -->
+        <div class="form-actions">
+          <button type="button" class="btn-cancelar" (click)="volver()">Cancelar</button>
+          <button type="submit" class="btn-crear" [disabled]="evaluacionForm.invalid || loading">
+            @if (loading) {
+              <span>⏳ Asignando...</span>
+            } @else {
+              <span>📤 Asignar Práctica</span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

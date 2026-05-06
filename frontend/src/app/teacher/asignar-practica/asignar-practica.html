@@ -1,0 +1,48 @@
+<!-- src/app/teacher/asignar-practica/asignar-practica.html -->
+
+<div class="asignar-practica-container">
+  <div class="page-header">
+    <h1>📝 Asignar Práctica</h1>
+    <p>Selecciona un curso para asignar una nueva práctica o evaluación</p>
+  </div>
+
+  <!-- Buscador -->
+  <div class="search-section">
+    <input 
+      type="text" 
+      placeholder="🔍 Buscar curso..." 
+      [(ngModel)]="filtroBusqueda"
+      (input)="filtrarCursos()"
+      class="search-input"
+    />
+  </div>
+
+  @if (cargando) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Cargando cursos...</p>
+    </div>
+  }
+
+  @if (!cargando && cursosFiltrados.length === 0) {
+    <div class="empty-state">
+      <p>No hay cursos disponibles</p>
+    </div>
+  }
+
+  @if (!cargando && cursosFiltrados.length > 0) {
+    <div class="cursos-grid">
+      @for (curso of cursosFiltrados; track curso.id) {
+        <div class="curso-card">
+          <div class="curso-icon">{{ getIconoPorNivel(curso.nivel) }}</div>
+          <h3>{{ curso.nombre }}</h3>
+          <p class="curso-nivel">{{ curso.nivel_nombre }}</p>
+          <p class="curso-fecha">📅 Inicio: {{ curso.fecha_inicio | date:'dd/MM/yyyy' }}</p>
+          <button class="btn-asignar" (click)="asignarPractica(curso.id, curso.nombre)">
+            📝 Asignar Práctica
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

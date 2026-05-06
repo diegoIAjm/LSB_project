@@ -146,7 +146,16 @@ export const routes: Routes = [
       {
         path: 'materiales/:id',
         loadComponent: () => import('./teacher/materiales/materiales').then(m => m.MaterialesComponent)
-      }
+      },
+
+      {
+      path: 'asignar-practica',
+      loadComponent: () => import('./teacher/asignar-practica/asignar-practica').then(m => m.AsignarPracticaComponent)
+    },
+    {
+      path: 'crear-evaluacion/:cursoId',
+      loadComponent: () => import('./teacher/crear-evaluacion/crear-evaluacion').then(m => m.CrearEvaluacionComponent)
+    }
     ]
   },
 

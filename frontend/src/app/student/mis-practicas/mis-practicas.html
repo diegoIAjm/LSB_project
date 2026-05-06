@@ -1,0 +1,120 @@
+<!-- src/app/student/mis-practicas/mis-practicas.html -->
+
+<div class="mis-practicas-container">
+  <div class="page-header">
+    <h1>📝 Mis Prácticas</h1>
+    <p>Aquí encontrarás todas las prácticas asignadas por tus docentes</p>
+  </div>
+
+  <!-- Buscador -->
+  <div class="search-section">
+    <input 
+      type="text" 
+      placeholder="🔍 Buscar práctica..." 
+      [(ngModel)]="filtroBusqueda"
+      (input)="filtrarPracticas()"
+      class="search-input"
+    />
+  </div>
+
+  @if (cargando) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Cargando tus prácticas...</p>
+    </div>
+  }
+
+  @if (!cargando && practicasFiltradas.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>No hay prácticas asignadas</h3>
+      <p>Tus prácticas aparecerán aquí cuando los docentes las asignen</p>
+    </div>
+  }
+
+  <div class="practicas-grid">
+    @for (practica of practicasFiltradas; track practica.id) {
+      <div class="practica-card" [class.vencida]="estaVencida(practica.fecha_limite)">
+        <div class="card-header">
+          <h3>{{ practica.titulo }}</h3>
+          <span class="fecha-limite">
+            📅 {{ practica.fecha_limite | date:'dd/MM/yyyy' }}
+          </span>
+        </div>
+        
+        <p class="descripcion">{{ practica.descripcion }}</p>
+        
+        <div class="card-info">
+          <div class="info-item">
+            <span class="label">Curso:</span>
+            <span class="value">{{ practica.curso_nombre }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Lección:</span>
+            <span class="value">{{ practica.leccion_titulo }}</span>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="estado">
+            <span class="badge" [class]="getEstadoBadgeClass(practica.estado_entrega || 'pendiente')">
+              {{ getEstadoTexto(practica.estado_entrega || 'pendiente') }}
+            </span>
+            @if (estaVencida(practica.fecha_limite) && practica.estado_entrega !== 'entregado') {
+              <span class="vencida-text">⚠️ Vencida</span>
+            }
+          </div>
+          
+          @if (practica.estado_entrega !== 'entregado' && practica.estado_entrega !== 'revisado') {
+            <button class="btn-entregar" 
+                    (click)="abrirModalEntrega(practica)"
+                    [disabled]="estaVencida(practica.fecha_limite)">
+              📤 Entregar Práctica
+            </button>
+          } @else if (practica.estado_entrega === 'revisado') {
+            <div class="calificacion">
+              <span class="nota">⭐ Calificada</span>
+            </div>
+          } @else {
+            <div class="entregado">
+              <span>✅ Entregado</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Modal de entrega -->
+  @if (mostrarModal) {
+    <div class="modal-overlay" (click)="cerrarModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>📤 Entregar Práctica</h3>
+          <button class="btn-cerrar" (click)="cerrarModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <p><strong>{{ practicaSeleccionada?.titulo }}</strong></p>
+          <div class="form-group">
+            <label>URL del Video *</label>
+            <input type="text" 
+                   [(ngModel)]="videoUrl" 
+                   class="form-control"
+                   placeholder="https://www.youtube.com/watch?v=...">
+            <small class="help-text">Sube tu video a YouTube, Drive o cualquier plataforma y pega el enlace aquí</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+          <button class="btn-confirmar" (click)="entregarPractica()" [disabled]="entregando">
+            @if (entregando) {
+              <span>⏳ Entregando...</span>
+            } @else {
+              <span>✅ Confirmar Entrega</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

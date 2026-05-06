@@ -1,0 +1,117 @@
+/* src/app/teacher/asignar-practica/asignar-practica.css */
+
+.asignar-practica-container {
+  padding: 2rem;
+  background: #f5f7fa;
+  min-height: 100vh;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #333;
+}
+
+.page-header p {
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+.search-section {
+  max-width: 400px;
+  margin: 0 auto 2rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 20px;
+  border: 2px solid #e1e5e9;
+  border-radius: 25px;
+  font-size: 1rem;
+}
+
+.cursos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.curso-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.curso-card:hover {
+  transform: translateY(-5px);
+}
+
+.curso-icon {
+  font-size: 3rem;
+}
+
+.curso-card h3 {
+  margin: 0.5rem 0;
+  color: #333;
+}
+
+.curso-nivel {
+  color: #667eea;
+  font-weight: 500;
+  margin: 0.5rem 0;
+}
+
+.curso-fecha {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.btn-asignar {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.btn-asignar:hover {
+  opacity: 0.9;
+}
+
+.loading, .empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+}
+/* src/app/teacher/asignar-practica/asignar-practica.css */
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

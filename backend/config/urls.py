@@ -25,6 +25,7 @@ urlpatterns = [
     path('api/', include('cursos.urls')),
     path('api/duolingo/', include('duolingo.urls')),
     path('api/', include('apps.materiales.urls')),
+    path('api/', include('apps.evaluaciones.urls')),
 ]
 
 if settings.DEBUG:
