@@ -2,7 +2,7 @@
   <!-- Header con gradiente -->
   <div class="page-header">
     <div class="header-content">
-      <h1>📚 Mis Cursos</h1>
+      <h1>Mis Cursos</h1>
       <p>Gestiona y da seguimiento a tus cursos asignados</p>
     </div>
     <div class="header-decoration">
@@ -14,7 +14,7 @@
   <!-- Filtros y búsqueda -->
   <div class="filters-section">
     <div class="search-bar">
-      <i class="search-icon">🔍</i>
+      <i class="bi bi-search search-icon"></i>
       <input 
         type="text" 
         placeholder="Buscar curso..." 
@@ -30,7 +30,8 @@
     </div>
 
     <button class="btn-clear" (click)="limpiarFiltros()">
-      🗑️ Limpiar
+      <i class="bi bi-trash3"></i>
+      Limpiar
     </button>
   </div>
 
@@ -46,8 +47,8 @@
         {{ getEstadoTexto(curso.estado) }}
       </div>
       
-      <div class="card-icon">
-        {{ curso.nivel === 'basico' ? '🌟' : '🚀' }}
+      <div class="card-icon" [ngClass]="curso.nivel === 'basico' ? 'icon-basico' : 'icon-avanzado'">
+        <i class="bi" [ngClass]="curso.nivel === 'basico' ? 'bi-star-fill' : 'bi-rocket-fill'"></i>
       </div>
       
       <h3>{{ curso.nombre }}</h3>
@@ -69,20 +70,22 @@
 
       <div class="card-actions">
         <a [routerLink]="['/teacher/curso', curso.id, 'estudiantes']" class="btn-ver">
-          <span>👥 Ver Estudiantes</span>
-          <i class="arrow">→</i>
+          <i class="bi bi-people-fill"></i>
+          <span>Ver Estudiantes</span>
+          <i class="bi bi-arrow-right-short arrow"></i>
         </a>
 
         <a [routerLink]="['/teacher/materiales', curso.id]" class="btn-materiales">
-            <span>📎 Materiales</span>
-          <i class="arrow">→</i>
+          <i class="bi bi-paperclip"></i>
+          <span>Materiales</span>
+          <i class="bi bi-arrow-right-short arrow"></i>
         </a>
       </div>
     </div>
 
     <!-- Mensaje sin resultados -->
     <div *ngIf="cursosFiltrados.length === 0" class="empty-state">
-      <div class="empty-icon">📭</div>
+      <div class="empty-icon"><i class="bi bi-inbox"></i></div>
       <h3>No hay cursos</h3>
       <p>No se encontraron cursos que coincidan con los filtros</p>
       <button class="btn-clear" (click)="limpiarFiltros()">Limpiar filtros</button>

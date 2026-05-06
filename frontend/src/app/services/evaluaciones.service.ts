@@ -16,6 +16,8 @@ export interface Evaluacion {
   senas_ids?: number[];
   curso_nombre?: string;
   leccion_titulo?: string;
+  estado_entrega?: 'pendiente' | 'entregado' | 'revisado';
+  entrega_id?: number;
 }
 
 export interface EntregaEvaluacion {

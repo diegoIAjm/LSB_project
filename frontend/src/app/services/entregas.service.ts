@@ -2,7 +2,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 export interface Entrega {
   id?: number;
@@ -21,22 +21,27 @@ export class EntregasService {
 
   constructor(private http: HttpClient) {}
 
-  // Crear o actualizar entrega
-  crearEntrega(entrega: Entrega): Observable<Entrega> {
+  marcarComoEntregado(evaluacionId: number, estudianteId: number, videoUrl: string): Observable<Entrega> {
+    const entrega = {
+      evaluacion_id: evaluacionId,
+      estudiante_id: estudianteId,
+      video_url: videoUrl,
+      estado: 'entregado',
+      fecha_entrega: new Date().toISOString()
+    };
     return this.http.post<Entrega>(`${this.apiUrl}/entregas-evaluacion/`, entrega);
   }
 
-  // Obtener entregas por estudiante y evaluación
-  getEntregaByEvaluacion(evaluacionId: number, estudianteId: number): Observable<Entrega> {
-    return this.http.get<Entrega>(`${this.apiUrl}/entregas-evaluacion/?evaluacion_id=${evaluacionId}&estudiante_id=${estudianteId}`);
-  }
-
-  // Marcar como entregado (actualizar estado)
-  marcarEntregado(id: number, videoUrl: string): Observable<Entrega> {
-    return this.http.patch<Entrega>(`${this.apiUrl}/entregas-evaluacion/${id}/`, {
-      estado: 'entregado',
-      video_url: videoUrl,
-      fecha_entrega: new Date().toISOString()
-    });
+  // 🔹 CORREGIDO: Devuelve un Observable que siempre emite un valor
+  getEstadoEntrega(evaluacionId: number, estudianteId: number): Observable<Entrega | null> {
+    return this.http.get<Entrega[]>(`${this.apiUrl}/entregas-evaluacion/?evaluacion_id=${evaluacionId}&estudiante_id=${estudianteId}`)
+      .pipe(
+        map(entregas => {
+          if (entregas && entregas.length > 0) {
+            return entregas[0]; // Devolver la primera entrega
+          }
+          return null; // No hay entrega
+        })
+      );
   }
 }

@@ -3,45 +3,44 @@
   <aside class="sidebar" [class.sidebar-collapsed]="!sidebarOpen">
     <div class="sidebar-header">
       <div class="logo" *ngIf="sidebarOpen">
-        <span class="logo-icon">👨‍🏫</span>
+        <i class="bi bi-person-badge-fill logo-icon"></i>
         <span class="logo-text">EduTeach</span>
       </div>
       <div class="logo-icon-only" *ngIf="!sidebarOpen">
-        <span class="logo-icon">👨‍🏫</span>
+        <i class="bi bi-person-badge-fill logo-icon"></i>
       </div>
       <button class="toggle-btn" (click)="toggleSidebar()">
-        {{ sidebarOpen ? '◀' : '▶' }}
+        <i class="bi" [ngClass]="sidebarOpen ? 'bi-chevron-left' : 'bi-chevron-right'"></i>
       </button>
     </div>
 
     <nav class="sidebar-nav">
       <a routerLink="/teacher/dashboard" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">📊</span>
+        <i class="bi bi-speedometer2 nav-icon"></i>
         <span class="nav-label" *ngIf="sidebarOpen">Dashboard</span>
       </a>
       <a routerLink="/teacher/mis-cursos" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">📚</span>
+        <i class="bi bi-journal-bookmark nav-icon"></i>
         <span class="nav-label" *ngIf="sidebarOpen">Mis Cursos</span>
       </a>
-
       <a routerLink="/teacher/asignar-practica" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">📝</span>
+        <i class="bi bi-pencil-square nav-icon"></i>
         <span class="nav-label" *ngIf="sidebarOpen">Asignar Práctica</span>
       </a>
       <a routerLink="/teacher/estudiantes" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">👥</span>
+        <i class="bi bi-people nav-icon"></i>
         <span class="nav-label" *ngIf="sidebarOpen">Estudiantes</span>
       </a>
       <a routerLink="/teacher/evaluaciones" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">📝</span>
+        <i class="bi bi-journal-check nav-icon"></i>
         <span class="nav-label" *ngIf="sidebarOpen">Evaluaciones</span>
       </a>
       <a routerLink="/teacher/horario" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">📅</span>
+        <i class="bi bi-calendar3 nav-icon"></i>
         <span class="nav-label" *ngIf="sidebarOpen">Horario</span>
       </a>
       <a routerLink="/teacher/materiales" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">📎</span>
+        <i class="bi bi-folder nav-icon"></i>
         <span class="nav-label" *ngIf="sidebarOpen">Recursos</span>
       </a>
     </nav>
@@ -64,11 +63,11 @@
   <main class="main-content" [class.content-expanded]="!sidebarOpen">
     <header class="top-bar">
       <div class="welcome-message">
-        <h1>¡Bienvenido, {{ usuario?.nombre || 'Docente' }}! 👨‍🏫</h1>
+        <h1>¡Bienvenido, {{ usuario?.nombre || 'Docente' }}!</h1>
         <p>Un nuevo día para inspirar y enseñar</p>
       </div>
       <div class="header-actions">
-        <button class="notification-btn">🔔</button>
+        <button class="notification-btn" aria-label="Notificaciones"><i class="bi bi-bell"></i></button>
         <button class="logout-header" (click)="logout()" title="Cerrar sesión">
           <i class="bi bi-box-arrow-right"></i>
         </button>

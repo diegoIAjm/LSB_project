@@ -70,53 +70,57 @@ export const routes: Routes = [
   },
 
   // ========== RUTAS DEL ESTUDIANTE ==========
-  {
-    path: 'student',
-    loadComponent: () => import('./student/student-layout/student-layout').then(m => m.StudentLayout),
-    canActivate: [authGuard],  // 🔹 AÑADIR GUARD
-    children: [
-      {
-        path: 'dashboard',
-        loadComponent: () => import('./student/dashboard/dashboard').then(m => m.StudentDashboard)
-      },
-      {
-        path: 'diccionario',
-        loadComponent: () => import('./student/diccionario/diccionario').then(m => m.DiccionarioComponent)
-      },
-      {
-        path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full'
-      },
-      {
-  path: 'duolingo',
-  loadComponent: () => import('./student/duolingo/duolingo-layout/duolingo-layout').then(m => m.DuolingoLayoutComponent),
+{
+  path: 'student',
+  loadComponent: () => import('./student/student-layout/student-layout').then(m => m.StudentLayout),
+  canActivate: [authGuard],
   children: [
     {
-      path: 'niveles',
-      loadComponent: () => import('./student/duolingo/niveles/niveles').then(m => m.DuolingoNivelesComponent)
+      path: 'dashboard',
+      loadComponent: () => import('./student/dashboard/dashboard').then(m => m.StudentDashboard)
     },
     {
-      path: 'unidades/:nivelId',
-      loadComponent: () => import('./student/duolingo/unidades/unidades').then(m => m.DuolingoUnidadesComponent)
+      path: 'diccionario',
+      loadComponent: () => import('./student/diccionario/diccionario').then(m => m.DiccionarioComponent)
     },
     {
-      path: 'lecciones/:unidadId',
-      loadComponent: () => import('./student/duolingo/lecciones/lecciones').then(m => m.DuolingoLeccionesComponent)
+      path: 'duolingo',
+      loadComponent: () => import('./student/duolingo/duolingo-layout/duolingo-layout').then(m => m.DuolingoLayoutComponent),
+      children: [
+        {
+          path: 'niveles',
+          loadComponent: () => import('./student/duolingo/niveles/niveles').then(m => m.DuolingoNivelesComponent)
+        },
+        {
+          path: 'unidades/:nivelId',
+          loadComponent: () => import('./student/duolingo/unidades/unidades').then(m => m.DuolingoUnidadesComponent)
+        },
+        {
+          path: 'lecciones/:unidadId',
+          loadComponent: () => import('./student/duolingo/lecciones/lecciones').then(m => m.DuolingoLeccionesComponent)
+        },
+        {
+          path: 'ejercicio/:leccionId',
+          loadComponent: () => import('./student/duolingo/ejercicio/ejercicio').then(m => m.DuolingoEjercicioComponent)
+        },
+        {
+          path: '',
+          redirectTo: 'niveles',
+          pathMatch: 'full'
+        }
+      ]
     },
     {
-      path: 'ejercicio/:leccionId',
-      loadComponent: () => import('./student/duolingo/ejercicio/ejercicio').then(m => m.DuolingoEjercicioComponent)
+      path: 'mis-practicas',  // 🔹 AHORA SÍ, DENTRO DEL ARRAY CHILDREN
+      loadComponent: () => import('./student/mis-practicas/mis-practicas').then(m => m.MisPracticasComponent)
     },
     {
       path: '',
-      redirectTo: 'niveles',
+      redirectTo: 'dashboard',
       pathMatch: 'full'
     }
   ]
-}
-    ]
-  },
+},
 
   // ========== RUTAS DEL DOCENTE ==========
   {

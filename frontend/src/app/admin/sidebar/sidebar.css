@@ -1,28 +1,29 @@
 /* ========== SIDEBAR MODERNO ========== */
 .sidebar {
-  width: 270px;
-  background: #0b0f19;
-  color: #d1d5db;
-  padding: 20px 16px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 280px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  color: #4a5568;
+  padding: 28px 18px;
+  transition: all 0.3s ease;
   height: 100vh;
   position: sticky;
   top: 0;
   overflow-y: auto;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
 }
 
 /* Scroll personalizado */
 .sidebar::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
 
 .sidebar::-webkit-scrollbar-track {
-  background: #1f2937;
+  background: rgba(102, 126, 234, 0.08);
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-  background: #22c55e;
+  background: rgba(102, 126, 234, 0.3);
   border-radius: 4px;
 }
 
@@ -41,19 +42,20 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 32px;
+  gap: 10px;
+  margin-bottom: 28px;
   padding: 0 8px;
 }
 
 .logo-icon {
   font-size: 28px;
+  color: #4f46e5;
 }
 
 .logo-text {
   font-size: 20px;
   font-weight: 700;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.5px;
@@ -64,42 +66,42 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 14px;
-  border-radius: 12px;
+  padding: 12px 16px;
+  border-radius: 14px;
   cursor: pointer;
   text-decoration: none;
-  color: #d1d5db;
-  margin-bottom: 4px;
-  transition: all 0.2s ease;
+  color: #4a5568;
+  margin-bottom: 6px;
+  transition: all 0.25s ease;
   font-size: 14px;
   font-weight: 500;
 }
 
 .item:hover,
 .menu-title:hover {
-  background: #1b2236;
-  color: #ffffff;
+  background: rgba(102, 126, 234, 0.12);
+  color: #1f2937;
   transform: translateX(4px);
 }
 
 /* ACTIVE STATE */
 .active {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  box-shadow: 0 6px 18px rgba(102, 126, 234, 0.25);
 }
 
 .active .icon {
-  color: #ffffff;
+  color: white;
 }
 
 /* ICONS */
 .icon {
-  font-size: 18px;
-  min-width: 24px;
+  font-size: 22px;
+  min-width: 30px;
   text-align: center;
-  opacity: 0.9;
-  transition: all 0.2s;
+  opacity: 0.95;
+  transition: all 0.25s;
 }
 
 /* LEFT CONTENT */
@@ -119,7 +121,7 @@
 /* ARROW */
 .arrow {
   font-size: 12px;
-  transition: transform 0.2s ease;
+  transition: transform 0.25s ease;
   opacity: 0.7;
 }
 
@@ -129,42 +131,43 @@
 
 /* SUBMENU */
 .submenu {
-  margin-left: 38px;
+  margin-left: 40px;
   margin-top: 4px;
   margin-bottom: 8px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .submenu a {
-  padding: 10px 12px;
-  border-radius: 8px;
-  color: #9ca3af;
+  padding: 10px 14px;
+  border-radius: 12px;
+  color: #475569;
   text-decoration: none;
   font-size: 13px;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
   display: flex;
   align-items: center;
   gap: 10px;
+  background: rgba(255,255,255,0.5);
 }
 
 .submenu a:hover {
-  background: #1b2236;
-  color: #ffffff;
+  background: rgba(102, 126, 234, 0.12);
+  color: #1f2937;
   transform: translateX(4px);
 }
 
 .submenu a i {
-  font-size: 14px;
-  min-width: 20px;
+  font-size: 16px;
+  min-width: 22px;
 }
 
 /* SIDEBAR FOOTER */
 .sidebar-footer {
   margin-top: auto;
   padding-top: 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
   margin-top: 20px;
 }
 
@@ -179,7 +182,7 @@
 }
 
 .user-info:hover {
-  background: #1b2236;
+  background: rgba(102, 126, 234, 0.1);
 }
 
 .user-avatar {
@@ -203,12 +206,12 @@
 .user-name {
   font-size: 14px;
   font-weight: 600;
-  color: #ffffff;
+  color: #2d3748;
 }
 
 .user-role {
   font-size: 11px;
-  color: #9ca3af;
+  color: #718096;
 }
 
 /* COLLAPSED STATE OPTIMIZATIONS */

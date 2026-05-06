@@ -107,13 +107,25 @@
 
 .nav-icon {
   font-size: 22px;
-  min-width: 30px;
+  min-width: 32px;
+  width: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
 }
 
 .nav-label {
   font-size: 15px;
   font-weight: 500;
+}
+
+.notification-btn i {
+  font-size: 22px;
+}
+
+.toggle-btn i {
+  font-size: 18px;
 }
 
 .sidebar-footer {

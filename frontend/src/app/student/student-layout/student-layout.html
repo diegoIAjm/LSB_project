@@ -3,41 +3,41 @@
   <aside class="sidebar" [class.sidebar-collapsed]="!sidebarOpen">
     <div class="sidebar-header">
       <div class="logo" *ngIf="sidebarOpen">
-        <span class="logo-icon">🎓</span>
+        <i class="bi bi-mortarboard-fill logo-icon"></i>
         <span class="logo-text">EduLearn</span>
       </div>
       <div class="logo-icon-only" *ngIf="!sidebarOpen">
-        <span class="logo-icon">🎓</span>
+        <i class="bi bi-mortarboard-fill logo-icon"></i>
       </div>
       <button class="toggle-btn" (click)="toggleSidebar()">
-        {{ sidebarOpen ? '◀' : '▶' }}
+        <i class="bi" [ngClass]="sidebarOpen ? 'bi-chevron-left' : 'bi-chevron-right'"></i>
       </button>
     </div>
 
     <nav class="sidebar-nav">
       <a routerLink="/student/dashboard" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">🏠</span>
+        <i class="bi bi-house-door nav-icon"></i>
         <span class="nav-label" *ngIf="sidebarOpen">Inicio</span>
       </a>
       <a routerLink="/student/mis-cursos" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">📚</span>
+        <i class="bi bi-journal-bookmark nav-icon"></i>
         <span class="nav-label" *ngIf="sidebarOpen">Mis Cursos</span>
       </a>
       <a routerLink="/student/diccionario" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">📖</span>
+        <i class="bi bi-book nav-icon"></i>
         <span class="nav-label" *ngIf="sidebarOpen">Diccionario</span>
       </a>
       <a routerLink="/student/duolingo" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">🦉</span>
+        <i class="bi bi-lightbulb nav-icon"></i>
         <span class="nav-label" *ngIf="sidebarOpen">Duolingo</span>
       </a>
       <a routerLink="/student/conversation" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">💬</span>
+        <i class="bi bi-robot nav-icon"></i>
         <span class="nav-label" *ngIf="sidebarOpen">Práctica IA</span>
       </a>
-      <a routerLink="/student/evaluation" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">📝</span>
-        <span class="nav-label" *ngIf="sidebarOpen">Modo Evaluación</span>
+      <a routerLink="/student/mis-practicas" routerLinkActive="active" class="nav-item">
+        <i class="bi bi-pencil-square nav-icon"></i>
+        <span class="nav-label" *ngIf="sidebarOpen">Mis Prácticas</span>
       </a>
     </nav>
 
@@ -62,7 +62,7 @@
         <p>¿Lista para seguir aprendiendo hoy?</p>
       </div>
       <div class="header-actions">
-        <button class="notification-btn">🔔</button>
+      <button class="notification-btn" aria-label="Notificaciones"><i class="bi bi-bell"></i></button>
         <button class="logout-header" (click)="logout()" title="Cerrar sesión">
           <i class="bi bi-box-arrow-right"></i>
         </button>

@@ -10,7 +10,7 @@
         <i class="bi bi-grid-fill logo-icon"></i>
       </div>
       <button class="toggle-btn" (click)="toggleSidebar()">
-        {{ sidebarOpen ? '◀' : '▶' }}
+        <i class="bi" [ngClass]="sidebarOpen ? 'bi-chevron-left' : 'bi-chevron-right'"></i>
       </button>
     </div>
 
@@ -140,11 +140,11 @@
   <main class="main-content" [class.content-expanded]="!sidebarOpen">
     <header class="top-bar">
       <div class="welcome-message">
-        <h1>¡Bienvenido, {{ usuario?.nombre || 'Administrador' }}! 👑</h1>
+        <h1>¡Bienvenido, {{ usuario?.nombre || 'Administrador' }}!</h1>
         <p>Gestiona el sistema desde aquí</p>
       </div>
       <div class="header-actions">
-        <button class="notification-btn">🔔</button>
+        <button class="notification-btn" aria-label="Notificaciones"><i class="bi bi-bell"></i></button>
         <button class="logout-header" (click)="logout()" title="Cerrar sesión">
           <i class="bi bi-box-arrow-right"></i>
         </button>

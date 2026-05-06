@@ -95,3 +95,40 @@ class ResultadoEvaluacionViewSet(viewsets.ModelViewSet):
                 {'error': 'Entrega no encontrada'},
                 status=status.HTTP_404_NOT_FOUND
             )
+
+class EntregaEvaluacionViewSet(viewsets.ModelViewSet):
+    queryset = EntregasEvaluacion.objects.all()
+    serializer_class = EntregaEvaluacionSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        evaluacion_id = self.request.query_params.get('evaluacion_id')
+        estudiante_id = self.request.query_params.get('estudiante_id')
+        
+        if evaluacion_id:
+            queryset = queryset.filter(evaluacion_id=evaluacion_id)
+        if estudiante_id:
+            queryset = queryset.filter(estudiante_id=estudiante_id)
+            
+        return queryset
+
+    def create(self, request, *args, **kwargs):
+        """Crear o actualizar una entrega (evitar duplicados)"""
+        evaluacion_id = request.data.get('evaluacion_id')
+        estudiante_id = request.data.get('estudiante_id')
+        
+        # Buscar si ya existe una entrega para esta evaluación y estudiante
+        entrega_existente = EntregasEvaluacion.objects.filter(
+            evaluacion_id=evaluacion_id,
+            estudiante_id=estudiante_id
+        ).first()
+        
+        if entrega_existente:
+            # Actualizar la existente
+            serializer = self.get_serializer(entrega_existente, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        
+        # Crear nueva
+        return super().create(request, *args, **kwargs)

@@ -67,9 +67,13 @@
           
           @if (practica.estado_entrega !== 'entregado' && practica.estado_entrega !== 'revisado') {
             <button class="btn-entregar" 
-                    (click)="abrirModalEntrega(practica)"
-                    [disabled]="estaVencida(practica.fecha_limite)">
-              📤 Entregar Práctica
+                    (click)="marcarEntregado(practica)"
+                    [disabled]="estaVencida(practica.fecha_limite) || marcando[practica.id!]">
+              @if (marcando[practica.id!]) {
+                <span>⏳ Procesando...</span>
+              } @else {
+                <span>✅ Marcar como Entregado</span>
+              }
             </button>
           } @else if (practica.estado_entrega === 'revisado') {
             <div class="calificacion">
@@ -84,37 +88,4 @@
       </div>
     }
   </div>
-
-  <!-- Modal de entrega -->
-  @if (mostrarModal) {
-    <div class="modal-overlay" (click)="cerrarModal()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <h3>📤 Entregar Práctica</h3>
-          <button class="btn-cerrar" (click)="cerrarModal()">✕</button>
-        </div>
-        <div class="modal-body">
-          <p><strong>{{ practicaSeleccionada?.titulo }}</strong></p>
-          <div class="form-group">
-            <label>URL del Video *</label>
-            <input type="text" 
-                   [(ngModel)]="videoUrl" 
-                   class="form-control"
-                   placeholder="https://www.youtube.com/watch?v=...">
-            <small class="help-text">Sube tu video a YouTube, Drive o cualquier plataforma y pega el enlace aquí</small>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
-          <button class="btn-confirmar" (click)="entregarPractica()" [disabled]="entregando">
-            @if (entregando) {
-              <span>⏳ Entregando...</span>
-            } @else {
-              <span>✅ Confirmar Entrega</span>
-            }
-          </button>
-        </div>
-      </div>
-    </div>
-  }
 </div>
