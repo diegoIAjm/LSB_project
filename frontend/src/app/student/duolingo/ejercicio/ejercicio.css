@@ -323,9 +323,12 @@
     padding: 15px;
   }
   
-  .video-wrapper {
-    aspect-ratio: 4/3;
-  }
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
   
   .ejercicio-card, .resultado-card {
     padding: 20px;
@@ -360,4 +363,133 @@
   transform: scaleX(-1);
   pointer-events: none;
 }
+}
+
+/* Cuenta regresiva */
+.cuenta-regresiva {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 20px 40px;
+  border-radius: 20px;
+}
+
+.cuenta-numero {
+  font-size: 60px;
+  font-weight: bold;
+  color: #58cc71;
+  text-shadow: 0 0 10px rgba(0,0,0,0.5);
+  animation: pulse 1s ease-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Indicador de grabación */
+.grabando-indicador {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 15px 0;
+  padding: 12px 20px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 50px;
+  color: white;
+  font-weight: bold;
+}
+
+.punto-rojo {
+  width: 16px;
+  height: 16px;
+  background-color: red;
+  border-radius: 50%;
+  animation: parpadeo 1s infinite;
+}
+
+@keyframes parpadeo {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Botón de grabar */
+.btn-grabar {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-grabar:hover:not(:disabled) {
+  transform: scale(1.02);
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+}
+
+.btn-grabar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Botón de cerrar cámara */
+.btn-cerrar-camara {
+  background: #7f8c8d;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-cerrar-camara:hover {
+  background: #95a5a6;
+}
+
+/* Mensaje de evaluando */
+.evaluando-mensaje {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+  padding: 10px;
+  background: rgba(52, 152, 219, 0.2);
+  border-radius: 30px;
+  color: #3498db;
+}
+
+.spinner-small {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #3498db;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Contenedor de acciones de cámara */
+.acciones-camara {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
 }

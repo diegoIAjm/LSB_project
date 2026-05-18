@@ -221,3 +221,4 @@ class CompletarLeccionView(APIView):
             'mensaje': f'Lección {leccion.titulo} completada',
             'progreso': ProgresoUsuarioSerializer(progreso).data
         })
+

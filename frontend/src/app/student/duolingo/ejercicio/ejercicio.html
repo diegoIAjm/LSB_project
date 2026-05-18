@@ -14,7 +14,7 @@
     <p>Cargando ejercicio...</p>
   </div>
 
-  <!-- Cámara -->
+  <!-- Tarjeta inicial del ejercicio -->
   <div *ngIf="!cargando && ejercicioActual && !resultado && !camaraActiva" class="ejercicio-card">
     <div class="avatar-3d">
       <div class="avatar-placeholder">
@@ -34,22 +34,43 @@
     </div>
   </div>
 
-  <!-- Vista de cámara -->
+  <!-- Vista de cámara con grabación -->
   <div *ngIf="camaraActiva && !resultado" class="camera-container">
     <div class="video-wrapper">
       <video #videoElement class="video-preview" autoplay playsinline></video>
       <canvas #canvasElement class="canvas-overlay"></canvas>
     </div>
+    
+    <!-- Cuenta regresiva -->
+    <div *ngIf="mostrandoCuentaRegresiva" class="cuenta-regresiva">
+      <div class="cuenta-numero">{{ cuentaRegresiva }}</div>
+      <p>Prepárate...</p>
+    </div>
+    
+    <!-- Indicador de grabación -->
+    <div *ngIf="grabando" class="grabando-indicador">
+      <div class="punto-rojo"></div>
+      <span>Grabando... {{ tiempoGrabacion }}s / 3s</span>
+    </div>
+    
     <div class="instruccion">
       <p>✋ Muestra tu mano frente a la cámara</p>
     </div>
+    
     <div class="acciones-camara">
-      <button class="btn-capturar" (click)="capturarYEvaluar()" [disabled]="evaluando">
-        {{ evaluando ? 'Evaluando...' : '✅ Evaluar Seña' }}
+      <button class="btn-grabar" (click)="iniciarCuentaRegresiva()" 
+              [disabled]="grabando || evaluando || mostrandoCuentaRegresiva">
+        🎥 Grabar Seña (3s)
       </button>
       <button class="btn-cerrar-camara" (click)="cerrarCamara()">
         ❌ Cerrar Cámara
       </button>
+    </div>
+    
+    <!-- Mensaje de evaluación -->
+    <div *ngIf="evaluando" class="evaluando-mensaje">
+      <div class="spinner-small"></div>
+      <p>Evaluando tu seña...</p>
     </div>
   </div>
 

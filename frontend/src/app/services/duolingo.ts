@@ -73,6 +73,19 @@ export interface EvaluarRespuesta {
     posicion: string;
   };
 }
+export interface EvaluacionIAResponse {
+  precision: number;
+  nota: number;
+  feedback: string;
+  color: 'verde' | 'amarillo' | 'rojo';
+  sena_detectada: string;
+  puntos_ganados: number;
+  puntos_totales: number;
+  detalles: {
+    mano: string;
+    movimiento: string;
+  };
+}
 
 @Injectable({
   providedIn: 'root'
@@ -120,6 +133,7 @@ export class DuolingoService {
     return this.http.get<Puntos>(`${this.api}puntos/`, { params });
   }
 
+
   // Evaluar ejercicio
   evaluarEjercicio(estudianteId: number, ejercicioId: number, keypoints: any): Observable<EvaluarRespuesta> {
     return this.http.post<EvaluarRespuesta>(`${this.api}evaluar-ejercicio/`, {
@@ -127,6 +141,16 @@ export class DuolingoService {
       ejercicio_id: ejercicioId,
       keypoints: keypoints
     });
+  }
+
+  // NUEVO: Evaluar seña con IA usando el modelo entrenado
+  evaluarSeñaConIA(senaId: number, videoFile: File, estudianteId: number): Observable<EvaluacionIAResponse> {
+    const formData = new FormData();
+    formData.append('sena_id', senaId.toString());
+    formData.append('video', videoFile);
+    formData.append('estudiante_id', estudianteId.toString());
+    
+    return this.http.post<EvaluacionIAResponse>(`${this.api}evaluar-sena-ia/`, formData);
   }
 
   // Completar lección

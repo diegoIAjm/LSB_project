@@ -1,0 +1,149 @@
+<!-- src/app/student/grabar-practica/grabar-practica.html -->
+<div class="grabar-container">
+  <!-- Cabecera -->
+  <div class="header">
+    <button class="btn-back" (click)="volver()">
+      ← Volver
+    </button>
+    <h1>📹 Entregar Práctica</h1>
+  </div>
+
+  <!-- Info de la práctica -->
+  @if (practica) {
+    <div class="practica-info">
+      <h2>{{ practica.titulo }}</h2>
+      <p>{{ practica.descripcion }}</p>
+      <div class="meta-info">
+        <span>📅 Límite: {{ practica.fecha_limite | date:'dd/MM/yyyy' }}</span>
+        <span>📚 {{ practica.curso_nombre }} - {{ practica.leccion_titulo }}</span>
+      </div>
+    </div>
+  }
+
+  <!-- Modo: Grabar Video -->
+  @if (modo === 'grabar') {
+    <div class="modo-grabar">
+      <div class="video-section">
+        <!-- Usamos #videoPlayer y verificamos con un operador de seguridad -->
+        <video #videoPlayer class="video-preview" autoplay muted playsinline></video>
+        <canvas #canvas style="display: none;"></canvas>
+        
+        <div class="controles">
+          @if (!grabando) {
+            <div class="camara-selector">
+              <label>📷 Seleccionar cámara:</label>
+              <select [(ngModel)]="camaraSeleccionada" (change)="reiniciarCamara()">
+                @for (cam of camaras; track cam.deviceId) {
+                  <option [value]="cam.deviceId">{{ cam.label || 'Cámara ' + $index }}</option>
+                }
+              </select>
+            </div>
+            
+            <button class="btn-grabar" (click)="iniciarGrabacion()">
+              🎥 Iniciar Grabación
+            </button>
+            <button class="btn-subir" (click)="fileInput.click()">
+              📁 Subir Video
+            </button>
+          }
+          
+          @if (grabando) {
+            <div class="grabando-info">
+              <div class="indicador">
+                <div class="punto-rojo"></div>
+                <span>Grabando... {{ tiempoGrabacion }}s / 30s</span>
+              </div>
+              <button class="btn-detener" (click)="detenerGrabacion()">
+                ⏹️ Detener
+              </button>
+            </div>
+          }
+          
+          <input #fileInput type="file" accept="video/*" style="display: none" (change)="onFileSelected($event)" />
+        </div>
+      </div>
+      
+      <div class="instrucciones">
+        <h3>📝 Instrucciones:</h3>
+        <ul>
+          <li>Realiza la seña <strong>{{ obtenerNombreSena() }}</strong> frente a la cámara</li>
+          <li>Mantén tus manos visibles y bien iluminadas</li>
+          <li>La grabación durará máximo 30 segundos</li>
+          <li>Asegúrate de hacer la seña completa de principio a fin</li>
+        </ul>
+      </div>
+    </div>
+  }
+
+  <!-- Modo: Subir/Previsualizar Video -->
+  @if (modo === 'subir' && videoGrabado) {
+    <div class="modo-subir">
+      <div class="video-section">
+        <!-- Usamos src de manera segura -->
+        <video class="video-preview" [src]="videoPreviewUrl" controls></video>
+      </div>
+      
+      <div class="info-video">
+        <p>📹 Video listo: {{ videoGrabado.name }}</p>
+        <p>Tamaño: {{ (videoGrabado.size / 1024 / 1024).toFixed(2) }} MB</p>
+      </div>
+      
+      <div class="acciones">
+        <button class="btn-reintentar" (click)="reintentar()">
+          🔄 Grabar de nuevo
+        </button>
+        <button class="btn-evaluar" (click)="enviarEvaluacion()" [disabled]="cargandoEvaluacion">
+          @if (cargandoEvaluacion) {
+            <span>🤖 Evaluando... <div class="spinner"></div></span>
+          } @else {
+            <span>✅ Enviar y Evaluar</span>
+          }
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Modo: Resultado de Evaluación -->
+  @if (modo === 'resultado' && resultado) {
+    <div class="modo-resultado" [class.aprobado]="resultado.nota >= 3" [class.reprobado]="resultado.nota < 3">
+      <div class="resultado-header">
+        <h2>🤖 Resultado de la Evaluación</h2>
+      </div>
+      
+      <div class="puntaje">
+        <div class="nota">
+          <span class="label">📊 Nota</span>
+          <span class="valor" [style.color]="obtenerColorNota()">{{ resultado.nota }}/5</span>
+        </div>
+        <div class="precision">
+          <span class="label">🎯 Precisión</span>
+          <span class="valor">{{ resultado.precision }}%</span>
+        </div>
+      </div>
+      
+      <div class="feedback">
+        <p>{{ resultado.feedback }}</p>
+      </div>
+      
+      <div class="detalles">
+        <div class="detalle">
+          <span class="label">🤚 Seña detectada:</span>
+          <span class="value">{{ resultado.sena_detectada }}</span>
+        </div>
+        <div class="detalle">
+          <span class="label">📈 Confianza:</span>
+          <span class="value">{{ resultado.confianza }}%</span>
+        </div>
+      </div>
+      
+      <div class="acciones-resultado">
+        <button class="btn-reintentar" (click)="reintentar()">
+          🔄 Intentar de nuevo
+        </button>
+        <button class="btn-volver" (click)="volver()">
+          📋 Ver mis prácticas
+        </button>
+      </div>
+    </div>
+  }
+</div>

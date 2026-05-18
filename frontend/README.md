@@ -1257,3 +1257,201 @@ frontend
 └─ tsconfig.spec.json
 
 ```
+```
+frontend
+├─ .angular
+├─ .editorconfig
+├─ .prettierrc
+├─ angular.json
+├─ package-lock.json
+├─ package.json
+├─ public
+│  ├─ assets
+│  │  ├─ keypoints
+│  │  │  └─ Hola_1776886075492.json
+│  │  └─ models
+│  │     ├─ ModeloLSB.blend
+│  │     ├─ ModeloLSB.blend1
+│  │     └─ ModeloLSB.glb
+│  └─ favicon.ico
+├─ README.md
+├─ src
+│  ├─ app
+│  │  ├─ admin
+│  │  │  ├─ admin-module.ts
+│  │  │  ├─ cursos
+│  │  │  │  ├─ crear-curso
+│  │  │  │  │  ├─ crear-curso.css
+│  │  │  │  │  ├─ crear-curso.html
+│  │  │  │  │  └─ crear-curso.ts
+│  │  │  │  ├─ cursos.css
+│  │  │  │  ├─ cursos.html
+│  │  │  │  ├─ cursos.spec.ts
+│  │  │  │  ├─ cursos.ts
+│  │  │  │  ├─ editar-curso
+│  │  │  │  │  ├─ editar-curso.css
+│  │  │  │  │  ├─ editar-curso.html
+│  │  │  │  │  └─ editar-curso.ts
+│  │  │  │  └─ horarios
+│  │  │  │     ├─ horarios.css
+│  │  │  │     ├─ horarios.html
+│  │  │  │     └─ horarios.ts
+│  │  │  ├─ dashboard
+│  │  │  │  ├─ dashboard.css
+│  │  │  │  ├─ dashboard.html
+│  │  │  │  ├─ dashboard.spec.ts
+│  │  │  │  └─ dashboard.ts
+│  │  │  ├─ header
+│  │  │  │  ├─ header.css
+│  │  │  │  ├─ header.html
+│  │  │  │  ├─ header.spec.ts
+│  │  │  │  └─ header.ts
+│  │  │  ├─ inscripciones
+│  │  │  │  ├─ inscribir
+│  │  │  │  │  ├─ inscribir.css
+│  │  │  │  │  ├─ inscribir.html
+│  │  │  │  │  └─ inscribir.ts
+│  │  │  │  ├─ inscripciones.css
+│  │  │  │  ├─ inscripciones.html
+│  │  │  │  └─ inscripciones.ts
+│  │  │  ├─ layout
+│  │  │  │  ├─ layout.css
+│  │  │  │  ├─ layout.html
+│  │  │  │  ├─ layout.spec.ts
+│  │  │  │  └─ layout.ts
+│  │  │  ├─ sidebar
+│  │  │  │  ├─ sidebar.css
+│  │  │  │  ├─ sidebar.html
+│  │  │  │  ├─ sidebar.spec.ts
+│  │  │  │  └─ sidebar.ts
+│  │  │  └─ usuarios
+│  │  │     ├─ importar-docentes
+│  │  │     │  ├─ importar-docentes.css
+│  │  │     │  ├─ importar-docentes.html
+│  │  │     │  └─ importar-docentes.ts
+│  │  │     ├─ importar-estudiantes
+│  │  │     │  ├─ importar-estudiantes.css
+│  │  │     │  ├─ importar-estudiantes.html
+│  │  │     │  └─ importar-estudiantes.ts
+│  │  │     ├─ usuarios.css
+│  │  │     ├─ usuarios.html
+│  │  │     ├─ usuarios.spec.ts
+│  │  │     └─ usuarios.ts
+│  │  ├─ app.config.ts
+│  │  ├─ app.css
+│  │  ├─ app.html
+│  │  ├─ app.routes.ts
+│  │  ├─ app.spec.ts
+│  │  ├─ app.ts
+│  │  ├─ auth
+│  │  │  ├─ auth-module.ts
+│  │  │  └─ login
+│  │  │     ├─ login.css
+│  │  │     ├─ login.html
+│  │  │     └─ login.ts
+│  │  ├─ guards
+│  │  │  ├─ auth-guard.spec.ts
+│  │  │  └─ auth-guard.ts
+│  │  ├─ modules
+│  │  │  └─ usuarios
+│  │  │     ├─ editar-usuario
+│  │  │     │  ├─ editar-usuario.css
+│  │  │     │  ├─ editar-usuario.html
+│  │  │     │  └─ editar-usuario.ts
+│  │  │     └─ usuarios-crear
+│  │  │        ├─ usuarios-crear.css
+│  │  │        ├─ usuarios-crear.html
+│  │  │        └─ usuarios-crear.ts
+│  │  ├─ services
+│  │  │  ├─ auth.spec.ts
+│  │  │  ├─ auth.ts
+│  │  │  ├─ camera.service.ts
+│  │  │  ├─ cursos.service.ts
+│  │  │  ├─ duolingo.ts
+│  │  │  ├─ entregas.service.ts
+│  │  │  ├─ evaluaciones.service.ts
+│  │  │  ├─ lecciones.service.ts
+│  │  │  ├─ materiales.service.ts
+│  │  │  ├─ usuarios.spec.ts
+│  │  │  └─ usuarios.ts
+│  │  ├─ shared
+│  │  │  └─ shared-module.ts
+│  │  ├─ student
+│  │  │  ├─ dashboard
+│  │  │  │  ├─ dashboard.css
+│  │  │  │  ├─ dashboard.html
+│  │  │  │  └─ dashboard.ts
+│  │  │  ├─ diccionario
+│  │  │  │  ├─ diccionario.css
+│  │  │  │  ├─ diccionario.html
+│  │  │  │  └─ diccionario.ts
+│  │  │  ├─ duolingo
+│  │  │  │  ├─ duolingo-layout
+│  │  │  │  │  ├─ duolingo-layout.css
+│  │  │  │  │  ├─ duolingo-layout.html
+│  │  │  │  │  └─ duolingo-layout.ts
+│  │  │  │  ├─ ejercicio
+│  │  │  │  │  ├─ ejercicio.css
+│  │  │  │  │  ├─ ejercicio.html
+│  │  │  │  │  └─ ejercicio.ts
+│  │  │  │  ├─ lecciones
+│  │  │  │  │  ├─ lecciones.css
+│  │  │  │  │  ├─ lecciones.html
+│  │  │  │  │  └─ lecciones.ts
+│  │  │  │  ├─ niveles
+│  │  │  │  │  ├─ niveles.css
+│  │  │  │  │  ├─ niveles.html
+│  │  │  │  │  └─ niveles.ts
+│  │  │  │  └─ unidades
+│  │  │  │     ├─ unidades.css
+│  │  │  │     ├─ unidades.html
+│  │  │  │     └─ unidades.ts
+│  │  │  ├─ grabar-practica
+│  │  │  │  ├─ grabar-practica.css
+│  │  │  │  ├─ grabar-practica.html
+│  │  │  │  └─ grabar-practica.ts
+│  │  │  ├─ mis-practicas
+│  │  │  │  ├─ mis-practicas.css
+│  │  │  │  ├─ mis-practicas.html
+│  │  │  │  └─ mis-practicas.ts
+│  │  │  └─ student-layout
+│  │  │     ├─ student-layout.css
+│  │  │     ├─ student-layout.html
+│  │  │     └─ student-layout.ts
+│  │  └─ teacher
+│  │     ├─ asignar-practica
+│  │     │  ├─ asignar-practica.css
+│  │     │  ├─ asignar-practica.html
+│  │     │  └─ asignar-practica.ts
+│  │     ├─ crear-evaluacion
+│  │     │  ├─ crear-evaluacion.css
+│  │     │  ├─ crear-evaluacion.html
+│  │     │  └─ crear-evaluacion.ts
+│  │     ├─ curso-estudiantes
+│  │     │  ├─ curso-estudiantes.css
+│  │     │  ├─ curso-estudiantes.html
+│  │     │  └─ curso-estudiantes.ts
+│  │     ├─ dashboard
+│  │     │  ├─ dashboard.css
+│  │     │  ├─ dashboard.html
+│  │     │  └─ dashboard.ts
+│  │     ├─ materiales
+│  │     │  ├─ materiales.css
+│  │     │  ├─ materiales.html
+│  │     │  └─ materiales.ts
+│  │     ├─ mis-cursos
+│  │     │  ├─ mis-cursos.css
+│  │     │  ├─ mis-cursos.html
+│  │     │  └─ mis-cursos.ts
+│  │     └─ teacher-layout
+│  │        ├─ teacher-layout.css
+│  │        ├─ teacher-layout.html
+│  │        └─ teacher-layout.ts
+│  ├─ index.html
+│  ├─ main.ts
+│  └─ styles.css
+├─ tsconfig.app.json
+├─ tsconfig.json
+└─ tsconfig.spec.json
+
+```

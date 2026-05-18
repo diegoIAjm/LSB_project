@@ -65,6 +65,10 @@ export const routes: Routes = [
       {
         path: 'inscripciones/inscribir',
         loadComponent: () => import('./admin/inscripciones/inscribir/inscribir').then(m => m.InscribirComponent)
+      },
+      {
+      path: 'entrenar-ia',
+      loadComponent: () => import('./admin/entrenar-ia/entrenar-ia').then(m => m.EntrenarIaComponent)
       }
     ]
   },
@@ -113,6 +117,10 @@ export const routes: Routes = [
     {
       path: 'mis-practicas',  // 🔹 AHORA SÍ, DENTRO DEL ARRAY CHILDREN
       loadComponent: () => import('./student/mis-practicas/mis-practicas').then(m => m.MisPracticasComponent)
+    },
+    {
+      path: 'grabar-practica/:id',
+      loadComponent: () => import('./student/grabar-practica/grabar-practica').then(m => m.GrabarPracticaComponent)
     },
     {
       path: '',

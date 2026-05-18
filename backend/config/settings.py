@@ -37,13 +37,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # Terceros
     'rest_framework',
-    'usuarios',
     'corsheaders',
+    
+    # Tus apps locales (solo una vez cada una)
+    'usuarios',
     'cursos',
     'duolingo',
     'apps.materiales',
     'apps.evaluaciones',
+    'apps.senas',
+    'apps.ia_admin',
 ]
 
 MIDDLEWARE = [

@@ -41,7 +41,6 @@ class Estudiante(models.Model):
     def __str__(self):
         return f"Estudiante: {self.usuario.nombre} {self.usuario.apellido}"
 
-# 🔹 MODELO DOCENTE (para futuro)
 class Docente(models.Model):
     id = models.AutoField(primary_key=True)
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='docente')

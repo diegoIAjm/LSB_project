@@ -18,6 +18,9 @@ export interface Evaluacion {
   leccion_titulo?: string;
   estado_entrega?: 'pendiente' | 'entregado' | 'revisado';
   entrega_id?: number;
+  nota?: number;        
+  precision?: number;   
+  feedback?: string;
 }
 
 export interface EntregaEvaluacion {

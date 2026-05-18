@@ -65,19 +65,22 @@
             }
           </div>
           
+          <!-- Mostrar botón según el estado -->
           @if (practica.estado_entrega !== 'entregado' && practica.estado_entrega !== 'revisado') {
             <button class="btn-entregar" 
-                    (click)="marcarEntregado(practica)"
-                    [disabled]="estaVencida(practica.fecha_limite) || marcando[practica.id!]">
-              @if (marcando[practica.id!]) {
-                <span>⏳ Procesando...</span>
-              } @else {
-                <span>✅ Marcar como Entregado</span>
-              }
+                    (click)="navegarAGrabacion(practica.id!)"
+                    [disabled]="estaVencida(practica.fecha_limite)">
+              🎥 Grabar Video
             </button>
           } @else if (practica.estado_entrega === 'revisado') {
-            <div class="calificacion">
-              <span class="nota">⭐ Calificada</span>
+            <!-- Mostrar calificación con detalle -->
+            <div class="calificacion" (click)="verDetalleResultado(practica)">
+              <div class="nota-preview">
+                <span class="estrella">⭐</span>
+                <span class="nota-valor">{{ practica.nota || 0 }}/5</span>
+              </div>
+              <span class="precision">{{ practica.precision || 0 }}%</span>
+              <span class="ver-detalle">📊</span>
             </div>
           } @else {
             <div class="entregado">

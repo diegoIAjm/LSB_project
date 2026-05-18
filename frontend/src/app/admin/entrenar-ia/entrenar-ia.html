@@ -1,0 +1,104 @@
+<!-- src/app/admin/entrenar-ia/entrenar-ia.html -->
+<div class="entrenar-ia-container">
+  <div class="page-header">
+    <h1>🤖 Entrenar Modelos de IA</h1>
+    <p>Entrena modelos para que la IA reconozca las señas correctamente</p>
+  </div>
+
+  <!-- Mensaje de estado -->
+  @if (mensaje) {
+    <div class="mensaje" [class.exito]="mensaje.tipo === 'exito'" 
+                         [class.error]="mensaje.tipo === 'error'"
+                         [class.info]="mensaje.tipo === 'info'">
+      {{ mensaje.texto }}
+    </div>
+  }
+
+  <div class="contenedor-dos-columnas">
+    <!-- Columna izquierda: Lista de señas -->
+    <div class="panel-senas">
+      <h2>📋 Señas Registradas</h2>
+      
+      @if (cargandoSenas) {
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Cargando señas...</p>
+        </div>
+      }
+      
+      <div class="lista-senas">
+        @for (sena of senas; track sena.id) {
+          <div class="sena-card" 
+               [class.seleccionada]="senaSeleccionada?.id === sena.id"
+               (click)="seleccionarSena(sena)">
+            <div class="sena-info">
+              <h3>{{ sena.nombre }}</h3>
+              <p>{{ sena.descripcion || 'Sin descripción' }}</p>
+            </div>
+            <div class="sena-estado">
+              @if (sena.modelo_ruta) {
+                <span class="badge entrenado">✅ Entrenado</span>
+              } @else {
+                <span class="badge no-entrenado">⚠️ Sin modelo</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Columna derecha: Entrenamiento -->
+    <div class="panel-entrenamiento">
+      <h2>🎬 Entrenar Modelo</h2>
+      
+      @if (!senaSeleccionada) {
+        <div class="sin-seleccion">
+          <div class="icono">👈</div>
+          <p>Selecciona una seña de la lista para comenzar</p>
+        </div>
+      } @else {
+        <div class="seleccion-actual">
+          <h3>Seña: {{ senaSeleccionada.nombre }}</h3>
+          
+          <!-- Video preview -->
+          <div class="video-section">
+            @if (videoPreviewUrl) {
+              <video class="video-preview" [src]="videoPreviewUrl" controls></video>
+              <button class="btn-limpiar" (click)="limpiarVideo()">🗑️ Quitar video</button>
+            } @else {
+              <div class="upload-area" (click)="fileInput.click()">
+                <div class="upload-icon">📹</div>
+                <p>Haz clic para subir un video de referencia</p>
+                <p class="small">(Video mostrando la seña correctamente)</p>
+              </div>
+            }
+            <input #fileInput type="file" accept="video/*" style="display: none" (change)="onFileSelected($event)" />
+          </div>
+          
+          <!-- Botón entrenar -->
+          @if (videoFile) {
+            <button class="btn-entrenar" (click)="entrenarModelo()" [disabled]="cargando">
+              @if (cargando) {
+                <span>⏳ Entrenando... <div class="spinner-small"></div></span>
+              } @else {
+                <span>🚀 Entrenar Modelo</span>
+              }
+            </button>
+          }
+          
+          <!-- Info del entrenamiento -->
+          <div class="info-entrenamiento">
+            <h4>📌 ¿Qué va a pasar?</h4>
+            <ul>
+              <li>Se extraerán los keypoints del video (manos + pose)</li>
+              <li>Se generarán 500 variaciones aumentadas del video</li>
+              <li>Se entrenará una red neuronal LSTM por 50 épocas</li>
+              <li>Se guardará el modelo en <code>models/senas/sena_{{ senaSeleccionada.id }}_modelo.h5</code></li>
+              <li>El proceso puede tomar de 5 a 10 minutos</li>
+            </ul>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

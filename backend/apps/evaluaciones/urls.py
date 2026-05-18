@@ -11,4 +11,7 @@ router.register(r'entregas-evaluacion', EntregaEvaluacionViewSet, basename='entr
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('entregas/entregar/', EntregaEvaluacionViewSet.as_view({'post': 'entregar_practica'}), name='entregar_practica'),
+    path('entregas/<int:pk>/resultado/', EntregaEvaluacionViewSet.as_view({'get': 'obtener_resultado'}), name='obtener_resultado_entrega'),
+    path('evaluar-rapido/', EntregaEvaluacionViewSet.as_view({'post': 'evaluar_rapido'}), name='evaluar_rapido'),
 ]

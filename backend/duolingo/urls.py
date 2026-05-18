@@ -10,6 +10,7 @@ from .views import (
     EvaluarEjercicioView,
     CompletarLeccionView
 )
+from . import views_ia
 
 urlpatterns = [
     path('niveles/', NivelListView.as_view(), name='niveles'),
@@ -21,4 +22,5 @@ urlpatterns = [
     path('intentos/', IntentosEjercicioView.as_view(), name='intentos'),
     path('evaluar-ejercicio/', EvaluarEjercicioView.as_view(), name='evaluar-ejercicio'),
     path('completar-leccion/', CompletarLeccionView.as_view(), name='completar-leccion'),
+    path('evaluar-sena-ia/', views_ia.evaluar_sena_duolingo, name='evaluar_sena_ia'),
 ]

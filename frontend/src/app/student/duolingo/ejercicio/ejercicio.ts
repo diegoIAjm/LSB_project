@@ -1,10 +1,11 @@
+// src/app/student/duolingo/ejercicio/ejercicio.ts
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DuolingoService, Ejercicio, EvaluarRespuesta } from '../../../services/duolingo';
 import { AuthService } from '../../../services/auth';
 import { CameraService } from '../../../services/camera.service';
-import { Hands, Results, VERSION } from '@mediapipe/hands';
+import { Hands, Results } from '@mediapipe/hands';
 import { Camera } from '@mediapipe/camera_utils';
 
 @Component({
@@ -31,8 +32,19 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
   precisionTotal: number = 0;
   ejerciciosCompletados: number = 0;
   
+  // Variables para grabación
+  private mediaRecorder: MediaRecorder | null = null;
+  private recordedChunks: Blob[] = [];
+  grabando: boolean = false;
+  tiempoGrabacion: number = 0;
+  private timerInterval: any = null;
+  cuentaRegresiva: number = 0;
+  mostrandoCuentaRegresiva: boolean = false;
+  private countdownInterval: any = null;
+  
   private hands: Hands | null = null;
   private camera: any = null;
+  private canvasReady: boolean = false;
 
   constructor(
     private duolingoService: DuolingoService,
@@ -51,7 +63,11 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
   }
 
   ngAfterViewInit(): void {
-    this.initMediaPipe();
+    // Esperar a que el canvas esté listo
+    setTimeout(() => {
+      this.canvasReady = true;
+      this.initMediaPipe();
+    }, 500);
   }
 
   ngOnDestroy(): void {
@@ -61,14 +77,20 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
     if (this.hands) {
       this.hands.close();
     }
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+    }
     this.cameraService.stopCamera();
   }
 
   private initMediaPipe(): void {
+    if (!this.canvasReady) return;
+    
     this.hands = new Hands({
-      locateFile: (file) => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-      }
+      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
     });
     
     this.hands.setOptions({
@@ -84,9 +106,17 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
   }
 
   private onHandsResults(results: Results): void {
-    // Dibujar los puntos en el canvas
+    // Verificar que el canvas existe
+    if (!this.canvasElement || !this.canvasElement.nativeElement) return;
+    
     const canvasCtx = this.canvasElement.nativeElement.getContext('2d');
     if (!canvasCtx) return;
+    
+    // Asegurar que el canvas tiene el tamaño correcto
+    if (this.canvasElement.nativeElement.width === 0) {
+      this.canvasElement.nativeElement.width = this.videoElement?.nativeElement?.videoWidth || 640;
+      this.canvasElement.nativeElement.height = this.videoElement?.nativeElement?.videoHeight || 480;
+    }
     
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, this.canvasElement.nativeElement.width, this.canvasElement.nativeElement.height);
@@ -94,7 +124,6 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
     
     if (results.multiHandLandmarks) {
       for (const landmarks of results.multiHandLandmarks) {
-        // Dibujar puntos
         for (const landmark of landmarks) {
           const x = landmark.x * this.canvasElement.nativeElement.width;
           const y = landmark.y * this.canvasElement.nativeElement.height;
@@ -112,55 +141,190 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
     this.camaraActiva = true;
     this.cdr.detectChanges();
     
-    const video = this.videoElement.nativeElement;
-    const canvas = this.canvasElement.nativeElement;
-    
-    this.camera = new Camera(video, {
-      onFrame: async () => {
-        if (this.hands) {
-          await this.hands.send({ image: video });
-        }
-      },
-      width: 640,
-      height: 480
-    });
-    
-    this.camera.start();
+    // Esperar a que el DOM se actualice
+    setTimeout(() => {
+      const video = this.videoElement?.nativeElement;
+      if (!video) {
+        console.error('Video element no encontrado');
+        return;
+      }
+      
+      this.camera = new Camera(video, {
+        onFrame: async () => {
+          if (this.hands) {
+            await this.hands.send({ image: video });
+          }
+        },
+        width: 640,
+        height: 480
+      });
+      
+      this.camera.start();
+    }, 100);
   }
 
-  capturarYEvaluar(): void {
-    if (!this.ejercicioActual) return;
+  cerrarCamara(): void {
+    this.camaraActiva = false;
+    this.grabando = false;
+    this.mostrandoCuentaRegresiva = false;
+    this.cuentaRegresiva = 0;
     
-    this.evaluando = true;
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+      this.countdownInterval = null;
+    }
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+    if (this.camera) {
+      this.camera.stop();
+      this.camera = null;
+    }
+    this.cdr.detectChanges();
+  }
+
+  // Iniciar cuenta regresiva
+  iniciarCuentaRegresiva(): void {
+    this.mostrandoCuentaRegresiva = true;
+    this.cuentaRegresiva = 3;
     this.cdr.detectChanges();
     
-    // Capturar keypoints actuales (simplificado, usar resultados de MediaPipe)
-    const keypointsCapturados = { frames: [] };
-    
-    this.duolingoService.evaluarEjercicio(
-      this.estudianteId!,
-      this.ejercicioActual.id,
-      keypointsCapturados
-    ).subscribe({
-      next: (respuesta) => {
-        this.resultado = respuesta;
-        this.puntuacionTotal += respuesta.puntos_ganados;
-        this.ejerciciosCompletados++;
-        this.precisionTotal = (this.precisionTotal + respuesta.precision) / this.ejerciciosCompletados;
-        this.evaluando = false;
-        this.camaraActiva = false;
-        if (this.camera) {
-          this.camera.stop();
-        }
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error al evaluar:', err);
-        this.evaluando = false;
-        this.cdr.detectChanges();
+    this.countdownInterval = setInterval(() => {
+      this.cuentaRegresiva--;
+      this.cdr.detectChanges();
+      
+      if (this.cuentaRegresiva === 0) {
+        clearInterval(this.countdownInterval);
+        this.countdownInterval = null;
+        this.mostrandoCuentaRegresiva = false;
+        this.iniciarGrabacion();
       }
-    });
+    }, 1000);
   }
+
+  // Iniciar grabación
+  iniciarGrabacion(): void {
+    const video = this.videoElement?.nativeElement;
+    if (!video || !video.srcObject) {
+      alert('Error: No hay cámara disponible');
+      return;
+    }
+    
+    this.recordedChunks = [];
+    this.grabando = true;
+    this.tiempoGrabacion = 0;
+    
+    const stream = video.srcObject as MediaStream;
+    this.mediaRecorder = new MediaRecorder(stream);
+    
+    this.mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        this.recordedChunks.push(event.data);
+      }
+    };
+    
+    this.mediaRecorder.onstop = () => {
+      this.procesarVideoGrabado();
+    };
+    
+    this.mediaRecorder.start();
+    
+    // Timer para mostrar tiempo
+    this.timerInterval = setInterval(() => {
+      this.tiempoGrabacion++;
+      this.cdr.detectChanges();
+    }, 1000);
+    
+    // Detener después de 3 segundos
+    setTimeout(() => {
+      if (this.grabando && this.mediaRecorder) {
+        this.mediaRecorder.stop();
+        this.grabando = false;
+        if (this.timerInterval) {
+          clearInterval(this.timerInterval);
+          this.timerInterval = null;
+        }
+      }
+    }, 3000);
+    
+    this.cdr.detectChanges();
+  }
+
+  // Procesar video grabado
+  procesarVideoGrabado(): void {
+    if (this.recordedChunks.length === 0) {
+      alert('No se grabó ningún video. Intenta nuevamente.');
+      return;
+    }
+    
+    const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
+    const videoFile = new File([blob], `grabacion_${Date.now()}.webm`, { type: 'video/webm' });
+    
+    this.enviarAEvaluacion(videoFile);
+  }
+
+// En ejercicio.ts, modifica enviarAEvaluacion
+enviarAEvaluacion(videoFile: File): void {
+  this.evaluando = true;
+  this.cdr.detectChanges();
+  
+  const senaId = this.ejercicioActual?.sena;
+  if (!senaId) {
+    console.error('El ejercicio no tiene una seña asociada');
+    this.evaluando = false;
+    return;
+  }
+  
+  console.log('=== ENVIANDO A EVALUACIÓN ===');
+  console.log('Seña ID:', senaId);
+  console.log('Estudiante ID:', this.estudianteId);
+  console.log('Video file:', videoFile.name, 'Tamaño:', videoFile.size, 'bytes');
+  
+  // Enviar también el estudiante_id
+  this.duolingoService.evaluarSeñaConIA(senaId, videoFile, this.estudianteId!).subscribe({
+    next: (respuesta) => {
+      console.log('=== RESPUESTA IA ===');
+      console.log('Precisión:', respuesta.precision);
+      console.log('Color:', respuesta.color);
+      console.log('Puntos ganados:', respuesta.puntos_ganados);
+      console.log('Puntos totales:', respuesta.puntos_totales);
+      console.log('Feedback:', respuesta.feedback);
+      console.log('Seña detectada:', respuesta.sena_detectada);
+      console.log('Detalles:', respuesta.detalles);
+      console.log('===================');
+      
+      this.resultado = {
+        precision: respuesta.precision,
+        color: respuesta.color,
+        puntos_ganados: respuesta.puntos_ganados,
+        puntos_totales: respuesta.puntos_totales || 0,
+        feedback: {
+          mano: respuesta.detalles?.mano || 'medio',
+          movimiento: respuesta.detalles?.movimiento || 'medio',
+          posicion: 'medio'
+        }
+      };
+      
+      this.puntuacionTotal += respuesta.puntos_ganados;
+      this.ejerciciosCompletados++;
+      this.precisionTotal = (this.precisionTotal + respuesta.precision) / this.ejerciciosCompletados;
+      this.evaluando = false;
+      this.cerrarCamara();
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      console.error('=== ERROR EN EVALUACIÓN ===');
+      console.error('Error:', err);
+      console.error('Status:', err.status);
+      console.error('Mensaje:', err.message);
+      console.error('===========================');
+      this.evaluando = false;
+      this.cdr.detectChanges();
+      alert('Error al evaluar la seña. Intenta nuevamente.');
+    }
+  });
+}
 
   cargarEjercicios(): void {
     this.cargando = true;
@@ -179,36 +343,6 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
       error: (err) => {
         console.error('Error al cargar ejercicios:', err);
         this.cargando = false;
-        this.cdr.detectChanges();
-      }
-    });
-  }
-
-  simularEvaluacion(): void {
-    if (!this.ejercicioActual) return;
-    
-    this.evaluando = true;
-    this.cdr.detectChanges();
-    
-    const keypointsSimulados = { frames: [] };
-    
-    this.duolingoService.evaluarEjercicio(
-      this.estudianteId!, 
-      this.ejercicioActual.id, 
-      keypointsSimulados
-    ).subscribe({
-      next: (respuesta) => {
-        console.log('Respuesta evaluación:', respuesta);
-        this.resultado = respuesta;
-        this.puntuacionTotal += respuesta.puntos_ganados;
-        this.ejerciciosCompletados++;
-        this.precisionTotal = (this.precisionTotal + respuesta.precision) / this.ejerciciosCompletados;
-        this.evaluando = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error al evaluar:', err);
-        this.evaluando = false;
         this.cdr.detectChanges();
       }
     });
@@ -257,12 +391,4 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
       default: return '';
     }
   }
-
-  cerrarCamara(): void {
-  this.camaraActiva = false;
-  if (this.camera) {
-    this.camera.stop();
-    this.camera = null;
-  }
-}
 }

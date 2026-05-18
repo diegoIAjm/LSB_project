@@ -19,7 +19,7 @@ class Command(BaseCommand):
         num_hola = options['num_hola']
         num_silencio = options['num_silencio']
         
-        self.stdout.write(f'📊 Cargando keypoints de: {input_path}')
+        self.stdout.write(f' Cargando keypoints de: {input_path}')
         
         with open(input_path, 'r') as f:
             keypoints = json.load(f)
@@ -30,25 +30,25 @@ class Command(BaseCommand):
         all_samples = []
         
         # Generar muestras de HOLA (clase 1)
-        self.stdout.write(f'\n🟢 Generando HOLA (clase 1)...')
+        self.stdout.write(f'\n Generando HOLA (clase 1)...')
         for i in range(num_hola):
             if (i + 1) % 50 == 0:
                 self.stdout.write(f'   HOLA: {i+1}/{num_hola}', ending='\r')
             
             seq = self.generate_sequence(keypoints, is_hola=True)
-            seq.append(1)  # Etiqueta 1 al final
+            seq.append(1)
             all_samples.append(seq)
         
         self.stdout.write(f'\n   HOLA: {num_hola}/{num_hola}')
         
         # Generar muestras de SILENCIO (clase 0)
-        self.stdout.write(f'\n🔴 Generando SILENCIO (clase 0)...')
+        self.stdout.write(f'\n Generando SILENCIO (clase 0)...')
         for i in range(num_silencio):
             if (i + 1) % 50 == 0:
                 self.stdout.write(f'   SILENCIO: {i+1}/{num_silencio}', ending='\r')
             
             seq = self.generate_sequence(keypoints, is_hola=False)
-            seq.append(0)  # Etiqueta 0 al final
+            seq.append(0)
             all_samples.append(seq)
         
         self.stdout.write(f'\n   SILENCIO: {num_silencio}/{num_silencio}')
@@ -56,79 +56,72 @@ class Command(BaseCommand):
         # Mezclar
         random.shuffle(all_samples)
         
-        # Crear DataFrame con nombres de columnas
-        # La última columna es 'label', el resto son características
         num_features = len(all_samples[0]) - 1
         column_names = [f'f_{i}' for i in range(num_features)] + ['label']
         
         df = pd.DataFrame(all_samples, columns=column_names)
         df.to_csv(output_path, index=False)
         
-        self.stdout.write(self.style.SUCCESS(f'\n✅ Dataset balanceado guardado: {output_path}'))
+        self.stdout.write(self.style.SUCCESS(f'\n Dataset balanceado guardado: {output_path}'))
         self.stdout.write(f'   Total muestras: {len(df)}')
         self.stdout.write(f'   Características por muestra: {num_features}')
         self.stdout.write(f'   Clase 1 (HOLA): {(df["label"]==1).sum()}')
         self.stdout.write(f'   Clase 0 (SILENCIO): {(df["label"]==0).sum()}')
     
     def generate_sequence(self, keypoints, is_hola=True):
-        """Genera una secuencia de frames transformada"""
+        """Genera una secuencia de frames transformada - FORZANDO 225 características por frame"""
         seq = []
+        FRAME_FEATURES = 225  # 99 pose + 63 right + 63 left
         
         for frame in keypoints:
-            pose = np.array(frame.get('pose', [0.0] * 99)).reshape(-1, 3)
-            right = np.array(frame.get('right_hand', [0.0] * 63)).reshape(-1, 3)
-            left = np.array(frame.get('left_hand', [0.0] * 63)).reshape(-1, 3)
-
-            all_points = np.vstack([pose, right, left])
-            
-            if is_hola:
-                # HOLA: transformaciones suaves
-                all_points = self._transform(
-                    all_points,
-                    scale_range=(0.92, 1.08),
-                    rotation_range=0.15,
-                    translation_range=0.08,
-                    noise=0.04
-                )
+            # Obtener pose (99)
+            pose = frame.get('pose', [0.0] * 99)
+            if len(pose) < 99:
+                pose = pose + [0.0] * (99 - len(pose))
             else:
-                # SILENCIO: transformaciones más agresivas
-                transform_type = random.choice(['noise', 'scale', 'zero', 'random'])
-                
-                if transform_type == 'noise':
-                    # Añadir mucho ruido
-                    all_points = self._transform(
-                        all_points,
-                        scale_range=(1.0, 1.0),
-                        rotation_range=0,
-                        translation_range=0,
-                        noise=0.3
-                    )
-                elif transform_type == 'scale':
-                    # Escalar mucho
-                    all_points = self._transform(
-                        all_points,
-                        scale_range=(0.3, 1.7),
-                        rotation_range=0.3,
-                        translation_range=0.2,
-                        noise=0.15
-                    )
-                elif transform_type == 'zero':
-                    # Silencio total (todos ceros)
-                    all_points = np.zeros_like(all_points)
-                else:
-                    # Datos aleatorios
-                    all_points = np.random.normal(0, 0.5, all_points.shape)
-
-            pose_aug = all_points[:len(pose)].flatten().tolist()
-            right_aug = all_points[len(pose):len(pose) + len(right)].flatten().tolist()
-            left_aug = all_points[len(pose) + len(right):].flatten().tolist()
-
-            seq.extend(pose_aug)
-            seq.extend(right_aug)
-            seq.extend(left_aug)
+                pose = pose[:99]
+            
+            # Obtener right_hand (63)
+            right = frame.get('right_hand', [0.0] * 63)
+            if len(right) < 63:
+                right = right + [0.0] * (63 - len(right))
+            else:
+                right = right[:63]
+            
+            # Obtener left_hand (63)
+            left = frame.get('left_hand', [0.0] * 63)
+            if len(left) < 63:
+                left = left + [0.0] * (63 - len(left))
+            else:
+                left = left[:63]
+            
+            # Combinar
+            all_points = np.array(pose + right + left)
+            
+            # Transformar
+            if is_hola:
+                all_points = self._transform_simple(all_points)
+            else:
+                # Silencio: ruido
+                all_points = all_points + np.random.normal(0, 0.3, len(all_points))
+            
+            seq.extend(all_points.tolist())
+        
+        # Asegurar longitud exacta: 30 frames * 225 = 6750
+        target_length = 30 * FRAME_FEATURES
+        if len(seq) < target_length:
+            seq.extend([0.0] * (target_length - len(seq)))
+        elif len(seq) > target_length:
+            seq = seq[:target_length]
         
         return seq
-    
+
+    def _transform_simple(self, points):
+        """Transformación simple para aumentar datos"""
+        noise = np.random.normal(0, 0.05, len(points))
+        scale = random.uniform(0.9, 1.1)
+        return points * scale + noise
+
     def _transform(self, points, scale_range, rotation_range, translation_range, noise):
         """Aplica transformaciones coherentes 3D"""
         if points is None or len(points) == 0:
