@@ -50,10 +50,19 @@ class Command(BaseCommand):
             return
 
         try:
-            # Cargar modelo
+            # Cargar modelo y scaler
             model = load_model(modelo_path)
             scaler = joblib.load(scaler_path)
-            self.stdout.write('Modelo cargado correctamente')
+            
+            # Obtener dimensiones del modelo automáticamente
+            input_shape = model.input_shape
+            seq_length = input_shape[1]  # Por ejemplo: 30
+            n_features = input_shape[2]  # Debería ser 225
+            
+            self.stdout.write(f'Modelo cargado correctamente')
+            self.stdout.write(f'  Secuencia esperada: {seq_length} frames')
+            self.stdout.write(f'  Features por frame: {n_features}')
+            
         except Exception as e:
             self.stdout.write(self.style.ERROR(f'Error cargando modelo: {e}'))
             return
@@ -67,35 +76,77 @@ class Command(BaseCommand):
             self.stdout.write(json.dumps(resultado))
             return
 
-        # Parámetros
-        seq_length = 30
-        n_features = 225
-
-        # Asegurar longitud
-        if len(keypoints) < seq_length:
-            keypoints = keypoints + [keypoints[-1]] * (seq_length - len(keypoints))
-        else:
-            keypoints = keypoints[:seq_length]
-
-        # Normalizar
-        secuencia_norm = []
-        for frame in keypoints:
-            if len(frame) < n_features:
-                frame = frame + [0.0] * (n_features - len(frame))
-            else:
-                frame = frame[:n_features]
+        self.stdout.write(f'Frames extraídos: {len(keypoints)}')
+        self.stdout.write(f'Features por frame extraídos: {len(keypoints[0])}')
+        
+        # ===== VERIFICAR Y AJUSTAR DIMENSIONES =====
+        features_extraidos = len(keypoints[0])
+        
+        if features_extraidos != n_features:
+            self.stdout.write(self.style.WARNING(
+                f'Inconsistencia: Extractor da {features_extraidos} features, '
+                f'pero modelo espera {n_features} features'
+            ))
             
+            if features_extraidos < n_features:
+                # Rellenar con ceros
+                self.stdout.write(f'Rellenando con ceros a {n_features} features...')
+                keypoints = [frame + [0.0] * (n_features - len(frame)) for frame in keypoints]
+            else:
+                # Truncar
+                self.stdout.write(f'Truncando a {n_features} features...')
+                keypoints = [frame[:n_features] for frame in keypoints]
+        
+        # Asegurar longitud de secuencia
+        if len(keypoints) < seq_length:
+            # Repetir el último frame si la secuencia es muy corta
+            frames_faltantes = seq_length - len(keypoints)
+            keypoints = keypoints + [keypoints[-1]] * frames_faltantes
+            self.stdout.write(f'Secuencia extendida de {len(keypoints)-frames_faltantes} a {len(keypoints)} frames')
+        else:
+            # Tomar los primeros seq_length frames
+            keypoints = keypoints[:seq_length]
+            self.stdout.write(f'Usando primeros {seq_length} frames')
+
+        # Normalizar cada frame
+        secuencia_norm = []
+        frames_error = 0
+        
+        for i, frame in enumerate(keypoints):
             try:
+                # Asegurar que el frame tiene exactamente n_features
+                if len(frame) != n_features:
+                    if len(frame) < n_features:
+                        frame = frame + [0.0] * (n_features - len(frame))
+                    else:
+                        frame = frame[:n_features]
+                
                 normalized = scaler.transform([frame])[0]
                 secuencia_norm.append(normalized)
             except Exception as e:
-                self.stdout.write(f'Error normalizando frame: {e}')
-                secuencia_norm.append([0.0] * n_features)
-
-        # Predecir
+                frames_error += 1
+                # Usar ceros si falla la normalización
+                secuencia_norm.append(np.zeros(n_features))
+        
+        if frames_error > 0:
+            self.stdout.write(self.style.WARNING(f'Error normalizando {frames_error} frames, usando ceros'))
+        
+        # Preparar input para el modelo
         input_data = np.array(secuencia_norm).reshape(1, seq_length, n_features)
-        prediccion = model.predict(input_data, verbose=0)
-        precision = float(prediccion[0][0]) * 100
+        
+        # Predicción
+        try:
+            prediccion = model.predict(input_data, verbose=0)
+            precision = float(prediccion[0][0]) * 100
+            
+            self.stdout.write(f'Predicción cruda: {prediccion[0][0]:.4f}')
+            self.stdout.write(f'Precisión: {precision:.2f}%')
+            
+        except Exception as e:
+            self.stdout.write(self.style.ERROR(f'Error en predicción: {e}'))
+            resultado = {'precision': 0, 'nota': 0, 'feedback': f'Error en predicción: {str(e)}', 'sena_detectada': 'error'}
+            self.stdout.write(json.dumps(resultado))
+            return
 
         # Feedback
         if precision >= 70:
@@ -109,13 +160,15 @@ class Command(BaseCommand):
             'precision': round(precision, 2),
             'nota': round(precision / 20, 2),
             'feedback': feedback,
-            'sena_detectada': 'seña'
+            'sena_detectada': 'seña',
+            'frames_procesados': len(keypoints),
+            'features_por_frame': n_features
         }
 
         self.stdout.write(json.dumps(resultado))
 
     def _extraer_keypoints(self, video_path):
-        """Extrae keypoints del video"""
+        """Extrae keypoints del video - Siempre 225 features (99 pose + 63 right + 63 left)"""
         if not HAS_TASKS:
             print("MediaPipe no disponible")
             return []
@@ -164,15 +217,20 @@ class Command(BaseCommand):
             return []
         
         fps = cap.get(cv2.CAP_PROP_FPS)
+        if fps <= 0:
+            fps = 30
+        
         keypoints_frames = []
         timestamp_ms = 0
         frame_count = 0
+        max_frames = 60
         
-        while cap.isOpened() and frame_count < 60:  # Máximo 60 frames
+        while cap.isOpened() and frame_count < max_frames:
             ret, frame = cap.read()
             if not ret:
                 break
             
+            # Redimensionar para consistencia
             frame = cv2.resize(frame, (640, 480))
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame_rgb)
@@ -181,33 +239,34 @@ class Command(BaseCommand):
                 hand_results = hand_detector.detect_for_video(mp_image, timestamp_ms)
                 pose_results = pose_detector.detect_for_video(mp_image, timestamp_ms)
             except Exception as e:
-                print(f"Error detectando: {e}")
+                print(f"Error detectando frame {frame_count}: {e}")
                 hand_results = None
                 pose_results = None
             
+            # ===== EXTRACCIÓN CONSISTENTE: SIEMPRE 225 FEATURES =====
             features = []
             
-            # Pose (99)
-            if pose_results and pose_results.pose_landmarks:
+            # 1. POSE: 33 landmarks × 3 = 99 features
+            if pose_results and pose_results.pose_landmarks and len(pose_results.pose_landmarks) > 0:
                 for lm in pose_results.pose_landmarks[0]:
                     features.extend([lm.x, lm.y, lm.z])
             else:
-                features.extend([0.0] * 99)
+                features.extend([0.0] * 99)  # 33 puntos × 3 coordenadas
             
-            # Mano derecha (63)
+            # 2. MANO DERECHA: 21 landmarks × 3 = 63 features
             right_hand = [0.0] * 63
             if hand_results and hand_results.hand_landmarks:
                 for idx, hand_lm in enumerate(hand_results.hand_landmarks):
                     if idx < len(hand_results.handedness):
                         if hand_results.handedness[idx][0].category_name == 'Right':
                             for i, lm in enumerate(hand_lm):
-                                if i < 21:
+                                if i < 21:  # Solo 21 landmarks
                                     right_hand[i*3] = lm.x
                                     right_hand[i*3+1] = lm.y
                                     right_hand[i*3+2] = lm.z
             features.extend(right_hand)
             
-            # Mano izquierda (63)
+            # 3. MANO IZQUIERDA: 21 landmarks × 3 = 63 features
             left_hand = [0.0] * 63
             if hand_results and hand_results.hand_landmarks:
                 for idx, hand_lm in enumerate(hand_results.hand_landmarks):
@@ -220,6 +279,14 @@ class Command(BaseCommand):
                                     left_hand[i*3+2] = lm.z
             features.extend(left_hand)
             
+            # Verificar dimensión (debe ser 99+63+63=225)
+            if len(features) != 225:
+                print(f"ADVERTENCIA: Frame {frame_count} tiene {len(features)} features (se esperaban 225)")
+                if len(features) < 225:
+                    features.extend([0.0] * (225 - len(features)))
+                else:
+                    features = features[:225]
+            
             keypoints_frames.append(features)
             timestamp_ms += int(1000 / fps)
             frame_count += 1
@@ -231,5 +298,5 @@ class Command(BaseCommand):
         except:
             pass
         
-        print(f"Extraídos {len(keypoints_frames)} frames")
+        print(f"Extraídos {len(keypoints_frames)} frames con {len(keypoints_frames[0]) if keypoints_frames else 0} features cada uno")
         return keypoints_frames

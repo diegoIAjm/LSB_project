@@ -8,50 +8,59 @@ class Command(BaseCommand):
     help = 'Genera dataset aumentado a partir de keypoints (con silencio artificial)'
 
     def add_arguments(self, parser):
-        parser.add_argument('--input', type=str, required=True, help='Archivo JSON con keypoints de HOLA')
+        parser.add_argument('--input', type=str, required=True, help='Archivo JSON con keypoints de la seña')
         parser.add_argument('--output', type=str, required=True, help='Archivo CSV de salida')
-        parser.add_argument('--num-hola', type=int, default=250, help='Número de variaciones para HOLA')
-        parser.add_argument('--num-silencio', type=int, default=250, help='Número de variaciones para SILENCIO')
+        parser.add_argument('--num-sena', type=int, default=200, help='Numero de variaciones para la seña')
+        parser.add_argument('--num-silencio', type=int, default=200, help='Numero de variaciones para SILENCIO')
+        parser.add_argument('--seq-length', type=int, default=30, help='Longitud de secuencia (frames por muestra)')
 
     def handle(self, *args, **options):
         input_path = options['input']
         output_path = options['output']
-        num_hola = options['num_hola']
+        num_sena = options['num_sena']
         num_silencio = options['num_silencio']
+        seq_length = options['seq_length']
         
-        self.stdout.write(f' Cargando keypoints de: {input_path}')
+        self.stdout.write(f'Cargando keypoints de: {input_path}')
         
         with open(input_path, 'r') as f:
             keypoints = json.load(f)
         
-        self.stdout.write(f'   Frames: {len(keypoints)}')
-        self.stdout.write(f'   Generando {num_hola} muestras de HOLA y {num_silencio} de SILENCIO...')
+        # Constantes
+        FRAME_FEATURES = 225  # 99 pose + 63 right + 63 left
+        TARGET_FEATURES = seq_length * FRAME_FEATURES
+        
+        self.stdout.write(f'   Frames originales: {len(keypoints)}')
+        self.stdout.write(f'   Features por frame: {FRAME_FEATURES}')
+        self.stdout.write(f'   Longitud de secuencia: {seq_length}')
+        self.stdout.write(f'   Features por muestra: {TARGET_FEATURES}')
+        self.stdout.write(f'   Generando {num_sena} muestras de la seña y {num_silencio} de silencio...')
         
         all_samples = []
         
-        # Generar muestras de HOLA (clase 1)
-        self.stdout.write(f'\n Generando HOLA (clase 1)...')
-        for i in range(num_hola):
+        # Generar muestras de la SEÑA (clase 1)
+        self.stdout.write(f'\nGenerando muestras de la seña (clase 1)...')
+        for i in range(num_sena):
             if (i + 1) % 50 == 0:
-                self.stdout.write(f'   HOLA: {i+1}/{num_hola}', ending='\r')
+                self.stdout.write(f'   Seña: {i+1}/{num_sena}', ending='\r')
             
-            seq = self.generate_sequence(keypoints, is_hola=True)
+            seq = self.generate_sequence(keypoints, is_sena=True, seq_length=seq_length, frame_features=FRAME_FEATURES)
             seq.append(1)
             all_samples.append(seq)
         
-        self.stdout.write(f'\n   HOLA: {num_hola}/{num_hola}')
+        self.stdout.write(f'\n   Seña: {num_sena}/{num_sena}')
         
         # Generar muestras de SILENCIO (clase 0)
-        self.stdout.write(f'\n Generando SILENCIO (clase 0)...')
+        self.stdout.write(f'\nGenerando muestras de silencio (clase 0)...')
         for i in range(num_silencio):
             if (i + 1) % 50 == 0:
-                self.stdout.write(f'   SILENCIO: {i+1}/{num_silencio}', ending='\r')
+                self.stdout.write(f'   Silencio: {i+1}/{num_silencio}', ending='\r')
             
-            seq = self.generate_sequence(keypoints, is_hola=False)
+            seq = self.generate_sequence(keypoints, is_sena=False, seq_length=seq_length, frame_features=FRAME_FEATURES)
             seq.append(0)
             all_samples.append(seq)
         
-        self.stdout.write(f'\n   SILENCIO: {num_silencio}/{num_silencio}')
+        self.stdout.write(f'\n   Silencio: {num_silencio}/{num_silencio}')
         
         # Mezclar
         random.shuffle(all_samples)
@@ -62,100 +71,57 @@ class Command(BaseCommand):
         df = pd.DataFrame(all_samples, columns=column_names)
         df.to_csv(output_path, index=False)
         
-        self.stdout.write(self.style.SUCCESS(f'\n Dataset balanceado guardado: {output_path}'))
+        self.stdout.write(self.style.SUCCESS(f'\nDataset guardado: {output_path}'))
         self.stdout.write(f'   Total muestras: {len(df)}')
-        self.stdout.write(f'   Características por muestra: {num_features}')
-        self.stdout.write(f'   Clase 1 (HOLA): {(df["label"]==1).sum()}')
-        self.stdout.write(f'   Clase 0 (SILENCIO): {(df["label"]==0).sum()}')
+        self.stdout.write(f'   Caracteristicas por muestra: {num_features}')
+        self.stdout.write(f'   Clase 1 (seña): {(df["label"]==1).sum()}')
+        self.stdout.write(f'   Clase 0 (silencio): {(df["label"]==0).sum()}')
     
-    def generate_sequence(self, keypoints, is_hola=True):
-        """Genera una secuencia de frames transformada - FORZANDO 225 características por frame"""
+    def generate_sequence(self, keypoints, is_sena=True, seq_length=30, frame_features=225):
+        """Genera una secuencia de frames transformada"""
         seq = []
-        FRAME_FEATURES = 225  # 99 pose + 63 right + 63 left
         
-        for frame in keypoints:
-            # Obtener pose (99)
-            pose = frame.get('pose', [0.0] * 99)
-            if len(pose) < 99:
-                pose = pose + [0.0] * (99 - len(pose))
-            else:
-                pose = pose[:99]
+        # Tomar los primeros seq_length frames o repetir si hay menos
+        frames_available = len(keypoints)
+        
+        for frame_idx in range(seq_length):
+            # Ciclar frames si no hay suficientes
+            source_idx = frame_idx % frames_available
+            frame = keypoints[source_idx]
             
-            # Obtener right_hand (63)
-            right = frame.get('right_hand', [0.0] * 63)
-            if len(right) < 63:
-                right = right + [0.0] * (63 - len(right))
+            # Obtener features del frame (priorizar campo 'features')
+            if 'features' in frame:
+                all_points = np.array(frame['features'])
             else:
-                right = right[:63]
+                # Fallback para compatibilidad
+                pose = frame.get('pose', [0.0] * 99)
+                right = frame.get('right_hand', [0.0] * 63)
+                left = frame.get('left_hand', [0.0] * 63)
+                all_points = np.array(pose + right + left)
             
-            # Obtener left_hand (63)
-            left = frame.get('left_hand', [0.0] * 63)
-            if len(left) < 63:
-                left = left + [0.0] * (63 - len(left))
+            # Asegurar dimension correcta
+            if len(all_points) < frame_features:
+                all_points = np.pad(all_points, (0, frame_features - len(all_points)))
+            elif len(all_points) > frame_features:
+                all_points = all_points[:frame_features]
+            
+            # Aplicar transformaciones
+            if is_sena:
+                # Para la seña: pequeñas variaciones
+                noise = np.random.normal(0, 0.05, frame_features)
+                scale = random.uniform(0.95, 1.05)
+                all_points = all_points * scale + noise
             else:
-                left = left[:63]
-            
-            # Combinar
-            all_points = np.array(pose + right + left)
-            
-            # Transformar
-            if is_hola:
-                all_points = self._transform_simple(all_points)
-            else:
-                # Silencio: ruido
-                all_points = all_points + np.random.normal(0, 0.3, len(all_points))
+                # Para silencio: ruido fuerte (movimiento aleatorio)
+                all_points = all_points + np.random.normal(0, 0.3, frame_features)
             
             seq.extend(all_points.tolist())
         
-        # Asegurar longitud exacta: 30 frames * 225 = 6750
-        target_length = 30 * FRAME_FEATURES
+        # Asegurar longitud exacta
+        target_length = seq_length * frame_features
         if len(seq) < target_length:
             seq.extend([0.0] * (target_length - len(seq)))
         elif len(seq) > target_length:
             seq = seq[:target_length]
         
         return seq
-
-    def _transform_simple(self, points):
-        """Transformación simple para aumentar datos"""
-        noise = np.random.normal(0, 0.05, len(points))
-        scale = random.uniform(0.9, 1.1)
-        return points * scale + noise
-
-    def _transform(self, points, scale_range, rotation_range, translation_range, noise):
-        """Aplica transformaciones coherentes 3D"""
-        if points is None or len(points) == 0:
-            return points
-
-        center = np.mean(points, axis=0)
-        centered = points - center
-        
-        scale = random.uniform(*scale_range)
-        scaled = centered * scale
-        
-        rotated = self._rotate_3d(scaled, rotation_range)
-        
-        translation = np.random.uniform(-translation_range, translation_range, 3)
-        transformed = rotated + center + translation
-        
-        noise_val = np.random.normal(0, noise, transformed.shape)
-        return transformed + noise_val
-
-    def _rotate_3d(self, points, angle_range):
-        angles = np.random.uniform(-angle_range, angle_range, size=3)
-        Rx = np.array([
-            [1, 0, 0],
-            [0, np.cos(angles[0]), -np.sin(angles[0])],
-            [0, np.sin(angles[0]), np.cos(angles[0])]
-        ])
-        Ry = np.array([
-            [np.cos(angles[1]), 0, np.sin(angles[1])],
-            [0, 1, 0],
-            [-np.sin(angles[1]), 0, np.cos(angles[1])]
-        ])
-        Rz = np.array([
-            [np.cos(angles[2]), -np.sin(angles[2]), 0],
-            [np.sin(angles[2]), np.cos(angles[2]), 0],
-            [0, 0, 1]
-        ])
-        return points.dot(Rx.T).dot(Ry.T).dot(Rz.T)

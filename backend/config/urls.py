@@ -28,6 +28,7 @@ urlpatterns = [
     path('api/', include('apps.evaluaciones.urls')),
     path('api/ia-admin/', include('apps.ia_admin.urls')),
     path('api/senas/', include('apps.senas.urls')), 
+    path('api/progreso/', include('apps.progreso.urls')),
 ]
 
 if settings.DEBUG:

@@ -84,6 +84,10 @@ export const routes: Routes = [
       loadComponent: () => import('./student/dashboard/dashboard').then(m => m.StudentDashboard)
     },
     {
+      path: 'progreso',
+      loadComponent: () => import('./student/progreso/progreso').then(m => m.ProgresoComponent)
+    },
+    {
       path: 'diccionario',
       loadComponent: () => import('./student/diccionario/diccionario').then(m => m.DiccionarioComponent)
     },

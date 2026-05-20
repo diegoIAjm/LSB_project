@@ -493,3 +493,46 @@
   margin-top: 20px;
   flex-wrap: wrap;
 }
+
+/* Botones de resultado */
+.acciones-resultado {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.btn-repetir {
+  background: #FF9800;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-repetir:hover {
+  background: #f57c00;
+  transform: scale(1.02);
+}
+
+.btn-siguiente {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-siguiente:hover {
+  background: #43a047;
+  transform: scale(1.02);
+}

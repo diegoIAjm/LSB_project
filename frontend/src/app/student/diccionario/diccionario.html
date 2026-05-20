@@ -50,11 +50,26 @@
         <div class="palabra-icon">📖</div>
         <div class="palabra-termino">{{ palabra.nombre }}</div>
         <div class="palabra-categoria">{{ getNombreCategoria(palabra.categoria_id) }}</div>
+        <!-- Indicador visual de que tiene modelo entrenado -->
+        <div class="modelo-status" *ngIf="palabra.modelo_ruta">
+          <span class="entrenado">✅</span>
+        </div>
       </div>
       
       <div *ngIf="palabrasFiltradas.length === 0" class="sin-resultados">
         <p>No se encontraron palabras</p>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Modal de seña no disponible -->
+<div class="modal-overlay" *ngIf="mostrarModalNoDisponible" (click)="cerrarModalNoDisponible()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-icon">⚠️</div>
+    <h3>Seña no disponible</h3>
+    <p>La seña <strong>{{ senaNoDisponible }}</strong> aún no tiene un modelo entrenado.</p>
+    <p class="modal-mensaje">Estamos trabajando para agregar esta seña pronto.</p>
+    <button class="btn-cerrar" (click)="cerrarModalNoDisponible()">Entendido</button>
   </div>
 </div>

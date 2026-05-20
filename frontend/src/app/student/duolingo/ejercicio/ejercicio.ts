@@ -391,4 +391,23 @@ enviarAEvaluacion(videoFile: File): void {
       default: return '';
     }
   }
+
+  // src/app/student/duolingo/ejercicio/ejercicio.ts
+
+// Añade este método
+repetirEjercicio(): void {
+  // Limpiar resultado actual
+  this.resultado = null;
+  // Cerrar cámara si está abierta
+  this.cerrarCamara();
+  // Reiniciar estado de grabación
+  this.grabando = false;
+  this.mostrandoCuentaRegresiva = false;
+  this.cuentaRegresiva = 0;
+  this.tiempoGrabacion = 0;
+  this.evaluando = false;
+  // Forzar detección de cambios
+  this.cdr.detectChanges();
+}
+
 }

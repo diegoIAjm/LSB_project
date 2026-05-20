@@ -5,8 +5,21 @@
     <p>Entrena modelos para que la IA reconozca las señas correctamente</p>
   </div>
 
+  <!-- Card de éxito (Seña aprendida) -->
+  @if (mostrarCardExito) {
+    <div class="card-exito">
+      <div class="card-exito-icon">🎉</div>
+      <div class="card-exito-content">
+        <h3>¡Seña Aprendida!</h3>
+        <p>El modelo para la seña <strong>{{ senaEntrenadaNombre }}</strong> ha sido entrenado correctamente.</p>
+        <p class="card-exito-sub">Ya puedes usar esta seña en el diccionario y en los ejercicios.</p>
+      </div>
+      <button class="card-exito-cerrar" (click)="cerrarCardExito()">✖</button>
+    </div>
+  }
+
   <!-- Mensaje de estado -->
-  @if (mensaje) {
+  @if (mensaje && !mostrarCardExito) {
     <div class="mensaje" [class.exito]="mensaje.tipo === 'exito'" 
                          [class.error]="mensaje.tipo === 'error'"
                          [class.info]="mensaje.tipo === 'info'">
@@ -30,6 +43,7 @@
         @for (sena of senas; track sena.id) {
           <div class="sena-card" 
                [class.seleccionada]="senaSeleccionada?.id === sena.id"
+               [class.recien-entrenada]="sena.modelo_ruta && sena.nombre === senaEntrenadaNombre"
                (click)="seleccionarSena(sena)">
             <div class="sena-info">
               <h3>{{ sena.nombre }}</h3>
@@ -42,6 +56,9 @@
                 <span class="badge no-entrenado">⚠️ Sin modelo</span>
               }
             </div>
+            @if (sena.modelo_ruta && sena.nombre === senaEntrenadaNombre) {
+              <div class="recien-entrenada-badge">✨ Nueva</div>
+            }
           </div>
         }
       </div>

@@ -1,6 +1,7 @@
 import cv2
 import json
 import os
+import numpy as np
 from django.core.management.base import BaseCommand
 
 try:
@@ -11,6 +12,7 @@ try:
 except Exception as e:
     HAS_TASKS = False
     mp = None
+    print(f"Error importing MediaPipe: {e}")
 
 class Command(BaseCommand):
     help = 'Extrae keypoints de un video (manos + pose)'
@@ -39,6 +41,7 @@ class Command(BaseCommand):
         self.stdout.write(f'   Umbral de confianza: {confianza}')
         self.stdout.write(f'   Factor de redimensionamiento: {resize_factor}')
         self.stdout.write(f'   Detectar pose: {"Sí" if detectar_pose else "No"}')
+        self.stdout.write(f'   Features por frame: 225 (99 pose + 63 mano derecha + 63 mano izquierda)')
 
         if not os.path.exists(video_path):
             self.stdout.write(self.style.ERROR(f'Video no encontrado: {video_path}'))
@@ -152,8 +155,10 @@ class Command(BaseCommand):
             
             timestamp_ms += int(1000 / fps)
 
-            # Inicializar arrays
+            # ===== INICIALIZAR ARRAYS CON DIMENSIONES CORRECTAS =====
+            # 33 landmarks de pose × 3 coordenadas = 99 features
             pose_landmarks = [0.0] * 99
+            # 21 landmarks de mano × 3 coordenadas = 63 features
             right_hand = [0.0] * 63
             left_hand = [0.0] * 63
 
@@ -174,23 +179,19 @@ class Command(BaseCommand):
                     for lm in hand_landmarks:
                         points.extend([lm.x, lm.y, lm.z])
                     
-                    # Verificar que tenemos 63 puntos
+                    # Verificar que tenemos al menos 63 puntos
                     if len(points) >= 63:
-                        points = points[:63]
+                        points = points[:63]  # Tomar solo los primeros 63
                         
                         # Determinar si es derecha o izquierda
-                        # Método 1: Usar handedness si está disponible
                         handedness = None
                         if hand_results.handedness and hand_idx < len(hand_results.handedness) and len(hand_results.handedness[hand_idx]) > 0:
                             handedness = hand_results.handedness[hand_idx][0].category_name
                         
-                        # Método 2: Por posición X (si handedness no funciona)
+                        # Método alternativo: por posición X
                         if handedness is None:
                             wrist_x = points[0]
-                            if wrist_x > 0.5:
-                                handedness = 'Right'
-                            else:
-                                handedness = 'Left'
+                            handedness = 'Right' if wrist_x > 0.5 else 'Left'
                         
                         # Asignar a la mano correspondiente
                         if handedness == 'Right':
@@ -256,6 +257,20 @@ class Command(BaseCommand):
                             x2, y2 = int(lm2.x * new_width), int(lm2.y * new_height)
                             cv2.line(frame_annotated, (x1, y1), (x2, y2), (255, 0, 0), 3)
 
+            # ===== CONCATENAR FEATURES =====
+            # Orden: POSE (99) + RIGHT_HAND (63) + LEFT_HAND (63) = TOTAL 225
+            features = pose_landmarks + right_hand + left_hand
+            
+            # VALIDACIÓN: Asegurar que siempre sean 225 características
+            if len(features) != 225:
+                self.stdout.write(self.style.WARNING(
+                    f'Frame {processed_frames}: {len(features)} features (se esperaban 225) - Corrigiendo...'
+                ))
+                if len(features) < 225:
+                    features.extend([0.0] * (225 - len(features)))
+                else:
+                    features = features[:225]
+
             # Guardar frame de debug
             if debug_video:
                 if frame_annotated is not None:
@@ -267,6 +282,7 @@ class Command(BaseCommand):
             if not solo_detectados or deteccion_frame:
                 keypoints.append({
                     'frame': processed_frames,
+                    'features': features,  # ← NUEVO: Lista plana de 225 características
                     'pose': pose_landmarks,
                     'right_hand': right_hand,
                     'left_hand': left_hand,
@@ -304,6 +320,13 @@ class Command(BaseCommand):
         self.stdout.write(f'   Frames con mano izquierda: {frames_con_izquierda}/{processed_frames}')
         if detectar_pose:
             self.stdout.write(f'   Frames con pose: {frames_con_pose}/{processed_frames}')
+        
+        # Verificar que todos los frames tengan 225 features
+        features_valid = all(len(f.get('features', [])) == 225 for f in keypoints)
+        if features_valid:
+            self.stdout.write(self.style.SUCCESS(f'   [OK] Todos los frames tienen 225 features'))
+        else:
+            self.stdout.write(self.style.WARNING(f'   [WARN] Algunos frames no tienen 225 features'))
 
         # Guardar JSON
         os.makedirs(os.path.dirname(output_path), exist_ok=True)

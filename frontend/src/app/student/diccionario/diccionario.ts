@@ -25,6 +25,8 @@ export class DiccionarioComponent implements OnInit, AfterViewInit, OnDestroy {
   
   terminoBusqueda = '';
   categoriaSeleccionada = 0;
+  mostrarModalNoDisponible = false;
+  senaNoDisponible= '';
   
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
@@ -216,6 +218,12 @@ export class DiccionarioComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // ========== ANIMACIÓN CON IA ==========
   seleccionarPalabra(palabra: Sena): void {
+
+    if (!palabra.modelo_ruta) {
+    this.senaNoDisponible = palabra.nombre;
+    this.mostrarModalNoDisponible = true;
+    return;
+  }
     this.senaActual = palabra.nombre;
     this.cargarKeypointsDeSena(palabra.id);
     if (this.controls) {
@@ -223,6 +231,11 @@ export class DiccionarioComponent implements OnInit, AfterViewInit, OnDestroy {
       setTimeout(() => { if (this.controls) this.controls.autoRotate = true; }, 3000);
     }
   }
+
+  cerrarModalNoDisponible(): void {
+  this.mostrarModalNoDisponible = false;
+  this.senaNoDisponible = '';
+}
 
   cargarKeypointsDeSena(senaId: number): void {
     console.log(`🎬 Obteniendo keypoints de IA para seña ID: ${senaId}`);

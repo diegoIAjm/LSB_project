@@ -1,0 +1,9 @@
+{
+  "seq_length": 30,
+  "n_features": 225,
+  "nombre_sena": "E",
+  "num_muestras_sena": 200,
+  "num_muestras_silencio": 200,
+  "accuracy": 0.9906250238418579,
+  "val_accuracy": 1.0
+}

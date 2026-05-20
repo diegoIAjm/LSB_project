@@ -252,16 +252,122 @@
 }
 
 .spinner-small {
-  display: inline-block;
   width: 16px;
   height: 16px;
-  border: 2px solid white;
-  border-top-color: transparent;
+  border: 2px solid #e0e0e0;
+  border-top-color: #4CAF50;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-left: 8px;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Recarga silenciosa */
+.recargando {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px;
+  font-size: 12px;
+  color: #666;
+  background: #f5f5f5;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+/* Card de éxito */
+.card-exito {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border-left: 4px solid #4CAF50;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  animation: slideDown 0.5s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-exito-icon {
+  font-size: 40px;
+}
+
+.card-exito-content {
+  flex: 1;
+}
+
+.card-exito-content h3 {
+  margin: 0 0 4px 0;
+  color: #2e7d32;
+  font-size: 18px;
+}
+
+.card-exito-content p {
+  margin: 0;
+  color: #1b5e20;
+  font-size: 14px;
+}
+
+.card-exito-sub {
+  font-size: 12px !important;
+  color: #4caf50 !important;
+  margin-top: 4px !important;
+}
+
+.card-exito-cerrar {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #2e7d32;
+  padding: 4px 8px;
+}
+
+.card-exito-cerrar:hover {
+  background: rgba(0,0,0,0.05);
+  border-radius: 50%;
+}
+
+/* Badge de recién entrenada */
+.recien-entrenada-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #4CAF50;
+  color: white;
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-weight: bold;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.sena-card {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.sena-card.recien-entrenada {
+  background: linear-gradient(135deg, #f1f8e9, #e8f5e9);
+  border-color: #4CAF50;
 }

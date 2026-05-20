@@ -14,6 +14,7 @@ export interface User {
   rol: string;
   rol_id: number;
   estado: string;
+  estudiante_id?: number;
 }
 
 @Injectable({

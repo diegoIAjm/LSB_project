@@ -74,45 +74,51 @@
     </div>
   </div>
 
-  <!-- Resultado -->
-  <div *ngIf="resultado" class="resultado-card" [class]="getColorClass(resultado.color)">
-    <div class="resultado-icon">
-      <span *ngIf="resultado.color === 'verde'">🎉</span>
-      <span *ngIf="resultado.color === 'amarillo'">👍</span>
-      <span *ngIf="resultado.color === 'rojo'">💪</span>
-    </div>
-    
-    <h2 *ngIf="resultado.color === 'verde'">¡Excelente!</h2>
-    <h2 *ngIf="resultado.color === 'amarillo'">¡Buen intento!</h2>
-    <h2 *ngIf="resultado.color === 'rojo'">¡Sigue practicando!</h2>
-    
-    <div class="precision">
-      <span class="precision-valor">{{ resultado.precision }}%</span>
-      <span class="precision-label">Precisión</span>
-    </div>
-    
-    <div class="puntos">
-      <span>⭐ +{{ resultado.puntos_ganados }} puntos</span>
-    </div>
+<!-- Resultado -->
+<div *ngIf="resultado" class="resultado-card" [class]="getColorClass(resultado.color)">
+  <div class="resultado-icon">
+    <span *ngIf="resultado.color === 'verde'">🎉</span>
+    <span *ngIf="resultado.color === 'amarillo'">👍</span>
+    <span *ngIf="resultado.color === 'rojo'">💪</span>
+  </div>
+  
+  <h2 *ngIf="resultado.color === 'verde'">¡Excelente!</h2>
+  <h2 *ngIf="resultado.color === 'amarillo'">¡Buen intento!</h2>
+  <h2 *ngIf="resultado.color === 'rojo'">¡Sigue practicando!</h2>
+  
+  <div class="precision">
+    <span class="precision-valor">{{ resultado.precision }}%</span>
+    <span class="precision-label">Precisión</span>
+  </div>
+  
+  <div class="puntos">
+    <span>⭐ +{{ resultado.puntos_ganados }} puntos</span>
+  </div>
 
-    <div class="feedback" *ngIf="resultado.feedback">
-      <h3>Detalles:</h3>
-      <div class="feedback-items">
-        <div class="feedback-item" [class.verde]="resultado.feedback.mano === 'verde'"
-                                   [class.amarillo]="resultado.feedback.mano === 'amarillo'"
-                                   [class.rojo]="resultado.feedback.mano === 'rojo'">
-          <span>✋ Posición de mano</span>
-        </div>
-        <div class="feedback-item" [class.verde]="resultado.feedback.movimiento === 'verde'"
-                                   [class.amarillo]="resultado.feedback.movimiento === 'amarillo'"
-                                   [class.rojo]="resultado.feedback.movimiento === 'rojo'">
-          <span>🔄 Movimiento</span>
-        </div>
+  <div class="feedback" *ngIf="resultado.feedback">
+    <h3>Detalles:</h3>
+    <div class="feedback-items">
+      <div class="feedback-item" [class.verde]="resultado.feedback.mano === 'verde'"
+                                 [class.amarillo]="resultado.feedback.mano === 'amarillo'"
+                                 [class.rojo]="resultado.feedback.mano === 'rojo'">
+        <span>✋ Posición de mano</span>
+      </div>
+      <div class="feedback-item" [class.verde]="resultado.feedback.movimiento === 'verde'"
+                                 [class.amarillo]="resultado.feedback.movimiento === 'amarillo'"
+                                 [class.rojo]="resultado.feedback.movimiento === 'rojo'">
+        <span>🔄 Movimiento</span>
       </div>
     </div>
+  </div>
 
+  <!-- Botones de acción -->
+  <div class="acciones-resultado">
+    <button class="btn-repetir" (click)="repetirEjercicio()">
+      🔄 Intentar de nuevo
+    </button>
     <button class="btn-siguiente" (click)="siguienteEjercicio()">
       {{ indiceActual + 1 < ejercicios.length ? 'Siguiente Ejercicio →' : 'Completar Lección 🎉' }}
     </button>
   </div>
+</div>
 </div>
