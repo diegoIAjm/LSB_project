@@ -4,7 +4,7 @@
   padding: 20px;
 }
 
-/* Header más compacto */
+/* Header */
 .header {
   display: flex;
   justify-content: space-between;
@@ -56,12 +56,95 @@
   transition: width 0.3s;
 }
 
-/* Área de cámara - MÁS GRANDE */
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 60px;
+  color: white;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #58cc71;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 15px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================ */
+/* INSTRUCCIÓN INICIAL (sin búho) */
+/* ============================================ */
+.instruccion-inicial {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.instruccion-contenido {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 32px;
+  padding: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 500px;
+  width: 100%;
+}
+
+.mano-icono {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.instruccion-contenido h2 {
+  color: #94a3b8;
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.palabra-sena {
+  font-size: 48px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  background: linear-gradient(135deg, #58cc71, #3a9b4e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.btn-iniciar {
+  background: linear-gradient(135deg, #58cc71, #3a9b4e);
+  color: white;
+  border: none;
+  padding: 12px 35px;
+  border-radius: 40px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-iniciar:hover {
+  transform: scale(1.02);
+  box-shadow: 0 5px 20px rgba(88, 204, 113, 0.4);
+}
+
+/* ============================================ */
+/* CÁMARA */
+/* ============================================ */
 .camera-container {
   background: #0a0a1a;
   border-radius: 24px;
   padding: 20px;
   margin-top: 20px;
+  position: relative;
 }
 
 .video-wrapper {
@@ -89,280 +172,23 @@
   width: 100%;
   height: 100%;
   transform: scaleX(-1);
-}
-
-.instruccion {
-  text-align: center;
-  margin: 15px 0;
-  color: #94a3b8;
-  font-size: 13px;
-}
-
-/* Botones de cámara */
-.acciones-camara {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-  margin-top: 15px;
-}
-
-.btn-capturar {
-  background: linear-gradient(135deg, #58cc71, #3a9b4e);
-  color: white;
-  border: none;
-  padding: 10px 28px;
-  border-radius: 40px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.btn-capturar:hover:not(:disabled) {
-  transform: scale(1.02);
-  box-shadow: 0 5px 20px rgba(88, 204, 113, 0.4);
-}
-
-.btn-cerrar-camara {
-  background: rgba(239, 68, 68, 0.2);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
-  padding: 10px 28px;
-  border-radius: 40px;
-  cursor: pointer;
-  font-size: 15px;
-  transition: all 0.3s;
-}
-
-.btn-cerrar-camara:hover {
-  background: rgba(239, 68, 68, 0.4);
-}
-
-/* Ejercicio Card - más compacta */
-.ejercicio-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 32px;
-  padding: 30px;
-  text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  max-width: 500px;
-  margin: 30px auto;
-}
-
-.avatar-3d {
-  margin-bottom: 20px;
-}
-
-.avatar-placeholder {
-  width: 100px;
-  height: 100px;
-  background: linear-gradient(135deg, #58cc71, #3a9b4e);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 12px;
-  font-size: 48px;
-  box-shadow: 0 8px 20px rgba(88, 204, 113, 0.2);
-}
-
-.avatar-text {
-  color: #94a3b8;
-  font-size: 13px;
-}
-
-.pregunta h2 {
-  font-size: 24px;
-  color: white;
-  margin-bottom: 25px;
-}
-
-.btn-camera {
-  background: linear-gradient(135deg, #58cc71, #3a9b4e);
-  color: white;
-  border: none;
-  padding: 12px 35px;
-  border-radius: 40px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.btn-camera:hover:not(:disabled) {
-  transform: scale(1.02);
-  box-shadow: 0 5px 20px rgba(88, 204, 113, 0.4);
-}
-
-/* Resultado Card */
-.resultado-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 32px;
-  padding: 30px;
-  text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  max-width: 500px;
-  margin: 30px auto;
-}
-
-.resultado-card.color-verde {
-  border-color: #58cc71;
-  background: rgba(88, 204, 113, 0.1);
-}
-
-.resultado-card.color-amarillo {
-  border-color: #fbbf24;
-  background: rgba(251, 191, 36, 0.1);
-}
-
-.resultado-card.color-rojo {
-  border-color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
-}
-
-.resultado-icon {
-  font-size: 56px;
-  margin-bottom: 15px;
-}
-
-.resultado-card h2 {
-  font-size: 28px;
-  margin-bottom: 15px;
-}
-
-.color-verde h2 { color: #58cc71; }
-.color-amarillo h2 { color: #fbbf24; }
-.color-rojo h2 { color: #ef4444; }
-
-.precision {
-  margin: 15px 0;
-}
-
-.precision-valor {
-  font-size: 42px;
-  font-weight: bold;
-  display: block;
-}
-
-.precision-label {
-  font-size: 13px;
-  color: #94a3b8;
-}
-
-.puntos {
-  margin: 12px 0;
-  font-size: 18px;
-  color: #fbbf24;
-}
-
-.feedback {
-  margin: 15px 0;
-  text-align: left;
-}
-
-.feedback h3 {
-  margin-bottom: 12px;
-  font-size: 15px;
-}
-
-.feedback-items {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-
-.feedback-item {
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 13px;
-}
-
-.btn-siguiente {
-  background: linear-gradient(135deg, #58cc71, #3a9b4e);
-  color: white;
-  border: none;
-  padding: 12px 35px;
-  border-radius: 40px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-  margin-top: 15px;
-}
-
-.btn-siguiente:hover {
-  transform: scale(1.02);
-  box-shadow: 0 5px 20px rgba(88, 204, 113, 0.4);
-}
-
-.loading {
-  text-align: center;
-  padding: 60px;
-  color: white;
-}
-
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 3px solid rgba(255, 255, 255, 0.2);
-  border-top-color: #58cc71;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin: 0 auto 15px;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .ejercicio-container {
-    padding: 15px;
-  }
-  
-.video-wrapper {
-  position: relative;
-  width: 100%;
-  max-width: 640px;
-  margin: 0 auto;
-}
-  
-  .ejercicio-card, .resultado-card {
-    padding: 20px;
-    margin: 20px auto;
-  }
-  
-  .pregunta h2 {
-    font-size: 20px;
-  }
-  
-  .btn-capturar, .btn-cerrar-camara, .btn-camera, .btn-siguiente {
-    padding: 10px 20px;
-    font-size: 14px;
-  }
-
-  /* Asegurar que el video sea visible */
-.video-preview {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scaleX(-1);
-  display: block;
-}
-
-/* El canvas debe estar encima del video para dibujar los puntos */
-.canvas-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  transform: scaleX(-1);
   pointer-events: none;
 }
+
+/* Instrucción dentro de la cámara */
+.instruccion-camara {
+  text-align: center;
+  margin: 15px 0;
+  padding: 10px 20px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 50px;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.instruccion-camara p {
+  margin: 0;
 }
 
 /* Cuenta regresiva */
@@ -419,47 +245,7 @@
   50% { opacity: 0.3; }
 }
 
-/* Botón de grabar */
-.btn-grabar {
-  background: linear-gradient(135deg, #e74c3c, #c0392b);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 30px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.btn-grabar:hover:not(:disabled) {
-  transform: scale(1.02);
-  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
-}
-
-.btn-grabar:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Botón de cerrar cámara */
-.btn-cerrar-camara {
-  background: #7f8c8d;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 30px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.btn-cerrar-camara:hover {
-  background: #95a5a6;
-}
-
-/* Mensaje de evaluando */
+/* Mensaje de evaluación */
 .evaluando-mensaje {
   display: flex;
   align-items: center;
@@ -481,58 +267,402 @@
   animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+/* ============================================ */
+/* RESUMEN FINAL */
+/* ============================================ */
+.resumen-final-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
 }
 
-/* Contenedor de acciones de cámara */
-.acciones-camara {
+.resumen-card {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border-radius: 32px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 32px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.resumen-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.resumen-header .icono-grande {
+  font-size: 72px;
+  margin-bottom: 16px;
+  display: inline-block;
+  animation: bounce 0.5s ease-out;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.resumen-header h1 {
+  font-size: 28px;
+  color: white;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #fff, #58cc71);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.resumen-header p {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+/* Calificación final */
+.calificacion-final {
   display: flex;
-  gap: 15px;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.promedio-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 70px;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.promedio-circle.verde {
+  background: linear-gradient(135deg, #48bb78, #2f855a);
+  box-shadow: 0 0 0 8px rgba(72, 187, 120, 0.2);
+}
+
+.promedio-circle.amarillo {
+  background: linear-gradient(135deg, #ed8936, #c05621);
+  box-shadow: 0 0 0 8px rgba(237, 137, 54, 0.2);
+}
+
+.promedio-circle.rojo {
+  background: linear-gradient(135deg, #f56565, #c53030);
+  box-shadow: 0 0 0 8px rgba(245, 101, 101, 0.2);
+}
+
+.promedio-valor {
+  font-size: 42px;
+  font-weight: bold;
+  color: white;
+}
+
+.puntos-totales {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+  padding: 8px 20px;
+  border-radius: 40px;
+}
+
+.puntos-icon {
+  font-size: 24px;
+}
+
+/* Resumen de ejercicios */
+.resumen-ejercicios h3 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.resumen-ejercicios h3::before {
+  content: "📋";
+  font-size: 20px;
+}
+
+.ejercicios-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.ejercicios-lista::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ejercicios-lista::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.ejercicios-lista::-webkit-scrollbar-thumb {
+  background: #58cc71;
+  border-radius: 10px;
+}
+
+.ejercicio-resumen {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  transition: all 0.3s;
+}
+
+.ejercicio-resumen:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ejercicio-numero {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #58cc71, #3a9b4e);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.ejercicio-info {
+  flex: 1;
+}
+
+.ejercicio-pregunta {
+  font-weight: 500;
+  color: white;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.ejercicio-metricas {
+  display: flex;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
-/* Botones de resultado */
-.acciones-resultado {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  margin-top: 20px;
-  flex-wrap: wrap;
+.precision-badge {
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
 }
 
-.btn-repetir {
+.precision-badge.verde {
+  background: rgba(72, 187, 120, 0.2);
+  color: #48bb78;
+}
+
+.precision-badge.amarillo {
+  background: rgba(237, 137, 54, 0.2);
+  color: #ed8936;
+}
+
+.precision-badge.rojo {
+  background: rgba(245, 101, 101, 0.2);
+  color: #f56565;
+}
+
+.puntos-badge {
+  font-size: 11px;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.ejercicio-icono {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+/* Botón repetir ejercicio */
+.btn-repetir-ejercicio {
   background: #FF9800;
-  color: white;
   border: none;
-  padding: 12px 24px;
   border-radius: 30px;
+  width: 32px;
+  height: 32px;
   font-size: 16px;
-  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.btn-repetir:hover {
+.btn-repetir-ejercicio:hover {
   background: #f57c00;
-  transform: scale(1.02);
+  transform: scale(1.05);
 }
 
-.btn-siguiente {
-  background: #4CAF50;
-  color: white;
+/* Feedback recomendaciones */
+.feedback-recomendaciones {
+  margin-top: 24px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 101, 101, 0.1));
+  border-radius: 16px;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.recomendacion {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.recomendacion span {
+  font-size: 28px;
+}
+
+.recomendacion p {
+  color: #fbbf24;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Botones de resumen */
+.resumen-acciones {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+
+.btn-repetir-leccion,
+.btn-volver,
+.btn-siguiente-leccion {
+  flex: 1;
+  padding: 12px 20px;
   border: none;
-  padding: 12px 24px;
-  border-radius: 30px;
-  font-size: 16px;
+  border-radius: 40px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
+  font-size: 14px;
 }
 
-.btn-siguiente:hover {
-  background: #43a047;
-  transform: scale(1.02);
+.btn-repetir-leccion {
+  background: linear-gradient(135deg, #FF9800, #f57c00);
+  color: white;
+}
+
+.btn-volver {
+  background: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-siguiente-leccion {
+  background: linear-gradient(135deg, #58cc71, #3a9b4e);
+  color: white;
+}
+
+.btn-repetir-leccion:hover,
+.btn-siguiente-leccion:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-volver:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+/* ============================================ */
+/* RESPONSIVE */
+/* ============================================ */
+@media (max-width: 768px) {
+  .ejercicio-container {
+    padding: 15px;
+  }
+
+  .instruccion-contenido {
+    padding: 30px;
+  }
+
+  .palabra-sena {
+    font-size: 36px;
+  }
+
+  .cuenta-numero {
+    font-size: 48px;
+  }
+
+  .resumen-card {
+    padding: 20px;
+  }
+
+  .resumen-header h1 {
+    font-size: 22px;
+  }
+
+  .promedio-circle {
+    width: 110px;
+    height: 110px;
+  }
+
+  .promedio-valor {
+    font-size: 32px;
+  }
+
+  .resumen-acciones {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .ejercicio-resumen {
+    flex-wrap: wrap;
+  }
+
+  .ejercicio-icono {
+    margin-left: auto;
+  }
+
+  .ejercicio-metricas {
+    margin-top: 4px;
+  }
 }

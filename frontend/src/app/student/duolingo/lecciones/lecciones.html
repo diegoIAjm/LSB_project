@@ -1,33 +1,101 @@
 <div class="lecciones-container">
+  <!-- Header moderno -->
   <div class="header">
     <button class="btn-back" (click)="volver()">
-      ← Volver a Unidades
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Volver a Unidades
     </button>
-    <h1>📖 Lecciones</h1>
-    <p>Completa cada lección para avanzar</p>
+    <div class="header-content">
+      <h1>Lecciones de la unidad</h1>
+      <p>Completa cada lección para avanzar a la siguiente</p>
+    </div>
   </div>
 
+  <!-- Loading -->
   <div *ngIf="cargando" class="loading">
     <div class="spinner"></div>
     <p>Cargando lecciones...</p>
   </div>
 
-  <div class="lecciones-timeline" *ngIf="!cargando">
-    <div *ngFor="let leccion of lecciones; let i = index" class="leccion-item" [class.completada]="leccion.progreso?.completado">
-      <div class="leccion-conector" *ngIf="i > 0"></div>
-      <div class="leccion-card" (click)="seleccionarLeccion(leccion)">
-        <div class="leccion-icon">
-          {{ leccion.progreso?.completado ? '✅' : '📘' }}
+  <!-- Lista de lecciones estilo tarjetas -->
+  <div class="lecciones-grid" *ngIf="!cargando">
+    <div *ngFor="let leccion of lecciones; let i = index" 
+         class="leccion-card" 
+         [class]="getLeccionClase(leccion)"
+         (click)="puedeSeleccionar(leccion) && seleccionarLeccion(leccion)">
+      
+      <!-- Icono de estado -->
+      <div class="card-icon" [class]="getLeccionClase(leccion) + '-icon'">
+        <span class="icon">{{ getLeccionIcon(leccion) }}</span>
+      </div>
+      
+      <!-- Contenido principal -->
+      <div class="card-content">
+        <div class="card-header">
+          <div class="leccion-badge">Lección {{ leccion.orden }}</div>
+          <h3 class="leccion-titulo">{{ leccion.titulo }}</h3>
         </div>
-        <div class="leccion-info">
-          <h3>{{ leccion.titulo }}</h3>
-          <p>Lección {{ leccion.orden }}</p>
+        
+        <!-- Barra de precisión si está completada -->
+        <div class="precision-section" *ngIf="leccion.progreso?.completado">
+          <div class="precision-stats">
+            <span class="precision-label">Precisión</span>
+            <span class="precision-value" [class]="getPrecisionClase(leccion.progreso?.precision || 0)">
+              {{ leccion.progreso?.precision || 0 }}%
+            </span>
+          </div>
+          <div class="precision-bar">
+            <div class="precision-fill" 
+                 [style.width.%]="leccion.progreso?.precision || 0"
+                 [class]="getPrecisionClase(leccion.progreso?.precision || 0)"></div>
+          </div>
         </div>
-<div class="leccion-progreso" *ngIf="getPrecision(leccion) !== null">
-  <span>{{ getPrecision(leccion) }}%</span>
-</div>
-        <div class="leccion-arrow">→</div>
+        
+        <!-- Estado disponible -->
+        <div class="estado-mensaje" *ngIf="leccion.desbloqueada && !leccion.progreso?.completado">
+          <span class="mensaje-disponible">
+            <span class="punto-verde"></span>
+            Disponible
+          </span>
+        </div>
+        
+        <!-- Estado bloqueado -->
+        <div class="estado-mensaje" *ngIf="!leccion.desbloqueada">
+          <span class="mensaje-bloqueado">
+            🔒 Completa la lección anterior
+          </span>
+        </div>
+      </div>
+      
+      <!-- Acción -->
+      <div class="card-action">
+        <div class="action-button" *ngIf="leccion.desbloqueada && !leccion.progreso?.completado">
+          <span>Iniciar</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+        <div class="action-button completado" *ngIf="leccion.progreso?.completado">
+          <span>Completado</span>
+          <span class="check-icon">✓</span>
+        </div>
+        <div class="action-button bloqueado" *ngIf="!leccion.desbloqueada">
+          <span>Bloqueado</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="11" width="14" height="11" rx="2" ry="2"/>
+            <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+          </svg>
+        </div>
       </div>
     </div>
+  </div>
+  
+  <!-- Mensaje vacío -->
+  <div *ngIf="!cargando && lecciones.length === 0" class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h3>No hay lecciones disponibles</h3>
+    <p>Pronto se agregarán nuevas lecciones a esta unidad.</p>
   </div>
 </div>

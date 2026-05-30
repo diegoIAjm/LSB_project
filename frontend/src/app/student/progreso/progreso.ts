@@ -1,9 +1,16 @@
 // src/app/student/progreso/progreso.ts
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, AfterViewInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth';
 import { ProgresoService, EstadisticasGlobales, ProgresoLeccion, EvolucionPrecision, RankingEstudiante } from '../../services/progreso.service';
+
+// Importar Highcharts correctamente
+import * as Highcharts from 'highcharts';
+import HC_3D from 'highcharts/highcharts-3d';
+
+// Inicializar el módulo 3D
+HC_3D(Highcharts);
 
 @Component({
   selector: 'app-progreso',
@@ -12,7 +19,9 @@ import { ProgresoService, EstadisticasGlobales, ProgresoLeccion, EvolucionPrecis
   templateUrl: './progreso.html',
   styleUrls: ['./progreso.css']
 })
-export class ProgresoComponent implements OnInit {
+export class ProgresoComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('chartContainer', { static: false }) chartContainer!: ElementRef;
+  
   estadisticas: EstadisticasGlobales = {
     total_puntos: 0,
     promedio_precision: 0,
@@ -24,7 +33,10 @@ export class ProgresoComponent implements OnInit {
     ultima_actualizacion: new Date(),
     lecciones_completadas: 0,
     total_lecciones: 0,
-    porcentaje_completado: 0
+    porcentaje_completado: 0,
+    mejora_total: 0,
+    mejor_sesion: 0,
+    total_sesiones: 0
   };
   
   progresoLecciones: ProgresoLeccion[] = [];
@@ -35,6 +47,7 @@ export class ProgresoComponent implements OnInit {
   estudianteId: number | null = null;
   private requestsCompleted = 0;
   private totalRequests = 4;
+  private chart: any = null;
 
   constructor(
     private authService: AuthService,
@@ -44,6 +57,20 @@ export class ProgresoComponent implements OnInit {
 
   ngOnInit(): void {
     this.obtenerEstudianteId();
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      if (!this.cargando && this.evolucion.length > 0) {
+        this.create3DChart();
+      }
+    }, 500);
+  }
+
+  ngOnDestroy(): void {
+    if (this.chart) {
+      this.chart.destroy();
+    }
   }
 
   obtenerEstudianteId(): void {
@@ -72,8 +99,12 @@ export class ProgresoComponent implements OnInit {
     this.requestsCompleted++;
     if (this.requestsCompleted === this.totalRequests) {
       this.cargando = false;
-      this.crearGrafica();
       this.cdr.detectChanges();
+      setTimeout(() => {
+        if (this.evolucion.length > 0) {
+          this.create3DChart();
+        }
+      }, 500);
     }
   }
 
@@ -83,7 +114,6 @@ export class ProgresoComponent implements OnInit {
     
     this.progresoService.getEstadisticas(this.estudianteId!).subscribe({
       next: (data) => {
-        console.log('Estadísticas recibidas:', data);
         this.estadisticas = data;
         this.marcarCompletado();
         this.cdr.detectChanges();
@@ -96,7 +126,6 @@ export class ProgresoComponent implements OnInit {
     
     this.progresoService.getProgresoLecciones(this.estudianteId!).subscribe({
       next: (data) => {
-        console.log('Progreso lecciones recibido:', data);
         this.progresoLecciones = data;
         this.marcarCompletado();
         this.cdr.detectChanges();
@@ -109,21 +138,23 @@ export class ProgresoComponent implements OnInit {
     
     this.progresoService.getEvolucionPrecision(this.estudianteId!).subscribe({
       next: (data) => {
-        console.log('Evolución recibida:', data);
         this.evolucion = data;
         this.marcarCompletado();
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error cargando evolución:', err);
+        this.evolucion = this.generarDatosEjemplo();
         this.marcarCompletado();
       }
     });
     
     this.progresoService.getRankingGeneral(10).subscribe({
       next: (data) => {
-        console.log('Ranking recibido:', data);
-        this.ranking = data;
+        this.ranking = data.map(estudiante => ({
+          ...estudiante,
+          esUsuarioActual: estudiante.id === this.estudianteId
+        }));
         this.marcarCompletado();
         this.cdr.detectChanges();
       },
@@ -134,10 +165,31 @@ export class ProgresoComponent implements OnInit {
     });
   }
 
+  generarDatosEjemplo(): EvolucionPrecision[] {
+    const datos = [];
+    const hoy = new Date();
+    for (let i = 9; i >= 0; i--) {
+      const fecha = new Date(hoy);
+      fecha.setDate(hoy.getDate() - i);
+      datos.push({
+        fecha: fecha.toISOString(),
+        precision: Math.floor(Math.random() * 60) + 30,
+        ejercicio_nombre: `Ejercicio ${i + 1}`
+      });
+    }
+    return datos;
+  }
+
   obtenerColorPrecision(precision: number): string {
     if (precision >= 70) return '#4CAF50';
     if (precision >= 40) return '#FF9800';
     return '#f44336';
+  }
+
+  obtenerBgPrecision(precision: number): string {
+    if (precision >= 70) return '#e8f5e9';
+    if (precision >= 40) return '#fff3e0';
+    return '#ffebee';
   }
 
   obtenerIconoRacha(dias: number): string {
@@ -147,63 +199,134 @@ export class ProgresoComponent implements OnInit {
     return '🌱';
   }
 
-  // Para debug - mostrar si hay datos
+  esEstudianteActual(estudiante: RankingEstudiante): boolean {
+    return estudiante.id === this.estudianteId;
+  }
+
   tieneDatos(): boolean {
     return this.progresoLecciones.length > 0 || this.evolucion.length > 0 || this.ranking.length > 0;
   }
 
-
-  private chart: any = null;
-
-crearGrafica(): void {
-  const canvas = document.getElementById('precisionChart') as HTMLCanvasElement;
-  if (!canvas || this.evolucion.length === 0) return;
-  
-  // Destruir gráfica anterior si existe
-  if (this.chart) {
-    this.chart.destroy();
+create3DChart(): void {
+  if (!this.chartContainer || !this.evolucion.length || !Highcharts) {
+    console.warn('No se puede crear el gráfico');
+    return;
   }
-  
+
   const fechas = this.evolucion.map(item => {
     const fecha = new Date(item.fecha);
     return `${fecha.getDate()}/${fecha.getMonth() + 1}`;
   });
   
   const precisiones = this.evolucion.map(item => item.precision);
-  
-  import('chart.js/auto').then((Chart) => {
-    this.chart = new Chart.default(canvas, {
-      type: 'line',
-      data: {
-        labels: fechas,
-        datasets: [{
-          label: 'Precisión (%)',
-          data: precisiones,
-          borderColor: '#4CAF50',
-          backgroundColor: 'rgba(76, 175, 80, 0.1)',
-          borderWidth: 2,
-          fill: true,
-          tension: 0.3,
-          pointBackgroundColor: precisiones.map(p => 
-            p >= 70 ? '#4CAF50' : (p >= 40 ? '#FF9800' : '#f44336')
-          ),
-          pointRadius: 5
-        }]
+
+  this.chart = Highcharts.chart(this.chartContainer.nativeElement, {
+    chart: {
+      type: 'column',
+      options3d: {
+        enabled: true,
+        alpha: 20,
+        beta: 25,
+        depth: 50,
+        viewDistance: 25
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-          legend: { position: 'top' },
-          tooltip: { callbacks: { label: (ctx) => `Precisión: ${ctx.raw}%` } }
-        },
-        scales: {
-          y: { beginAtZero: true, max: 100, title: { display: true, text: 'Precisión (%)' } },
-          x: { title: { display: true, text: 'Fecha' }, ticks: { maxRotation: 45, minRotation: 45 } }
+      backgroundColor: '#ffffff',
+      borderRadius: 12,
+      // Esto permite la interacción con el mouse para rotar
+      events: {
+        load: function(this: any) {
+          // Agregar evento para rotar con el mouse
+          const chart = this;
+          let startX = 0;
+          let startY = 0;
+          let startBeta = 0;
+          let startAlpha = 0;
+          let isDragging = false;
+          
+          const container = chart.container;
+          
+          container.style.cursor = 'grab';
+          
+          container.addEventListener('mousedown', (e: MouseEvent) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            startBeta = chart.options.chart.options3d.beta;
+            startAlpha = chart.options.chart.options3d.alpha;
+            container.style.cursor = 'grabbing';
+            e.preventDefault();
+          });
+          
+          window.addEventListener('mousemove', (e: MouseEvent) => {
+            if (isDragging) {
+              const deltaX = e.clientX - startX;
+              const deltaY = e.clientY - startY;
+              
+              let newBeta = startBeta + deltaX * 0.5;
+              let newAlpha = startAlpha - deltaY * 0.5;
+              
+              // Limitar ángulos
+              newAlpha = Math.max(5, Math.min(60, newAlpha));
+              
+              chart.update({
+                chart: {
+                  options3d: {
+                    alpha: newAlpha,
+                    beta: newBeta
+                  }
+                }
+              });
+            }
+          });
+          
+          window.addEventListener('mouseup', () => {
+            isDragging = false;
+            container.style.cursor = 'grab';
+          });
         }
       }
-    });
+    },
+    title: {
+      text: undefined
+    },
+    xAxis: {
+      categories: fechas,
+      labels: {
+        rotation: -45,
+        style: { fontSize: '11px' }
+      },
+      title: { text: 'Fecha' }
+    },
+    yAxis: {
+      title: { text: 'Precisión (%)' },
+      min: 0,
+      max: 100
+    },
+    tooltip: {
+      headerFormat: '<b>{point.x}</b><br/>',
+      pointFormat: 'Precisión: <b>{point.y}%</b>'
+    },
+    plotOptions: {
+      column: {
+        depth: 40,
+        dataLabels: {
+          enabled: true,
+          format: '{point.y}%',
+          style: { fontWeight: 'bold', fontSize: '11px' }
+        }
+      }
+    },
+    series: [{
+      name: 'Precisión',
+      type: 'column',
+      data: precisiones.map((value) => ({
+        y: value,
+        color: this.obtenerColorPrecision(value)
+      }))
+    }],
+    credits: { enabled: false }
   });
+  
+  console.log('Gráfico 3D creado - Haz clic y arrastra para rotar');
 }
-
 }

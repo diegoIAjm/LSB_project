@@ -36,7 +36,6 @@ export class MaterialesService {
 
   constructor(private http: HttpClient) {}
 
-  // 🔹 CORREGIDO: El tipo de retorno es MaterialesResponse
   getMateriales(cursoId: number): Observable<MaterialesResponse> {
     let params = new HttpParams().set('curso_id', cursoId.toString());
     return this.http.get<MaterialesResponse>(this.api, { params });

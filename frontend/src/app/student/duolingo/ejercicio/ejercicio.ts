@@ -8,6 +8,21 @@ import { CameraService } from '../../../services/camera.service';
 import { Hands, Results } from '@mediapipe/hands';
 import { Camera } from '@mediapipe/camera_utils';
 
+interface EvaluacionGuardada {
+  ejercicio_id: number;
+  pregunta: string;
+  sena_id?: number;
+  precision: number;
+  puntos_ganados: number;
+  color: string;
+  feedback: {
+    mano: string;
+    movimiento: string;
+    posicion: string;
+  };
+  timestamp: Date;
+}
+
 @Component({
   selector: 'app-duolingo-ejercicio',
   standalone: true,
@@ -26,13 +41,16 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
   cargando = true;
   evaluando = false;
   camaraActiva = false;
-  resultado: EvaluarRespuesta | null = null;
   estudianteId: number | null = null;
-  puntuacionTotal: number = 0;
-  precisionTotal: number = 0;
-  ejerciciosCompletados: number = 0;
   
-  // Variables para grabación
+  // Variables para el flujo acumulativo
+  evaluacionesRealizadas: EvaluacionGuardada[] = [];
+  mostrandoResumenFinal = false;
+  promedioFinal = 0;
+  puntuacionTotal = 0;
+  ejerciciosCompletados = 0;
+  
+  // Variables para el flujo de grabación automática
   private mediaRecorder: MediaRecorder | null = null;
   private recordedChunks: Blob[] = [];
   grabando: boolean = false;
@@ -40,7 +58,13 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
   private timerInterval: any = null;
   cuentaRegresiva: number = 0;
   mostrandoCuentaRegresiva: boolean = false;
+  mensajeInstruccion: string = '';
   private countdownInterval: any = null;
+  private autoProximoEjercicio: boolean = true;
+  
+  // Modo repetir ejercicio específico
+  modoRepetir: boolean = false;
+  ejercicioRepetirId: number | null = null;
   
   private hands: Hands | null = null;
   private camera: any = null;
@@ -63,7 +87,6 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
   }
 
   ngAfterViewInit(): void {
-    // Esperar a que el canvas esté listo
     setTimeout(() => {
       this.canvasReady = true;
       this.initMediaPipe();
@@ -106,13 +129,11 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
   }
 
   private onHandsResults(results: Results): void {
-    // Verificar que el canvas existe
     if (!this.canvasElement || !this.canvasElement.nativeElement) return;
     
     const canvasCtx = this.canvasElement.nativeElement.getContext('2d');
     if (!canvasCtx) return;
     
-    // Asegurar que el canvas tiene el tamaño correcto
     if (this.canvasElement.nativeElement.width === 0) {
       this.canvasElement.nativeElement.width = this.videoElement?.nativeElement?.videoWidth || 640;
       this.canvasElement.nativeElement.height = this.videoElement?.nativeElement?.videoHeight || 480;
@@ -141,7 +162,6 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
     this.camaraActiva = true;
     this.cdr.detectChanges();
     
-    // Esperar a que el DOM se actualice
     setTimeout(() => {
       const video = this.videoElement?.nativeElement;
       if (!video) {
@@ -160,6 +180,13 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
       });
       
       this.camera.start();
+      
+      // Iniciar automáticamente la cuenta regresiva al abrir la cámara
+      setTimeout(() => {
+        if (this.camaraActiva && !this.grabando && !this.evaluando) {
+          this.iniciarCuentaRegresiva();
+        }
+      }, 500);
     }, 100);
   }
 
@@ -184,10 +211,11 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
     this.cdr.detectChanges();
   }
 
-  // Iniciar cuenta regresiva
+  // Cuenta regresiva de 5 segundos
   iniciarCuentaRegresiva(): void {
     this.mostrandoCuentaRegresiva = true;
-    this.cuentaRegresiva = 3;
+    this.cuentaRegresiva = 5;
+    this.mensajeInstruccion = `🎯 Realiza la seña: ${this.ejercicioActual?.pregunta || ''}`;
     this.cdr.detectChanges();
     
     this.countdownInterval = setInterval(() => {
@@ -203,7 +231,6 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
     }, 1000);
   }
 
-  // Iniciar grabación
   iniciarGrabacion(): void {
     const video = this.videoElement?.nativeElement;
     if (!video || !video.srcObject) {
@@ -230,13 +257,12 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
     
     this.mediaRecorder.start();
     
-    // Timer para mostrar tiempo
     this.timerInterval = setInterval(() => {
       this.tiempoGrabacion++;
       this.cdr.detectChanges();
     }, 1000);
     
-    // Detener después de 3 segundos
+    // Grabar por 3 segundos
     setTimeout(() => {
       if (this.grabando && this.mediaRecorder) {
         this.mediaRecorder.stop();
@@ -251,7 +277,6 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
     this.cdr.detectChanges();
   }
 
-  // Procesar video grabado
   procesarVideoGrabado(): void {
     if (this.recordedChunks.length === 0) {
       alert('No se grabó ningún video. Intenta nuevamente.');
@@ -264,7 +289,7 @@ export class DuolingoEjercicioComponent implements OnInit, OnDestroy, AfterViewI
     this.enviarAEvaluacion(videoFile);
   }
 
-// En ejercicio.ts, modifica enviarAEvaluacion
+// En enviarAEvaluacion, modifica la creación de evaluacionRespuesta
 enviarAEvaluacion(videoFile: File): void {
   this.evaluando = true;
   this.cdr.detectChanges();
@@ -276,25 +301,10 @@ enviarAEvaluacion(videoFile: File): void {
     return;
   }
   
-  console.log('=== ENVIANDO A EVALUACIÓN ===');
-  console.log('Seña ID:', senaId);
-  console.log('Estudiante ID:', this.estudianteId);
-  console.log('Video file:', videoFile.name, 'Tamaño:', videoFile.size, 'bytes');
-  
-  // Enviar también el estudiante_id
   this.duolingoService.evaluarSeñaConIA(senaId, videoFile, this.estudianteId!).subscribe({
     next: (respuesta) => {
-      console.log('=== RESPUESTA IA ===');
-      console.log('Precisión:', respuesta.precision);
-      console.log('Color:', respuesta.color);
-      console.log('Puntos ganados:', respuesta.puntos_ganados);
-      console.log('Puntos totales:', respuesta.puntos_totales);
-      console.log('Feedback:', respuesta.feedback);
-      console.log('Seña detectada:', respuesta.sena_detectada);
-      console.log('Detalles:', respuesta.detalles);
-      console.log('===================');
-      
-      this.resultado = {
+      // Crear evaluacionRespuesta con posicion requerida
+      const evaluacionRespuesta: EvaluarRespuesta = {
         precision: respuesta.precision,
         color: respuesta.color,
         puntos_ganados: respuesta.puntos_ganados,
@@ -302,23 +312,18 @@ enviarAEvaluacion(videoFile: File): void {
         feedback: {
           mano: respuesta.detalles?.mano || 'medio',
           movimiento: respuesta.detalles?.movimiento || 'medio',
-          posicion: 'medio'
+          posicion: 'medio'  // Valor fijo ya que no viene del backend
         }
       };
       
-      this.puntuacionTotal += respuesta.puntos_ganados;
-      this.ejerciciosCompletados++;
-      this.precisionTotal = (this.precisionTotal + respuesta.precision) / this.ejerciciosCompletados;
+      this.guardarEvaluacion(evaluacionRespuesta);
+      
       this.evaluando = false;
       this.cerrarCamara();
       this.cdr.detectChanges();
     },
     error: (err) => {
-      console.error('=== ERROR EN EVALUACIÓN ===');
-      console.error('Error:', err);
-      console.error('Status:', err.status);
-      console.error('Mensaje:', err.message);
-      console.error('===========================');
+      console.error('Error en evaluación:', err);
       this.evaluando = false;
       this.cdr.detectChanges();
       alert('Error al evaluar la seña. Intenta nuevamente.');
@@ -326,16 +331,109 @@ enviarAEvaluacion(videoFile: File): void {
   });
 }
 
+// En guardarEvaluacion, también agrega posicion con valor fijo
+guardarEvaluacion(respuesta: EvaluarRespuesta): void {
+  // Si es modo repetir, actualizar la evaluación existente
+  if (this.modoRepetir && this.ejercicioRepetirId) {
+    const index = this.evaluacionesRealizadas.findIndex(e => e.ejercicio_id === this.ejercicioRepetirId);
+    if (index !== -1) {
+      // Restar los puntos anteriores
+      this.puntuacionTotal -= this.evaluacionesRealizadas[index].puntos_ganados;
+      // Actualizar evaluación
+      this.evaluacionesRealizadas[index] = {
+        ejercicio_id: this.ejercicioActual?.id || 0,
+        pregunta: this.ejercicioActual?.pregunta || '',
+        sena_id: this.ejercicioActual?.sena || undefined,
+        precision: respuesta.precision,
+        puntos_ganados: respuesta.puntos_ganados,
+        color: respuesta.color,
+        feedback: {
+          mano: respuesta.feedback?.mano || 'medio',
+          movimiento: respuesta.feedback?.movimiento || 'medio',
+          posicion: respuesta.feedback?.posicion || 'medio'
+        },
+        timestamp: new Date()
+      };
+      this.puntuacionTotal += respuesta.puntos_ganados;
+    }
+    
+    // Salir del modo repetir
+    this.modoRepetir = false;
+    this.ejercicioRepetirId = null;
+    
+    // Mostrar resumen actualizado
+    this.mostrarResumenFinal();
+    return;
+  }
+  
+  // Modo normal
+  const evaluacion: EvaluacionGuardada = {
+    ejercicio_id: this.ejercicioActual?.id || 0,
+    pregunta: this.ejercicioActual?.pregunta || '',
+    sena_id: this.ejercicioActual?.sena || undefined,
+    precision: respuesta.precision,
+    puntos_ganados: respuesta.puntos_ganados,
+    color: respuesta.color,
+    feedback: {
+      mano: respuesta.feedback?.mano || 'medio',
+      movimiento: respuesta.feedback?.movimiento || 'medio',
+      posicion: respuesta.feedback?.posicion || 'medio'
+    },
+    timestamp: new Date()
+  };
+  
+  this.evaluacionesRealizadas.push(evaluacion);
+  this.puntuacionTotal += respuesta.puntos_ganados;
+  this.ejerciciosCompletados++;
+  
+  // Verificar si hay más ejercicios
+  if (this.indiceActual + 1 < this.ejercicios.length) {
+    this.siguienteEjercicio();
+  } else {
+    this.mostrarResumenFinal();
+  }
+}
+
+  mostrarResumenFinal(): void {
+    let totalPrecision = 0;
+    for (let i = 0; i < this.evaluacionesRealizadas.length; i++) {
+      totalPrecision += this.evaluacionesRealizadas[i].precision;
+    }
+    this.promedioFinal = totalPrecision / this.evaluacionesRealizadas.length;
+    
+    this.mostrandoResumenFinal = true;
+    this.camaraActiva = false;
+    this.cdr.detectChanges();
+    
+    this.guardarEstadisticasFinales();
+  }
+
+  guardarEstadisticasFinales(): void {
+    this.duolingoService.completarLeccion(
+      this.estudianteId!,
+      this.leccionId,
+      this.puntuacionTotal,
+      this.promedioFinal
+    ).subscribe({
+      next: () => {
+        console.log('Estadísticas guardadas correctamente');
+      },
+      error: (err) => {
+        console.error('Error guardando estadísticas:', err);
+      }
+    });
+  }
+
   cargarEjercicios(): void {
     this.cargando = true;
     this.cdr.detectChanges();
     
     this.duolingoService.getEjercicios(this.leccionId).subscribe({
       next: (ejercicios) => {
-        console.log('Ejercicios recibidos:', ejercicios);
         this.ejercicios = ejercicios;
         if (this.ejercicios.length > 0) {
           this.ejercicioActual = this.ejercicios[0];
+          this.indiceActual = 0;
         }
         this.cargando = false;
         this.cdr.detectChanges();
@@ -349,65 +447,78 @@ enviarAEvaluacion(videoFile: File): void {
   }
 
   siguienteEjercicio(): void {
-    this.resultado = null;
     this.indiceActual++;
     
     if (this.indiceActual < this.ejercicios.length) {
       this.ejercicioActual = this.ejercicios[this.indiceActual];
       this.cdr.detectChanges();
-    } else {
-      this.completarLeccion();
+      // Iniciar automáticamente la cámara para el siguiente ejercicio
+      setTimeout(() => {
+        this.iniciarCamara();
+      }, 1000);
     }
   }
 
-  completarLeccion(): void {
-    this.duolingoService.completarLeccion(
-      this.estudianteId!,
-      this.leccionId,
-      this.puntuacionTotal,
-      this.precisionTotal
-    ).subscribe({
-      next: () => {
-        this.router.navigate(['/student/duolingo/lecciones', this.leccionId], {
-          state: { mensaje: '¡Lección completada!' }
-        });
-      },
-      error: (err) => {
-        console.error('Error al completar lección:', err);
-        this.router.navigate(['/student/duolingo/lecciones', this.leccionId]);
-      }
-    });
+  // Repetir ejercicio específico
+  repetirEjercicioEspecifico(ejercicioId: number): void {
+    const ejercicio = this.ejercicios.find(e => e.id === ejercicioId);
+    if (ejercicio) {
+      this.modoRepetir = true;
+      this.ejercicioRepetirId = ejercicioId;
+      this.ejercicioActual = ejercicio;
+      this.indiceActual = this.ejercicios.findIndex(e => e.id === ejercicioId);
+      this.mostrandoResumenFinal = false;
+      this.cdr.detectChanges();
+      
+      // Iniciar cámara para repetir el ejercicio
+      setTimeout(() => {
+        this.iniciarCamara();
+      }, 500);
+    }
+  }
+
+  repetirLeccionCompleta(): void {
+    this.evaluacionesRealizadas = [];
+    this.puntuacionTotal = 0;
+    this.ejerciciosCompletados = 0;
+    this.promedioFinal = 0;
+    this.indiceActual = 0;
+    this.mostrandoResumenFinal = false;
+    this.modoRepetir = false;
+    this.ejercicioRepetirId = null;
+    
+    if (this.ejercicios.length > 0) {
+      this.ejercicioActual = this.ejercicios[0];
+    }
+    this.cdr.detectChanges();
+    
+    setTimeout(() => {
+      this.iniciarCamara();
+    }, 500);
+  }
+
+  cerrarResumen(): void {
+    this.mostrandoResumenFinal = false;
+    this.volver();
+  }
+
+  irSiguienteLeccion(): void {
+    this.router.navigate(['/student/duolingo/lecciones', this.leccionId + 1]);
+  }
+
+  getColorClase(precision: number): string {
+    if (precision >= 70) return 'verde';
+    if (precision >= 40) return 'amarillo';
+    return 'rojo';
+  }
+
+  getPrecisionIcon(precision: number): string {
+    if (precision >= 70) return '🎉';
+    if (precision >= 40) return '👍';
+    return '💪';
   }
 
   volver(): void {
     this.router.navigate(['/student/duolingo/lecciones', this.leccionId]);
   }
-
-  getColorClass(color: string): string {
-    switch(color) {
-      case 'verde': return 'color-verde';
-      case 'amarillo': return 'color-amarillo';
-      case 'rojo': return 'color-rojo';
-      default: return '';
-    }
-  }
-
-  // src/app/student/duolingo/ejercicio/ejercicio.ts
-
-// Añade este método
-repetirEjercicio(): void {
-  // Limpiar resultado actual
-  this.resultado = null;
-  // Cerrar cámara si está abierta
-  this.cerrarCamara();
-  // Reiniciar estado de grabación
-  this.grabando = false;
-  this.mostrandoCuentaRegresiva = false;
-  this.cuentaRegresiva = 0;
-  this.tiempoGrabacion = 0;
-  this.evaluando = false;
-  // Forzar detección de cambios
-  this.cdr.detectChanges();
-}
-
 }

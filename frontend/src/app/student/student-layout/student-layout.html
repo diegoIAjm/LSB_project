@@ -14,36 +14,36 @@
       </button>
     </div>
 
-    <nav class="sidebar-nav">
-      <a routerLink="/student/dashboard" routerLinkActive="active" class="nav-item">
-        <i class="bi bi-house-door nav-icon"></i>
-        <span class="nav-label" *ngIf="sidebarOpen">Inicio</span>
-      </a>
-      <a routerLink="/student/mis-cursos" routerLinkActive="active" class="nav-item">
-        <i class="bi bi-journal-bookmark nav-icon"></i>
-        <span class="nav-label" *ngIf="sidebarOpen">Mis Cursos</span>
-      </a>
-      <a routerLink="/student/diccionario" routerLinkActive="active" class="nav-item">
-        <i class="bi bi-book nav-icon"></i>
-        <span class="nav-label" *ngIf="sidebarOpen">Diccionario</span>
-      </a>
-      <a routerLink="/student/duolingo" routerLinkActive="active" class="nav-item">
-        <i class="bi bi-lightbulb nav-icon"></i>
-        <span class="nav-label" *ngIf="sidebarOpen">Duolingo</span>
-      </a>
-      <a routerLink="/student/progreso" routerLinkActive="active" class="nav-item">
-        <i class="bi bi-graph-up"></i>
-        <span class="nav-label" *ngIf="sidebarOpen">Mi Progreso</span>
-      </a>
-      <a routerLink="/student/conversation" routerLinkActive="active" class="nav-item">
-        <i class="bi bi-robot nav-icon"></i>
-        <span class="nav-label" *ngIf="sidebarOpen">Práctica IA</span>
-      </a>
-      <a routerLink="/student/mis-practicas" routerLinkActive="active" class="nav-item">
-        <i class="bi bi-pencil-square nav-icon"></i>
-        <span class="nav-label" *ngIf="sidebarOpen">Mis Prácticas</span>
-      </a>
-    </nav>
+<nav class="sidebar-nav">
+  <a routerLink="/student/dashboard" routerLinkActive="active" class="nav-item">
+    <i class="bi bi-house-door nav-icon"></i>
+    <span class="nav-label" *ngIf="sidebarOpen">Inicio</span>
+  </a>
+  <a routerLink="/student/mis-cursos" routerLinkActive="active" class="nav-item">
+    <i class="bi bi-journal-bookmark nav-icon"></i>
+    <span class="nav-label" *ngIf="sidebarOpen">Mis Cursos</span>
+  </a>
+  <a routerLink="/student/diccionario" routerLinkActive="active" class="nav-item">
+    <i class="bi bi-book nav-icon"></i>
+    <span class="nav-label" *ngIf="sidebarOpen">Diccionario</span>
+  </a>
+  <a routerLink="/student/duolingo/niveles" routerLinkActive="active" class="nav-item">
+    <i class="bi bi-lightbulb nav-icon"></i>
+    <span class="nav-label" *ngIf="sidebarOpen">Duolingo</span>
+  </a>
+  <a routerLink="/student/progreso" routerLinkActive="active" class="nav-item">
+    <i class="bi bi-graph-up"></i>
+    <span class="nav-label" *ngIf="sidebarOpen">Mi Progreso</span>
+  </a>
+  <a routerLink="/student/materiales" routerLinkActive="active" class="nav-item">
+    <i class="bi bi-folder2-open nav-icon"></i>
+    <span class="nav-label" *ngIf="sidebarOpen">Materiales</span>
+  </a>
+  <a routerLink="/student/mis-practicas" routerLinkActive="active" class="nav-item">
+    <i class="bi bi-pencil-square nav-icon"></i>
+    <span class="nav-label" *ngIf="sidebarOpen">Mis Prácticas</span>
+  </a>
+</nav>
 
     <div class="sidebar-footer" *ngIf="sidebarOpen">
       <div class="user-info">

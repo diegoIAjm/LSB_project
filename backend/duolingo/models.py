@@ -150,3 +150,40 @@ class ActividadUsuario(models.Model):
     
     def __str__(self):
         return f"{self.estudiante.usuario.nombre} - {self.modulo} - {self.accion}"
+
+
+class Logro(models.Model):
+    TIPO_CHOICES = [
+        ('completar_leccion', 'Completar Lección'),
+        ('completar_unidad', 'Completar Unidad'),
+        ('completar_nivel', 'Completar Nivel'),
+        ('racha', 'Racha'),
+        ('puntuacion', 'Puntuación Perfecta'),
+    ]
+    
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField()
+    tipo = models.CharField(max_length=50, choices=TIPO_CHOICES)
+    condicion_valor = models.IntegerField()  # Número de lecciones, días de racha, etc.
+    imagen = models.CharField(max_length=50, default='🏆')  # Emoji o URL
+    puntos_recompensa = models.IntegerField(default=0)
+    
+    class Meta:
+        db_table = 'logros'
+    
+    def __str__(self):
+        return self.nombre
+
+class UsuarioLogro(models.Model):
+    id = models.AutoField(primary_key=True)
+    estudiante = models.ForeignKey(Estudiante, on_delete=models.CASCADE, related_name='logros_duolingo')
+    logro = models.ForeignKey(Logro, on_delete=models.CASCADE)
+    fecha_desbloqueo = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'usuario_logros'
+        unique_together = ['estudiante', 'logro']
+    
+    def __str__(self):
+        return f"{self.estudiante.usuario.nombre} - {self.logro.nombre}"

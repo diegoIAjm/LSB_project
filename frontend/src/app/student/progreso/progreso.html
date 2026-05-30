@@ -1,120 +1,14 @@
 <!-- src/app/student/progreso/progreso.html -->
 <div class="progreso-container">
+
+  <!-- Header -->
   <div class="page-header">
-    <h1>📊 Mi Progreso</h1>
-    <p>Visualiza tu avance en el aprendizaje de señas</p>
-  </div>
-
-  <!-- Tarjetas de estadísticas -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon">⭐</div>
-      <div class="stat-info">
-        <span class="stat-value">{{ estadisticas.total_puntos }}</span>
-        <span class="stat-label">Puntos Totales</span>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon">🎯</div>
-      <div class="stat-info">
-        <span class="stat-value">{{ estadisticas.promedio_precision }}%</span>
-        <span class="stat-label">Precisión Promedio</span>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon">{{ obtenerIconoRacha(estadisticas.racha_dias) }}</div>
-      <div class="stat-info">
-        <span class="stat-value">{{ estadisticas.racha_dias }}</span>
-        <span class="stat-label">Días de Racha</span>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon">📚</div>
-      <div class="stat-info">
-        <span class="stat-value">{{ estadisticas.ejercicios_aprobados }}/{{ estadisticas.total_ejercicios }}</span>
-        <span class="stat-label">Ejercicios Aprobados</span>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon">🏆</div>
-      <div class="stat-info">
-        <span class="stat-value">{{ estadisticas.lecciones_completadas }}/{{ estadisticas.total_lecciones }}</span>
-        <span class="stat-label">Lecciones Completadas</span>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon">📈</div>
-      <div class="stat-info">
-        <span class="stat-value">{{ estadisticas.nivel_actual }}</span>
-        <span class="stat-label">Nivel Actual</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Progreso general -->
-  <div class="progreso-general">
-    <h3>📖 Progreso General</h3>
-    <div class="progreso-bar-container">
-      <div class="progreso-bar">
-        <div class="progreso-fill" [style.width.%]="estadisticas.porcentaje_completado"></div>
-      </div>
-      <span class="progreso-porcentaje">{{ estadisticas.porcentaje_completado }}%</span>
-    </div>
-  </div>
-
-<!-- Gráfica de evolución -->
-<div class="evolucion-section">
-  <h3>📈 Evolución de Precisión</h3>
-  <div class="grafica-container">
-    <canvas id="precisionChart" class="precision-canvas"></canvas>
-  </div>
-</div>
-
-  <!-- Progreso por lecciones -->
-  <div class="lecciones-section">
-    <h3>📚 Progreso por Lección</h3>
-    <div class="lecciones-lista">
-      <div class="leccion-item" *ngFor="let leccion of progresoLecciones">
-        <div class="leccion-info">
-          <span class="leccion-nombre">{{ leccion.leccion_titulo }}</span>
-          <span class="leccion-precision" [style.color]="obtenerColorPrecision(leccion.precision)">
-            {{ leccion.precision }}%
-          </span>
-        </div>
-        <div class="leccion-bar">
-          <div class="leccion-fill" [style.width.%]="leccion.precision" 
-               [style.background-color]="obtenerColorPrecision(leccion.precision)"></div>
-        </div>
-        <div class="leccion-stats">
-          <span>🎯 {{ leccion.puntuacion }} pts</span>
-          <span>🔄 {{ leccion.intentos }} intentos</span>
-          <span *ngIf="leccion.completado" class="completado">✅ Completado</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Ranking -->
-  <div class="ranking-section">
-    <h3>🏆 Ranking de Estudiantes</h3>
-    <div class="ranking-lista">
-      <div class="ranking-item" *ngFor="let estudiante of ranking; let i = index">
-        <div class="ranking-posicion" [class.top-1]="i === 0" [class.top-2]="i === 1" [class.top-3]="i === 2">
-          #{{ i + 1 }}
-        </div>
-        <div class="ranking-info">
-          <span class="ranking-nombre">{{ estudiante.nombre }} {{ estudiante.apellido }}</span>
-          <span class="ranking-precision">{{ estudiante.promedio_precision }}% precisión</span>
-        </div>
-        <div class="ranking-puntos">
-          ⭐ {{ estudiante.puntos_totales }} pts
-        </div>
-      </div>
+    <div class="page-header-text">
+      <h1>
+        <span class="header-icon">📊</span>
+        Mi Progreso
+      </h1>
+      <p>Seguimiento de tu avance en el aprendizaje de señas</p>
     </div>
   </div>
 
@@ -123,4 +17,169 @@
     <div class="spinner"></div>
     <p>Cargando tu progreso...</p>
   </div>
+
+  <ng-container *ngIf="!cargando">
+
+    <!-- Tarjetas de estadísticas -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon-wrap">⭐</div>
+        <div class="stat-info">
+          <span class="stat-value">{{ estadisticas.total_puntos }}</span>
+          <span class="stat-label">Puntos totales</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap">🎯</div>
+        <div class="stat-info">
+          <span class="stat-value">{{ estadisticas.promedio_precision }}%</span>
+          <span class="stat-label">Precisión promedio</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap">{{ obtenerIconoRacha(estadisticas.racha_dias) }}</div>
+        <div class="stat-info">
+          <span class="stat-value">{{ estadisticas.racha_dias }}</span>
+          <span class="stat-label">Días de racha</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap">📚</div>
+        <div class="stat-info">
+          <span class="stat-value">{{ estadisticas.ejercicios_aprobados }}/{{ estadisticas.total_ejercicios }}</span>
+          <span class="stat-label">Ejercicios aprobados</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap">🏆</div>
+        <div class="stat-info">
+          <span class="stat-value">{{ estadisticas.lecciones_completadas }}/{{ estadisticas.total_lecciones }}</span>
+          <span class="stat-label">Lecciones completadas</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap">📈</div>
+        <div class="stat-info">
+          <span class="stat-value">{{ estadisticas.nivel_actual }}</span>
+          <span class="stat-label">Nivel actual</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progreso general -->
+    <div class="progreso-general">
+      <div class="section-header">
+        <span class="section-title">
+          <span class="section-title-icon">📖</span>
+          Progreso general
+        </span>
+        <span class="progreso-porcentaje">{{ estadisticas.porcentaje_completado }}%</span>
+      </div>
+      <div class="progreso-bar-container">
+        <div class="progreso-bar">
+          <div class="progreso-fill" [style.width.%]="estadisticas.porcentaje_completado"></div>
+        </div>
+      </div>
+    </div>
+
+
+<div class="evolucion-section">
+  <div class="section-header">
+    <span class="section-title">
+      <span class="section-title-icon">📈</span>
+      Evolución de precisión (3D)
+    </span>
+    <span style="font-size: 12px; color: #718096;">
+      Vista 3D interactiva
+    </span>
+  </div>
+  <div class="grafica-container">
+    <div #chartContainer style="width: 100%; height: 450px;"></div>
+  </div>
+  <div class="chart-meta">
+    <div class="chart-meta-item">
+      <span class="chart-meta-value">{{ estadisticas.promedio_precision }}%</span>
+      <span class="chart-meta-label">Precisión actual</span>
+    </div>
+    <div class="chart-meta-item">
+      <span class="chart-meta-value up">+{{ estadisticas.mejora_total }}%</span>
+      <span class="chart-meta-label">Mejora total</span>
+    </div>
+    <div class="chart-meta-item">
+      <span class="chart-meta-value">{{ estadisticas.mejor_sesion }}%</span>
+      <span class="chart-meta-label">Mejor sesión</span>
+    </div>
+    <div class="chart-meta-item">
+      <span class="chart-meta-value">{{ estadisticas.total_sesiones }}</span>
+      <span class="chart-meta-label">Sesiones</span>
+    </div>
+  </div>
+</div>
+
+    <!-- Progreso por lecciones -->
+    <div class="lecciones-section">
+      <div class="section-header">
+        <span class="section-title">
+          <span class="section-title-icon">📚</span>
+          Progreso por lección
+        </span>
+      </div>
+      <div class="lecciones-lista">
+        <div class="leccion-item" *ngFor="let leccion of progresoLecciones">
+          <div class="leccion-info">
+            <span class="leccion-nombre">{{ leccion.leccion_titulo }}</span>
+            <span class="leccion-precision"
+              [style.background]="obtenerBgPrecision(leccion.precision)"
+              [style.color]="obtenerColorPrecision(leccion.precision)">
+              {{ leccion.precision }}%
+            </span>
+          </div>
+          <div class="leccion-bar">
+            <div class="leccion-fill"
+              [style.width.%]="leccion.precision"
+              [style.background-color]="obtenerColorPrecision(leccion.precision)">
+            </div>
+          </div>
+          <div class="leccion-stats">
+            <span>🎯 {{ leccion.puntuacion }} pts</span>
+            <span>🔄 {{ leccion.intentos }} intentos</span>
+            <span *ngIf="leccion.completado" class="badge-completado">✓ Completado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ranking -->
+    <div class="ranking-section">
+      <div class="section-header">
+        <span class="section-title">
+          <span class="section-title-icon">🏆</span>
+          Ranking de estudiantes
+        </span>
+      </div>
+      <div class="ranking-lista">
+        <div class="ranking-item"
+          *ngFor="let estudiante of ranking; let i = index"
+          [class.es-usuario]="estudiante.esUsuarioActual">
+          <div class="ranking-posicion"
+            [class.top-1]="i === 0"
+            [class.top-2]="i === 1"
+            [class.top-3]="i === 2">
+            {{ i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) }}
+          </div>
+          <div class="ranking-avatar">
+            {{ estudiante.nombre[0] }}{{ estudiante.apellido[0] }}
+          </div>
+          <div class="ranking-info">
+            <span class="ranking-nombre">{{ estudiante.nombre }} {{ estudiante.apellido }}</span>
+            <span class="ranking-precision">{{ estudiante.promedio_precision }}% de precisión</span>
+          </div>
+          <div class="ranking-puntos">
+            {{ estudiante.puntos_totales }} pts
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
 </div>

@@ -12,6 +12,10 @@ export interface Unidad {
   nivel: number;
   nombre: string;
   orden: number;
+  progreso?: number;           
+  desbloqueada?: boolean;      
+  lecciones_completadas?: number;  
+  total_lecciones?: number;  
 }
 
 export interface Leccion {
@@ -24,6 +28,7 @@ export interface Leccion {
     puntuacion: number;
     precision: number | null;
   };
+  desbloqueada?: boolean;  // ← Agregado
 }
 
 export interface Ejercicio {
@@ -73,6 +78,7 @@ export interface EvaluarRespuesta {
     posicion: string;
   };
 }
+
 export interface EvaluacionIAResponse {
   precision: number;
   nota: number;
@@ -87,6 +93,27 @@ export interface EvaluacionIAResponse {
   };
 }
 
+// ========== NUEVAS INTERFACES PARA LOGROS ==========
+export interface Logro {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  imagen: string;
+  desbloqueado: boolean;
+  puntos_recompensa: number;
+  fecha_desbloqueo?: Date;
+}
+
+export interface RespuestaCompletarLeccion {
+  success: boolean;
+  puntos_totales: number;
+  racha_dias: number;
+  logros_desbloqueados: Logro[];
+  siguiente_leccion?: { id: number; titulo: string };
+  siguiente_unidad?: { id: number; nombre: string };
+  siguiente_nivel?: { id: number; nombre: string };
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -96,13 +123,20 @@ export class DuolingoService {
   constructor(private http: HttpClient) {}
 
   // Obtener todos los niveles
-  getNiveles(): Observable<Nivel[]> {
-    return this.http.get<Nivel[]>(`${this.api}niveles/`);
+  getNiveles(estudianteId?: number): Observable<Nivel[]> {
+    let params = new HttpParams();
+    if (estudianteId) {
+      params = params.set('estudiante_id', estudianteId.toString());
+    }
+    return this.http.get<Nivel[]>(`${this.api}niveles/`, { params });
   }
 
-  // Obtener unidades por nivel
-  getUnidades(nivelId: number): Observable<Unidad[]> {
+  // Obtener unidades por nivel (CON estudianteId para progreso)
+  getUnidades(nivelId: number, estudianteId?: number): Observable<Unidad[]> {
     let params = new HttpParams().set('nivel_id', nivelId.toString());
+    if (estudianteId) {
+      params = params.set('estudiante_id', estudianteId.toString());
+    }
     return this.http.get<Unidad[]>(`${this.api}unidades/`, { params });
   }
 
@@ -133,8 +167,7 @@ export class DuolingoService {
     return this.http.get<Puntos>(`${this.api}puntos/`, { params });
   }
 
-
-  // Evaluar ejercicio
+  // Evaluar ejercicio (simulación)
   evaluarEjercicio(estudianteId: number, ejercicioId: number, keypoints: any): Observable<EvaluarRespuesta> {
     return this.http.post<EvaluarRespuesta>(`${this.api}evaluar-ejercicio/`, {
       estudiante_id: estudianteId,
@@ -143,7 +176,7 @@ export class DuolingoService {
     });
   }
 
-  // NUEVO: Evaluar seña con IA usando el modelo entrenado
+  // Evaluar seña con IA usando el modelo entrenado
   evaluarSeñaConIA(senaId: number, videoFile: File, estudianteId: number): Observable<EvaluacionIAResponse> {
     const formData = new FormData();
     formData.append('sena_id', senaId.toString());
@@ -153,7 +186,7 @@ export class DuolingoService {
     return this.http.post<EvaluacionIAResponse>(`${this.api}evaluar-sena-ia/`, formData);
   }
 
-  // Completar lección
+  // Completar lección (versión simple)
   completarLeccion(estudianteId: number, leccionId: number, puntuacion: number, precision: number): Observable<any> {
     return this.http.post(`${this.api}completar-leccion/`, {
       estudiante_id: estudianteId,
@@ -163,4 +196,36 @@ export class DuolingoService {
     });
   }
 
+  // ========== NUEVOS MÉTODOS PARA LOGROS Y DESBLOQUEO ==========
+
+  // Completar lección con verificación de logros
+  completarLeccionConLogros(estudianteId: number, leccionId: number, puntuacion: number, precision: number): Observable<RespuestaCompletarLeccion> {
+    return this.http.post<RespuestaCompletarLeccion>(`${this.api}completar-leccion-logros/`, {
+      estudiante_id: estudianteId,
+      leccion_id: leccionId,
+      puntuacion: puntuacion,
+      precision: precision
+    });
+  }
+
+  // Obtener todos los logros del usuario con estado
+  getLogrosUsuario(estudianteId: number): Observable<Logro[]> {
+    return this.http.get<Logro[]>(`${this.api}logros/${estudianteId}/`);
+  }
+
+  // Verificar si una lección está desbloqueada
+  verificarDesbloqueoLeccion(leccionId: number, estudianteId: number): Observable<{ desbloqueada: boolean }> {
+    let params = new HttpParams().set('estudiante_id', estudianteId.toString());
+    return this.http.get<{ desbloqueada: boolean }>(`${this.api}leccion/${leccionId}/desbloqueada/`, { params });
+  }
+
+  // Obtener siguiente contenido desbloqueado
+  getSiguienteContenido(estudianteId: number): Observable<{
+    siguiente_leccion: { id: number; titulo: string; unidad_id: number; unidad_nombre: string } | null;
+    siguiente_unidad: { id: number; nombre: string; nivel_id: number } | null;
+    siguiente_nivel: { id: number; nombre: string } | null;
+  }> {
+    let params = new HttpParams().set('estudiante_id', estudianteId.toString());
+    return this.http.get<any>(`${this.api}siguiente-contenido/`, { params });
+  }
 }

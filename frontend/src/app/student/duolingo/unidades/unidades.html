@@ -1,25 +1,88 @@
 <div class="unidades-container">
+  <!-- Header con diseño moderno -->
   <div class="header">
     <button class="btn-back" (click)="volver()">
-      ← Volver a Niveles
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Volver
     </button>
-    <h1>📚 Unidades</h1>
-    <p>Selecciona una unidad para continuar</p>
+    <div class="header-content">
+      <h1>Unidades de aprendizaje</h1>
+      <p>Selecciona una unidad para comenzar tu práctica</p>
+    </div>
   </div>
 
+  <!-- Loading -->
   <div *ngIf="cargando" class="loading">
     <div class="spinner"></div>
     <p>Cargando unidades...</p>
   </div>
 
-  <div class="unidades-list" *ngIf="!cargando">
-    <div *ngFor="let unidad of unidades; let i = index" class="unidad-card" (click)="seleccionarUnidad(unidad)">
-      <div class="unidad-numero">{{ i + 1 }}</div>
-      <div class="unidad-info">
-        <h3>{{ unidad.nombre }}</h3>
-        <p>Unidad {{ unidad.orden }}</p>
+  <!-- Grid de unidades -->
+  <div class="unidades-grid" *ngIf="!cargando">
+    <div *ngFor="let unidad of unidades; let i = index" 
+         class="unidad-card" 
+         [class]="getUnidadClase(unidad)"
+         (click)="puedeSeleccionar(unidad) && seleccionarUnidad(unidad)">
+      
+      <!-- Indicador de estado -->
+      <div class="card-status" [class]="getUnidadClase(unidad) + '-status'">
+        <span class="status-icon">{{ getUnidadIcon(unidad) }}</span>
       </div>
-      <div class="unidad-icon">→</div>
+      
+      <!-- Contenido principal -->
+      <div class="card-content">
+        <div class="card-header">
+          <div class="unidad-badge">Unidad {{ unidad.orden }}</div>
+          <h3 class="unidad-titulo">{{ unidad.nombre }}</h3>
+        </div>
+        
+        <!-- Barra de progreso -->
+        <div class="progress-section" *ngIf="unidad.progreso !== undefined">
+          <div class="progress-stats">
+            <span class="progress-label">Progreso</span>
+            <span class="progress-percent">{{ unidad.progreso }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="unidad.progreso"></div>
+          </div>
+        </div>
+        
+        <!-- Lecciones info -->
+        <div class="lecciones-info" *ngIf="unidad.lecciones_completadas !== undefined">
+          <div class="info-icon">📚</div>
+          <span>{{ unidad.lecciones_completadas }} de {{ unidad.total_lecciones }} lecciones</span>
+        </div>
+      </div>
+      
+      <!-- Footer de la tarjeta -->
+      <div class="card-footer">
+        <div class="action-button" *ngIf="unidad.desbloqueada && unidad.progreso !== 100">
+          <span>Continuar</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+        <div class="action-button completado" *ngIf="unidad.progreso === 100">
+          <span>Completado</span>
+          <span class="check-icon">✓</span>
+        </div>
+        <div class="action-button bloqueado" *ngIf="!unidad.desbloqueada">
+          <span>Bloqueado</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="11" width="14" height="11" rx="2" ry="2"/>
+            <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+          </svg>
+        </div>
+      </div>
     </div>
+  </div>
+  
+  <!-- Mensaje vacío -->
+  <div *ngIf="!cargando && unidades.length === 0" class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h3>No hay unidades disponibles</h3>
+    <p>Pronto se agregarán nuevas unidades a este nivel.</p>
   </div>
 </div>

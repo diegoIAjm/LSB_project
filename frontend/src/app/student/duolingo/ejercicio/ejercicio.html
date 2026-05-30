@@ -14,34 +14,101 @@
     <p>Cargando ejercicio...</p>
   </div>
 
-  <!-- Tarjeta inicial del ejercicio -->
-  <div *ngIf="!cargando && ejercicioActual && !resultado && !camaraActiva" class="ejercicio-card">
-    <div class="avatar-3d">
-      <div class="avatar-placeholder">
-        <span>🦉</span>
+  <!-- Mostrar resumen final cuando se completan todos los ejercicios -->
+  <div *ngIf="mostrandoResumenFinal" class="resumen-final-container">
+    <div class="resumen-card">
+      <div class="resumen-header">
+        <div class="icono-grande">🏆</div>
+        <h1>¡Lección Completada!</h1>
+        <p>Has completado todos los ejercicios de esta lección</p>
       </div>
-      <p class="avatar-text">¡Intenta hacer la seña!</p>
-    </div>
 
-    <div class="pregunta">
-      <h2>{{ ejercicioActual.pregunta }}</h2>
-    </div>
+      <!-- Calificación final -->
+      <div class="calificacion-final">
+        <div class="promedio-circle" [class]="getColorClase(promedioFinal)">
+          <span class="promedio-valor">{{ promedioFinal | number:'1.0' }}%</span>
+        </div>
+        <div class="puntos-totales">
+          <span class="puntos-icon">⭐</span>
+          <span class="puntos-valor">{{ puntuacionTotal }} puntos totales</span>
+        </div>
+      </div>
 
-    <div class="acciones">
-      <button class="btn-camera" (click)="iniciarCamara()" [disabled]="evaluando">
-        📷 Iniciar Cámara
+      <!-- Resumen de cada ejercicio con botón repetir -->
+      <div class="resumen-ejercicios">
+        <h3>Detalle de tus señas:</h3>
+        <div class="ejercicios-lista">
+          <div class="ejercicio-resumen" *ngFor="let evaluacion of evaluacionesRealizadas; let i = index">
+            <div class="ejercicio-numero">#{{ i + 1 }}</div>
+            <div class="ejercicio-info">
+              <div class="ejercicio-pregunta">{{ evaluacion.pregunta }}</div>
+              <div class="ejercicio-metricas">
+                <span class="precision-badge" [class]="getColorClase(evaluacion.precision)">
+                  {{ evaluacion.precision }}%
+                </span>
+                <span class="puntos-badge">+{{ evaluacion.puntos_ganados }} pts</span>
+              </div>
+            </div>
+            <div class="ejercicio-icono">
+              {{ getPrecisionIcon(evaluacion.precision) }}
+            </div>
+            <!-- Botón repetir ejercicio específico -->
+            <button class="btn-repetir-ejercicio" (click)="repetirEjercicioEspecifico(evaluacion.ejercicio_id)" 
+                    title="Repetir este ejercicio">
+              🔄
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feedback adicional si el promedio es bajo -->
+      <div class="feedback-recomendaciones" *ngIf="promedioFinal < 70">
+        <div class="recomendacion">
+          <span>💡</span>
+          <p>Puedes repetir los ejercicios que tuvieron menor precisión para mejorar tu puntuación</p>
+        </div>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="resumen-acciones">
+        <button class="btn-repetir-leccion" (click)="repetirLeccionCompleta()">
+          🔄 Repetir toda la lección
+        </button>
+        <button class="btn-volver" (click)="cerrarResumen()">
+          ← Volver a lecciones
+        </button>
+        <button *ngIf="promedioFinal >= 70" class="btn-siguiente-leccion" (click)="irSiguienteLeccion()">
+          Siguiente lección →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Instrucción inicial simple (sin búho) -->
+  <div *ngIf="!cargando && ejercicioActual && !mostrandoResumenFinal && !camaraActiva" class="instruccion-inicial">
+    <div class="instruccion-contenido">
+      <div class="mano-icono">✋</div>
+      <h2>Realiza la seña:</h2>
+      <div class="palabra-sena">{{ ejercicioActual.pregunta }}</div>
+      <button class="btn-iniciar" (click)="iniciarCamara()" [disabled]="evaluando">
+        Comenzar →
       </button>
     </div>
   </div>
 
-  <!-- Vista de cámara con grabación -->
-  <div *ngIf="camaraActiva && !resultado" class="camera-container">
+  <!-- Vista de cámara con grabación automática -->
+  <div *ngIf="camaraActiva && !mostrandoResumenFinal" class="camera-container">
     <div class="video-wrapper">
       <video #videoElement class="video-preview" autoplay playsinline></video>
       <canvas #canvasElement class="canvas-overlay"></canvas>
     </div>
     
-    <!-- Cuenta regresiva -->
+    <!-- Mensaje de instrucción dentro de la cámara -->
+    <div class="instruccion-camara">
+      <p>{{ mensajeInstruccion || ('Realiza la seña: ' + (ejercicioActual?.pregunta || '')) }}</p>
+    </div>
+    
+    <!-- Cuenta regresiva grande -->
     <div *ngIf="mostrandoCuentaRegresiva" class="cuenta-regresiva">
       <div class="cuenta-numero">{{ cuentaRegresiva }}</div>
       <p>Prepárate...</p>
@@ -53,72 +120,10 @@
       <span>Grabando... {{ tiempoGrabacion }}s / 3s</span>
     </div>
     
-    <div class="instruccion">
-      <p>✋ Muestra tu mano frente a la cámara</p>
-    </div>
-    
-    <div class="acciones-camara">
-      <button class="btn-grabar" (click)="iniciarCuentaRegresiva()" 
-              [disabled]="grabando || evaluando || mostrandoCuentaRegresiva">
-        🎥 Grabar Seña (3s)
-      </button>
-      <button class="btn-cerrar-camara" (click)="cerrarCamara()">
-        ❌ Cerrar Cámara
-      </button>
-    </div>
-    
     <!-- Mensaje de evaluación -->
     <div *ngIf="evaluando" class="evaluando-mensaje">
       <div class="spinner-small"></div>
       <p>Evaluando tu seña...</p>
     </div>
   </div>
-
-<!-- Resultado -->
-<div *ngIf="resultado" class="resultado-card" [class]="getColorClass(resultado.color)">
-  <div class="resultado-icon">
-    <span *ngIf="resultado.color === 'verde'">🎉</span>
-    <span *ngIf="resultado.color === 'amarillo'">👍</span>
-    <span *ngIf="resultado.color === 'rojo'">💪</span>
-  </div>
-  
-  <h2 *ngIf="resultado.color === 'verde'">¡Excelente!</h2>
-  <h2 *ngIf="resultado.color === 'amarillo'">¡Buen intento!</h2>
-  <h2 *ngIf="resultado.color === 'rojo'">¡Sigue practicando!</h2>
-  
-  <div class="precision">
-    <span class="precision-valor">{{ resultado.precision }}%</span>
-    <span class="precision-label">Precisión</span>
-  </div>
-  
-  <div class="puntos">
-    <span>⭐ +{{ resultado.puntos_ganados }} puntos</span>
-  </div>
-
-  <div class="feedback" *ngIf="resultado.feedback">
-    <h3>Detalles:</h3>
-    <div class="feedback-items">
-      <div class="feedback-item" [class.verde]="resultado.feedback.mano === 'verde'"
-                                 [class.amarillo]="resultado.feedback.mano === 'amarillo'"
-                                 [class.rojo]="resultado.feedback.mano === 'rojo'">
-        <span>✋ Posición de mano</span>
-      </div>
-      <div class="feedback-item" [class.verde]="resultado.feedback.movimiento === 'verde'"
-                                 [class.amarillo]="resultado.feedback.movimiento === 'amarillo'"
-                                 [class.rojo]="resultado.feedback.movimiento === 'rojo'">
-        <span>🔄 Movimiento</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Botones de acción -->
-  <div class="acciones-resultado">
-    <button class="btn-repetir" (click)="repetirEjercicio()">
-      🔄 Intentar de nuevo
-    </button>
-    <button class="btn-siguiente" (click)="siguienteEjercicio()">
-      {{ indiceActual + 1 < ejercicios.length ? 'Siguiente Ejercicio →' : 'Completar Lección 🎉' }}
-    </button>
-  </div>
-</div>
 </div>

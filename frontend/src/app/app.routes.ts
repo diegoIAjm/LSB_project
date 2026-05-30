@@ -74,6 +74,7 @@ export const routes: Routes = [
   },
 
   // ========== RUTAS DEL ESTUDIANTE ==========
+// app.routes.ts
 {
   path: 'student',
   loadComponent: () => import('./student/student-layout/student-layout').then(m => m.StudentLayout),
@@ -91,40 +92,37 @@ export const routes: Routes = [
       path: 'diccionario',
       loadComponent: () => import('./student/diccionario/diccionario').then(m => m.DiccionarioComponent)
     },
+    // ============================================
+    // DUOLINGO - SIN LAYOUT, DIRECTO EN STUDENT
+    // ============================================
     {
-      path: 'duolingo',
-      loadComponent: () => import('./student/duolingo/duolingo-layout/duolingo-layout').then(m => m.DuolingoLayoutComponent),
-      children: [
-        {
-          path: 'niveles',
-          loadComponent: () => import('./student/duolingo/niveles/niveles').then(m => m.DuolingoNivelesComponent)
-        },
-        {
-          path: 'unidades/:nivelId',
-          loadComponent: () => import('./student/duolingo/unidades/unidades').then(m => m.DuolingoUnidadesComponent)
-        },
-        {
-          path: 'lecciones/:unidadId',
-          loadComponent: () => import('./student/duolingo/lecciones/lecciones').then(m => m.DuolingoLeccionesComponent)
-        },
-        {
-          path: 'ejercicio/:leccionId',
-          loadComponent: () => import('./student/duolingo/ejercicio/ejercicio').then(m => m.DuolingoEjercicioComponent)
-        },
-        {
-          path: '',
-          redirectTo: 'niveles',
-          pathMatch: 'full'
-        }
-      ]
+      path: 'duolingo/niveles',
+      loadComponent: () => import('./student/duolingo/niveles/niveles').then(m => m.DuolingoNivelesComponent)
     },
     {
-      path: 'mis-practicas',  // 🔹 AHORA SÍ, DENTRO DEL ARRAY CHILDREN
+      path: 'duolingo/unidades/:nivelId',
+      loadComponent: () => import('./student/duolingo/unidades/unidades').then(m => m.DuolingoUnidadesComponent)
+    },
+    {
+      path: 'duolingo/lecciones/:unidadId',
+      loadComponent: () => import('./student/duolingo/lecciones/lecciones').then(m => m.DuolingoLeccionesComponent)
+    },
+    {
+      path: 'duolingo/ejercicio/:leccionId',
+      loadComponent: () => import('./student/duolingo/ejercicio/ejercicio').then(m => m.DuolingoEjercicioComponent)
+    },
+    // ============================================
+    {
+      path: 'mis-practicas',
       loadComponent: () => import('./student/mis-practicas/mis-practicas').then(m => m.MisPracticasComponent)
     },
     {
       path: 'grabar-practica/:id',
       loadComponent: () => import('./student/grabar-practica/grabar-practica').then(m => m.GrabarPracticaComponent)
+    },
+    {
+      path: 'materiales',
+      loadComponent: () => import('./student/materiales/materiales').then(m => m.MaterialesComponent)
     },
     {
       path: '',

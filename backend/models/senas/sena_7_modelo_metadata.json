@@ -1,0 +1,16 @@
+{
+  "seq_length": 30,
+  "n_features": 225,
+  "nombre_sena": "F",
+  "num_muestras_sena": 1000,
+  "num_muestras_silencio": 1000,
+  "accuracy_entrenamiento_final": 0.9975000023841858,
+  "accuracy_validacion_final": 1.0,
+  "mejor_accuracy_validacion": 1.0,
+  "mejor_loss_validacion": 0.050947025418281555,
+  "accuracy_realista_estimada": 0.85,
+  "epochs_completadas": 30,
+  "advertencia": "Modelo entrenado con UN SOLO video - la precisi\u00f3n real ser\u00e1 menor",
+  "umbral_recomendado": 0.6,
+  "recomendacion": "Usar umbral 0.6 para mejor detecci\u00f3n, 0.7 para mayor precision"
+}

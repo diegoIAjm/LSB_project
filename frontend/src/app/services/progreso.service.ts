@@ -16,6 +16,10 @@ export interface EstadisticasGlobales {
   lecciones_completadas: number;
   total_lecciones: number;
   porcentaje_completado: number;
+  // 👇 Agrega estas 3 propiedades
+  mejora_total: number;
+  mejor_sesion: number;
+  total_sesiones: number;
 }
 
 export interface ProgresoLeccion {
@@ -43,6 +47,7 @@ export interface RankingEstudiante {
   promedio_precision: number;
   ejercicios_completados: number;
   avatar?: string;
+  esUsuarioActual?: boolean;
 }
 
 @Injectable({
