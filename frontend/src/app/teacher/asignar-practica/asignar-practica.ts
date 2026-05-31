@@ -16,7 +16,7 @@ import { CursosService } from '../../services/cursos.service';
 export class AsignarPracticaComponent implements OnInit {
   cursos: any[] = [];
   cursosFiltrados: any[] = [];
-  cargando = true;  // 🔹 Cambiar a true inicialmente
+  cargando = true;
   filtroBusqueda = '';
   docenteId = 1;
 
@@ -36,7 +36,6 @@ export class AsignarPracticaComponent implements OnInit {
       next: (response: any) => {
         console.log('Respuesta completa:', response);
         
-        // 🔹 Extraer los cursos de la respuesta
         let cursosData = [];
         
         if (response && response.cursos && Array.isArray(response.cursos)) {
@@ -48,11 +47,10 @@ export class AsignarPracticaComponent implements OnInit {
         }
         
         this.cursos = cursosData;
-        this.cursosFiltrados = [...cursosData];  // 🔹 Copia inmediata
+        this.cursosFiltrados = [...cursosData];
         
         console.log('Cursos cargados:', this.cursos);
-        console.log('Cursos filtrados inicial:', this.cursosFiltrados);
-        this.cargando = false;  // 🔹 Asegurar que se cambie a false
+        this.cargando = false;
       },
       error: (error: any) => {
         console.error('Error al cargar cursos:', error);
@@ -71,7 +69,7 @@ export class AsignarPracticaComponent implements OnInit {
         curso.nombre && curso.nombre.toLowerCase().includes(this.filtroBusqueda.toLowerCase())
       );
     } else {
-      this.cursosFiltrados = [...this.cursos];  // 🔹 Mostrar todos si no hay filtro
+      this.cursosFiltrados = [...this.cursos];
     }
     
     console.log('Cursos filtrados:', this.cursosFiltrados);
@@ -90,4 +88,10 @@ export class AsignarPracticaComponent implements OnInit {
       queryParams: { cursoNombre: cursoNombre }
     });
   }
+
+verEntregas(cursoId: number, cursoNombre: string): void {
+  this.router.navigate(['/teacher/entregas-cursos', cursoId], {
+    queryParams: { cursoNombre: cursoNombre }
+  });
+}
 }

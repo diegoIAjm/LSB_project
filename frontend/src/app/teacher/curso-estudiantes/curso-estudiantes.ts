@@ -1,3 +1,5 @@
+// src/app/teacher/curso-estudiantes/curso-estudiantes.ts
+
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -46,22 +48,11 @@ export class CursoEstudiantesComponent implements OnInit {
       next: (res: any) => {
         console.log('Datos recibidos del backend:', res);
         
-        // 🔹 Forzar nueva referencia del array
         this.estudiantes = [...res.estudiantes];
         this.estudiantesFiltrados = [...res.estudiantes];
         this.cursoNombre = res.curso_nombre;
         this.cargando = false;
-        
-        // 🔹 Forzar detección de cambios
         this.cdr.detectChanges();
-        
-        console.log('Datos asignados - estudiantes:', this.estudiantes.length);
-        console.log('Datos asignados - cursoNombre:', this.cursoNombre);
-        
-        // 🔹 Forzar actualización después de un breve retraso
-        setTimeout(() => {
-          this.cdr.detectChanges();
-        }, 100);
       },
       error: (err: any) => {
         console.error('Error:', err);
@@ -91,19 +82,13 @@ export class CursoEstudiantesComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  toggleEstado(inscripcion: any): void {
-    const nuevoEstado = inscripcion.estado === 'activo' ? 'cancelar' : 'activar';
-    const confirmar = confirm(`¿Seguro que deseas ${nuevoEstado} la inscripción de ${inscripcion.nombre}?`);
-    if (!confirmar) return;
-    
-    this.cursosService.toggleInscripcionEstado(inscripcion.id).subscribe({
-      next: () => {
-        inscripcion.estado = inscripcion.estado === 'activo' ? 'cancelado' : 'activo';
-        this.filtrarEstudiantes();
-        this.cdr.detectChanges();
-      },
-      error: (err: any) => {
-        console.error('Error:', err);
+  // ✅ Nueva función: Ver prácticas del estudiante
+  verPracticas(estudianteId: number, estudianteNombre: string): void {
+    this.router.navigate(['/teacher/estudiante-practicas', estudianteId], {
+      queryParams: { 
+        cursoId: this.cursoId,
+        cursoNombre: this.cursoNombre,
+        estudianteNombre: estudianteNombre 
       }
     });
   }

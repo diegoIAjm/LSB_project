@@ -1,91 +1,197 @@
 <!-- src/app/student/mis-practicas/mis-practicas.html -->
 
 <div class="mis-practicas-container">
-  <div class="page-header">
-    <h1>📝 Mis Prácticas</h1>
-    <p>Aquí encontrarás todas las prácticas asignadas por tus docentes</p>
+  <!-- Header -->
+  <div class="header">
+    <div class="header-title">
+      <h1>Prácticas Asignadas</h1>
+      <p>Gestiona y realiza las prácticas enviadas por tus docentes</p>
+    </div>
+    <div class="header-stats" *ngIf="practicas.length > 0">
+      <div class="stat-card">
+        <span class="stat-number">{{ practicas.length }}</span>
+        <span class="stat-label">Total</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">{{ getPracticasPendientes() }}</span>
+        <span class="stat-label">Pendientes</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">{{ getPracticasCompletadas() }}</span>
+        <span class="stat-label">Completadas</span>
+      </div>
+    </div>
   </div>
 
-  <!-- Buscador -->
-  <div class="search-section">
-    <input 
-      type="text" 
-      placeholder="🔍 Buscar práctica..." 
-      [(ngModel)]="filtroBusqueda"
-      (input)="filtrarPracticas()"
-      class="search-input"
-    />
+  <!-- Buscador y filtros -->
+  <div class="search-filters">
+    <div class="search-box">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input 
+        type="text" 
+        placeholder="Buscar práctica..." 
+        [(ngModel)]="filtroBusqueda"
+        (input)="filtrarPracticas()"
+        class="search-input"
+      />
+    </div>
+    <div class="filter-tabs">
+      <button class="filter-tab" [class.active]="filtroEstado === 'todos'" (click)="filtrarPorEstado('todos')">Todos</button>
+      <button class="filter-tab" [class.active]="filtroEstado === 'pendiente'" (click)="filtrarPorEstado('pendiente')">Pendientes</button>
+      <button class="filter-tab" [class.active]="filtroEstado === 'en_progreso'" (click)="filtrarPorEstado('en_progreso')">En progreso</button>
+      <button class="filter-tab" [class.active]="filtroEstado === 'completado'" (click)="filtrarPorEstado('completado')">Completadas</button>
+      <button class="filter-tab" [class.active]="filtroEstado === 'revisado'" (click)="filtrarPorEstado('revisado')">Revisadas</button>
+    </div>
   </div>
 
-  @if (cargando) {
+  <!-- Loading -->
+  @if (cargando || verificando) {
     <div class="loading">
       <div class="spinner"></div>
       <p>Cargando tus prácticas...</p>
     </div>
   }
 
-  @if (!cargando && practicasFiltradas.length === 0) {
+  <!-- Empty State -->
+  @if (!cargando && !verificando && practicasFiltradas.length === 0) {
     <div class="empty-state">
-      <div class="empty-icon">📭</div>
+      <div class="empty-illustration">
+        <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <path d="M22 6L12 13L2 6M22 6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6l10 7l10-7z"/>
+        </svg>
+      </div>
       <h3>No hay prácticas asignadas</h3>
-      <p>Tus prácticas aparecerán aquí cuando los docentes las asignen</p>
+      <p>Tus prácticas aparecerán aquí cuando los docentes te las asignen</p>
     </div>
   }
 
+  <!-- Grid de prácticas -->
   <div class="practicas-grid">
     @for (practica of practicasFiltradas; track practica.id) {
       <div class="practica-card" [class.vencida]="estaVencida(practica.fecha_limite)">
+        <!-- Cabecera -->
         <div class="card-header">
-          <h3>{{ practica.titulo }}</h3>
-          <span class="fecha-limite">
-            📅 {{ practica.fecha_limite | date:'dd/MM/yyyy' }}
+          <div class="card-title">
+            <h3>{{ practica.titulo }}</h3>
+            <span class="fecha-limite">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              {{ practica.fecha_limite | date:'dd/MM/yyyy HH:mm' }}
+            </span>
+          </div>
+          <span class="estado-badge" [class]="getEstadoBadgeClass(practica.estado_entrega || 'pendiente')">
+            {{ getEstadoTexto(practica.estado_entrega || 'pendiente') }}
           </span>
         </div>
-        
+
+        <!-- Descripción -->
         <p class="descripcion">{{ practica.descripcion }}</p>
-        
-        <div class="card-info">
-          <div class="info-item">
-            <span class="label">Curso:</span>
-            <span class="value">{{ practica.curso_nombre }}</span>
+
+        <!-- Metadatos -->
+        <div class="metadata">
+          <div class="meta-item">
+            <span class="meta-label">Curso</span>
+            <span class="meta-value">{{ practica.curso_nombre }}</span>
           </div>
-          <div class="info-item">
-            <span class="label">Lección:</span>
-            <span class="value">{{ practica.leccion_titulo }}</span>
+          <div class="meta-item">
+            <span class="meta-label">Lección</span>
+            <span class="meta-value">{{ practica.leccion_titulo }}</span>
+          </div>
+          <div class="meta-item" *ngIf="practica.reintentos_permitidos">
+            <span class="meta-label">Intentos</span>
+            <span class="meta-value">{{ practica.intentos_realizados || 0 }} / {{ practica.reintentos_permitidos }}</span>
           </div>
         </div>
 
-        <div class="card-footer">
-          <div class="estado">
-            <span class="badge" [class]="getEstadoBadgeClass(practica.estado_entrega || 'pendiente')">
-              {{ getEstadoTexto(practica.estado_entrega || 'pendiente') }}
-            </span>
-            @if (estaVencida(practica.fecha_limite) && practica.estado_entrega !== 'entregado') {
-              <span class="vencida-text">⚠️ Vencida</span>
-            }
+        <!-- Progreso -->
+        @if (practica.estado_entrega === 'en_progreso' && practica.videos_total) {
+          <div class="progress-section">
+            <div class="progress-header">
+              <span>Progreso</span>
+              <span>{{ practica.videos_aprobados || 0 }}/{{ practica.videos_total }} señas</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="((practica.videos_aprobados || 0) / practica.videos_total) * 100"></div>
+            </div>
           </div>
-          
-          <!-- Mostrar botón según el estado -->
-          @if (practica.estado_entrega !== 'entregado' && practica.estado_entrega !== 'revisado') {
-            <button class="btn-entregar" 
+        }
+
+        <!-- Footer con acciones -->
+        <div class="card-footer">
+          <!-- Estado de vencimiento -->
+          @if (estaVencida(practica.fecha_limite) && practica.estado_entrega !== 'completado' && practica.estado_entrega !== 'revisado') {
+            <div class="vencido-warning">
+              <span>Práctica vencida</span>
+            </div>
+          }
+
+          <!-- Botones según estado -->
+          @if (practica.estado_entrega === 'pendiente') {
+            <button class="btn-primary" 
                     (click)="navegarAGrabacion(practica.id!)"
                     [disabled]="estaVencida(practica.fecha_limite)">
-              🎥 Grabar Video
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polygon points="10 8 16 12 10 16 10 8"/>
+              </svg>
+              Iniciar práctica
+            </button>
+          } @else if (practica.estado_entrega === 'en_progreso') {
+            <button class="btn-secondary" (click)="continuarPractica(practica)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12h3l3-9 3 18 3-9h3"/>
+              </svg>
+              Continuar
             </button>
           } @else if (practica.estado_entrega === 'revisado') {
-            <!-- Mostrar calificación con detalle -->
-            <div class="calificacion" (click)="verDetalleResultado(practica)">
-              <div class="nota-preview">
-                <span class="estrella">⭐</span>
-                <span class="nota-valor">{{ practica.nota || 0 }}/5</span>
+            <div class="resultado-badge" (click)="verDetalleResultado(practica)">
+              <div class="nota">
+                <span class="nota-valor">{{ practica.nota || practica.nota_final || 0 }}</span>
+                <span class="nota-max">/20</span>
               </div>
-              <span class="precision">{{ practica.precision || 0 }}%</span>
-              <span class="ver-detalle">📊</span>
+              <div class="precision">
+                <span>{{ (practica.precision || 0) | number:'1.0' }}%</span>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
             </div>
-          } @else {
-            <div class="entregado">
-              <span>✅ Entregado</span>
+            @if (puedeReintentar(practica)) {
+              <button class="btn-outline" 
+                      (click)="reintentarPractica(practica)"
+                      [disabled]="reintentando[practica.id!]">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M23 4v6h-6M1 20v-6h6"/>
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                </svg>
+                Reintentar
+              </button>
+            }
+          } @else if (practica.estado_entrega === 'completado') {
+            <div class="completado-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Pendiente de revisión
             </div>
+            @if (puedeReintentar(practica)) {
+              <button class="btn-outline" 
+                      (click)="reintentarPractica(practica)"
+                      [disabled]="reintentando[practica.id!]">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M23 4v6h-6M1 20v-6h6"/>
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                </svg>
+                Reintentar
+              </button>
+            }
           }
         </div>
       </div>

@@ -24,7 +24,7 @@
         <!-- Lección -->
         <div class="form-group">
           <label class="form-label">📖 Lección *</label>
-          <select formControlName="leccion_id" class="form-control">
+          <select formControlName="leccion_id" class="form-control" (change)="onLeccionChange()">
             <option value="">Seleccionar lección</option>
             @for (leccion of lecciones; track leccion.id) {
               <option [value]="leccion.id">{{ leccion.titulo }}</option>
@@ -55,19 +55,85 @@
           }
         </div>
 
-        <!-- Fecha límite -->
+        <!-- Fecha Límite con hora -->
         <div class="form-group">
-          <label class="form-label">⏰ Fecha Límite *</label>
-          <input type="date" formControlName="fecha_limite" class="form-control">
+          <label class="form-label">⏰ Fecha y Hora Límite *</label>
+          <input type="datetime-local" formControlName="fecha_limite" class="form-control">
           @if (evaluacionForm.get('fecha_limite')?.invalid && evaluacionForm.get('fecha_limite')?.touched) {
-            <div class="error-message">Seleccione una fecha límite</div>
+            <div class="error-message">Seleccione una fecha y hora límite</div>
           }
+        </div>
+
+        <!-- Selección de señas -->
+        <div class="form-group">
+          <label class="form-label">🖐️ Señas a evaluar *</label>
+          <div class="senas-seleccion">
+            <div class="senas-busqueda" *ngIf="senasDisponibles.length > 0">
+              <input type="text" 
+                     class="form-control" 
+                     [(ngModel)]="busquedaSena" 
+                     [ngModelOptions]="{standalone: true}"
+                     placeholder="Buscar seña..."
+                     (input)="filtrarSenas()">
+            </div>
+            
+            <div class="senas-lista">
+              <div *ngFor="let sena of senasFiltradas" 
+                   class="sena-item" 
+                   [class.selected]="isSenaSelected(sena.id)"
+                   (click)="toggleSena(sena.id, sena.nombre)">
+                <span class="sena-icon">✋</span>
+                <span class="sena-nombre">{{ sena.nombre }}</span>
+                <span class="sena-check" *ngIf="isSenaSelected(sena.id)">✓</span>
+              </div>
+              
+              <div *ngIf="senasFiltradas.length === 0 && !cargandoSenas" class="no-senas">
+                No hay señas disponibles
+              </div>
+              
+              <div *ngIf="cargandoSenas" class="loading-senas">
+                Cargando señas...
+              </div>
+            </div>
+          </div>
+          
+          <!-- Resumen de señas seleccionadas -->
+          <div class="senas-seleccionadas" *ngIf="senasSeleccionadas.length > 0">
+            <label class="form-label">Señas seleccionadas ({{ senasSeleccionadas.length }}):</label>
+            <div class="selected-badges">
+              <span *ngFor="let sena of senasSeleccionadas" class="badge-sena">
+                {{ sena.nombre }}
+                <button type="button" class="badge-remove" (click)="removeSena(sena.id)">×</button>
+              </span>
+            </div>
+          </div>
+          
+          @if (senasSeleccionadas.length === 0 && evaluacionForm.get('senasSeleccionadas')?.touched) {
+            <div class="error-message">Seleccione al menos una seña</div>
+          }
+        </div>
+
+        <!-- Tiempo estimado -->
+        <div class="form-group">
+          <label class="form-label">⏱️ Tiempo estimado (minutos)</label>
+          <input type="number" formControlName="tiempo_estimado_minutos" class="form-control" 
+                 placeholder="Ej: 30" min="1" max="180">
+        </div>
+
+        <!-- Reintentos permitidos -->
+        <div class="form-group">
+          <label class="form-label">🔄 Reintentos permitidos</label>
+          <select formControlName="reintentos_permitidos" class="form-control">
+            <option [value]="1">1 intento</option>
+            <option [value]="2">2 intentos</option>
+            <option [value]="3">3 intentos</option>
+          </select>
         </div>
 
         <!-- Botones -->
         <div class="form-actions">
           <button type="button" class="btn-cancelar" (click)="volver()">Cancelar</button>
-          <button type="submit" class="btn-crear" [disabled]="evaluacionForm.invalid || loading">
+          <button type="submit" class="btn-crear" [disabled]="evaluacionForm.invalid || loading || senasSeleccionadas.length === 0">
             @if (loading) {
               <span>⏳ Asignando...</span>
             } @else {

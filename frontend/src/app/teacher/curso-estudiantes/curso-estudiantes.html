@@ -1,11 +1,13 @@
+<!-- src/app/teacher/curso-estudiantes/curso-estudiantes.html -->
+
 <div class="estudiantes-container">
   <!-- Header -->
   <div class="page-header">
     <div class="header-content">
       <button class="btn-back" (click)="volver()">
-        ← Volver
+        ← Volver a Cursos
       </button>
-      <h1>📚 <span id="cursoNombreSpan">{{ cursoNombre || 'Cargando...' }}</span></h1>
+      <h1>{{ cursoNombre || 'Cargando...' }}</h1>
       <p>Gestión de estudiantes inscritos en el curso</p>
     </div>
     <div class="header-decoration">
@@ -14,7 +16,7 @@
     </div>
   </div>
 
-  <!-- Estadísticas usando getters -->
+  <!-- Estadísticas -->
   <div class="stats-grid">
     <div class="stat-card">
       <div class="stat-icon">👥</div>
@@ -49,7 +51,7 @@
   <!-- Filtros -->
   <div class="filters-section">
     <div class="search-bar">
-      <i class="search-icon">🔍</i>
+      <span class="search-icon">🔍</span>
       <input 
         type="text" 
         placeholder="Buscar estudiante..." 
@@ -65,66 +67,68 @@
     </div>
 
     <button class="btn-clear" (click)="limpiarFiltros()">
-      🗑️ Limpiar
+      Limpiar filtros
     </button>
   </div>
 
+  <!-- Loading -->
+  @if (cargando) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando estudiantes...</p>
+    </div>
+  }
+
   <!-- Grid de estudiantes -->
-  <div *ngIf="cargando" class="loading-container">
-    <div class="spinner"></div>
-    <p>Cargando estudiantes...</p>
-  </div>
-
-  <div *ngIf="!cargando" class="estudiantes-grid">
-    <div *ngFor="let est of estudiantesFiltrados" class="estudiante-card">
-      <div class="card-header">
-        <div class="avatar">
-          <span class="avatar-initial">{{ est.nombre?.charAt(0) || '?' }}</span>
-        </div>
-        <div class="estado-badge" [class]="getEstadoClass(est.estado)">
-          {{ getEstadoTexto(est.estado) }}
-        </div>
-      </div>
-      
-      <h3 class="estudiante-nombre">{{ est.nombre }}</h3>
-      <p class="estudiante-email">{{ est.email }}</p>
-      
-      <div class="card-info">
-        <div class="info-item">
-          <span class="info-label">📅 Inscripción</span>
-          <span class="info-value">{{ est.fecha_inscripcion | date:'dd/MM/yyyy' }}</span>
-        </div>
-        <div class="info-item" *ngIf="est.progreso">
-          <span class="info-label">📊 Progreso</span>
-          <div class="progress-bar-mini">
-            <div class="progress-fill-mini" [style.width.%]="est.progreso"></div>
+  @if (!cargando) {
+    <div class="estudiantes-grid">
+      @for (est of estudiantesFiltrados; track est.id) {
+        <div class="estudiante-card">
+          <div class="card-header">
+            <div class="avatar">
+              <span class="avatar-initial">{{ (est.nombre?.charAt(0) || '?') }}{{ (est.apellido?.charAt(0) || '') }}</span>
+            </div>
+            <div class="estado-badge" [class]="getEstadoClass(est.estado)">
+              {{ getEstadoTexto(est.estado) }}
+            </div>
           </div>
-          <span class="info-value">{{ est.progreso }}%</span>
+          
+          <h3 class="estudiante-nombre">{{ est.nombre }} {{ est.apellido }}</h3>
+          <p class="estudiante-email">{{ est.email }}</p>
+          
+          <div class="card-info">
+            <div class="info-item">
+              <span class="info-label">Fecha inscripción</span>
+              <span class="info-value">{{ est.fecha_inscripcion | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="info-item" *ngIf="est.progreso">
+              <span class="info-label">Progreso</span>
+              <div class="progress-wrapper">
+                <div class="progress-bar-mini">
+                  <div class="progress-fill-mini" [style.width.%]="est.progreso"></div>
+                </div>
+                <span class="info-value">{{ est.progreso }}%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <button class="btn-practicas" (click)="verPracticas(est.id, est.nombre)">
+              Ver Prácticas
+            </button>
+          </div>
         </div>
-      </div>
+      }
 
-      <div class="card-actions">
-        <button 
-          *ngIf="est.estado === 'activo'" 
-          class="btn-cancelar" 
-          (click)="toggleEstado(est)">
-          ❌ Cancelar Inscripción
-        </button>
-        <button 
-          *ngIf="est.estado !== 'activo'" 
-          class="btn-activar" 
-          (click)="toggleEstado(est)">
-          🔄 Activar Inscripción
-        </button>
-      </div>
+      <!-- Mensaje sin resultados -->
+      @if (estudiantesFiltrados.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">👥</div>
+          <h3>No hay estudiantes</h3>
+          <p>No se encontraron estudiantes que coincidan con los filtros</p>
+          <button class="btn-clear" (click)="limpiarFiltros()">Limpiar filtros</button>
+        </div>
+      }
     </div>
-
-    <!-- Mensaje sin resultados -->
-    <div *ngIf="estudiantesFiltrados.length === 0" class="empty-state">
-      <div class="empty-icon">👥</div>
-      <h3>No hay estudiantes</h3>
-      <p>No se encontraron estudiantes que coincidan con los filtros</p>
-      <button class="btn-clear" (click)="limpiarFiltros()">Limpiar filtros</button>
-    </div>
-  </div>
+  }
 </div>

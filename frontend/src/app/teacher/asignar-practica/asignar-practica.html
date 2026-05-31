@@ -38,9 +38,14 @@
           <h3>{{ curso.nombre }}</h3>
           <p class="curso-nivel">{{ curso.nivel_nombre }}</p>
           <p class="curso-fecha">📅 Inicio: {{ curso.fecha_inicio | date:'dd/MM/yyyy' }}</p>
-          <button class="btn-asignar" (click)="asignarPractica(curso.id, curso.nombre)">
-            📝 Asignar Práctica
-          </button>
+          <div class="curso-actions">
+            <button class="btn-asignar" (click)="asignarPractica(curso.id, curso.nombre)">
+              📝 Asignar Práctica
+            </button>
+            <button class="btn-ver-entregas" (click)="verEntregas(curso.id, curso.nombre)">
+              📋 Ver Entregas
+            </button>
+          </div>
         </div>
       }
     </div>

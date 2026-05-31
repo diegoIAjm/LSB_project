@@ -1,149 +1,89 @@
 <!-- src/app/student/grabar-practica/grabar-practica.html -->
-<div class="grabar-container">
-  <!-- Cabecera -->
+
+<div class="grabar-practica-container">
+  <!-- Header minimalista -->
   <div class="header">
     <button class="btn-back" (click)="volver()">
       ← Volver
     </button>
-    <h1>📹 Entregar Práctica</h1>
+    <div class="header-info">
+      <h2>{{ practica?.titulo || 'Práctica' }}</h2>
+      <p>Seña: <strong>{{ senaActual?.nombre || senaActual?.id || 'Cargando...' }}</strong></p>
+    </div>
+    <div class="progreso-header">
+      <span>{{ senasCompletadas }}/{{ totalSenas }} señas</span>
+      <div class="progreso-bar">
+        <div class="progreso-fill" [style.width.%]="(senasCompletadas / totalSenas) * 100"></div>
+      </div>
+    </div>
   </div>
 
-  <!-- Info de la práctica -->
-  @if (practica) {
-    <div class="practica-info">
-      <h2>{{ practica.titulo }}</h2>
-      <p>{{ practica.descripcion }}</p>
-      <div class="meta-info">
-        <span>📅 Límite: {{ practica.fecha_limite | date:'dd/MM/yyyy' }}</span>
-        <span>📚 {{ practica.curso_nombre }} - {{ practica.leccion_titulo }}</span>
-      </div>
+  <!-- Área de cámara GRANDE -->
+  <div class="camera-area">
+    <div class="video-wrapper">
+      <video #videoElement class="video-preview" autoplay playsinline muted></video>
+      <canvas #canvasElement class="canvas-overlay"></canvas>
     </div>
-  }
 
-  <!-- Modo: Grabar Video -->
-  @if (modo === 'grabar') {
-    <div class="modo-grabar">
-      <div class="video-section">
-        <!-- Usamos #videoPlayer y verificamos con un operador de seguridad -->
-        <video #videoPlayer class="video-preview" autoplay muted playsinline></video>
-        <canvas #canvas style="display: none;"></canvas>
-        
-        <div class="controles">
-          @if (!grabando) {
-            <div class="camara-selector">
-              <label>📷 Seleccionar cámara:</label>
-              <select [(ngModel)]="camaraSeleccionada" (change)="reiniciarCamara()">
-                @for (cam of camaras; track cam.deviceId) {
-                  <option [value]="cam.deviceId">{{ cam.label || 'Cámara ' + $index }}</option>
-                }
-              </select>
-            </div>
-            
-            <button class="btn-grabar" (click)="iniciarGrabacion()">
-              🎥 Iniciar Grabación
-            </button>
-            <button class="btn-subir" (click)="fileInput.click()">
-              📁 Subir Video
-            </button>
-          }
-          
-          @if (grabando) {
-            <div class="grabando-info">
-              <div class="indicador">
-                <div class="punto-rojo"></div>
-                <span>Grabando... {{ tiempoGrabacion }}s / 30s</span>
-              </div>
-              <button class="btn-detener" (click)="detenerGrabacion()">
-                ⏹️ Detener
-              </button>
-            </div>
-          }
-          
-          <input #fileInput type="file" accept="video/*" style="display: none" (change)="onFileSelected($event)" />
-        </div>
-      </div>
-      
-      <div class="instrucciones">
-        <h3>📝 Instrucciones:</h3>
-        <ul>
-          <li>Realiza la seña <strong>{{ obtenerNombreSena() }}</strong> frente a la cámara</li>
-          <li>Mantén tus manos visibles y bien iluminadas</li>
-          <li>La grabación durará máximo 30 segundos</li>
-          <li>Asegúrate de hacer la seña completa de principio a fin</li>
-        </ul>
-      </div>
+    <!-- Instrucción flotante -->
+    <div class="instruccion-flotante" *ngIf="!resultadoActual && !grabando && !mostrandoCuentaRegresiva">
+      <p>✋ Realiza la seña: <strong>{{ senaActual?.nombre || senaActual?.id }}</strong></p>
+      <button class="btn-iniciar" (click)="iniciarCuentaRegresiva()">
+        🎥 Comenzar Grabación
+      </button>
     </div>
-  }
 
-  <!-- Modo: Subir/Previsualizar Video -->
-  @if (modo === 'subir' && videoGrabado) {
-    <div class="modo-subir">
-      <div class="video-section">
-        <!-- Usamos src de manera segura -->
-        <video class="video-preview" [src]="videoPreviewUrl" controls></video>
-      </div>
-      
-      <div class="info-video">
-        <p>📹 Video listo: {{ videoGrabado.name }}</p>
-        <p>Tamaño: {{ (videoGrabado.size / 1024 / 1024).toFixed(2) }} MB</p>
-      </div>
-      
-      <div class="acciones">
-        <button class="btn-reintentar" (click)="reintentar()">
-          🔄 Grabar de nuevo
-        </button>
-        <button class="btn-evaluar" (click)="enviarEvaluacion()" [disabled]="cargandoEvaluacion">
-          @if (cargandoEvaluacion) {
-            <span>🤖 Evaluando... <div class="spinner"></div></span>
-          } @else {
-            <span>✅ Enviar y Evaluar</span>
-          }
-        </button>
-      </div>
+    <!-- Cuenta regresiva -->
+    <div *ngIf="mostrandoCuentaRegresiva" class="cuenta-regresiva">
+      <div class="cuenta-numero">{{ cuentaRegresiva }}</div>
+      <p>Prepárate...</p>
     </div>
-  }
 
-  <!-- Modo: Resultado de Evaluación -->
-  @if (modo === 'resultado' && resultado) {
-    <div class="modo-resultado" [class.aprobado]="resultado.nota >= 3" [class.reprobado]="resultado.nota < 3">
-      <div class="resultado-header">
-        <h2>🤖 Resultado de la Evaluación</h2>
-      </div>
-      
-      <div class="puntaje">
-        <div class="nota">
-          <span class="label">📊 Nota</span>
-          <span class="valor" [style.color]="obtenerColorNota()">{{ resultado.nota }}/5</span>
-        </div>
-        <div class="precision">
-          <span class="label">🎯 Precisión</span>
-          <span class="valor">{{ resultado.precision }}%</span>
-        </div>
-      </div>
-      
-      <div class="feedback">
-        <p>{{ resultado.feedback }}</p>
-      </div>
-      
-      <div class="detalles">
-        <div class="detalle">
-          <span class="label">🤚 Seña detectada:</span>
-          <span class="value">{{ resultado.sena_detectada }}</span>
-        </div>
-        <div class="detalle">
-          <span class="label">📈 Confianza:</span>
-          <span class="value">{{ resultado.confianza }}%</span>
-        </div>
-      </div>
-      
-      <div class="acciones-resultado">
-        <button class="btn-reintentar" (click)="reintentar()">
-          🔄 Intentar de nuevo
-        </button>
-        <button class="btn-volver" (click)="volver()">
-          📋 Ver mis prácticas
-        </button>
+    <!-- Indicador de grabación -->
+    <div *ngIf="grabando" class="grabando-indicador">
+      <div class="punto-rojo"></div>
+      <span>Grabando... {{ tiempoGrabacion }}s / {{ duracionGrabacion }}s</span>
+      <div class="onda-sonido">
+        <span></span><span></span><span></span><span></span>
       </div>
     </div>
-  }
+
+    <!-- Mensaje de evaluación -->
+    <div *ngIf="evaluando" class="evaluando-mensaje">
+      <div class="spinner-small"></div>
+      <p>Evaluando tu seña...</p>
+    </div>
+
+    <!-- Resultado de la seña -->
+    <div *ngIf="resultadoActual" class="resultado-overlay" [class.verde]="resultadoActual.color === 'verde'"
+         [class.amarillo]="resultadoActual.color === 'amarillo'"
+         [class.rojo]="resultadoActual.color === 'rojo'">
+      <div class="resultado-icon">
+        <span *ngIf="resultadoActual.color === 'verde'">🎉</span>
+        <span *ngIf="resultadoActual.color === 'amarillo'">👍</span>
+        <span *ngIf="resultadoActual.color === 'rojo'">💪</span>
+      </div>
+      <div class="resultado-info">
+        <span class="precision">{{ resultadoActual.precision }}%</span>
+        <span class="puntos">+{{ resultadoActual.puntuacion }} pts</span>
+      </div>
+      <div class="resultado-feedback" *ngIf="resultadoActual.feedback">
+        <span>✋ {{ resultadoActual.feedback.mano || 'Mano' }}</span>
+        <span>🔄 {{ resultadoActual.feedback.movimiento || 'Movimiento' }}</span>
+      </div>
+      <button class="btn-continuar" (click)="siguienteSena()">
+        {{ hayMasSenas ? 'Siguiente Seña →' : 'Finalizar Práctica 🎉' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Selector de cámara -->
+  <div class="camara-selector" *ngIf="!grabando && !resultadoActual && !mostrandoCuentaRegresiva">
+    <label>📷 Cámara:</label>
+    <select [(ngModel)]="camaraSeleccionada" (change)="cambiarCamara()">
+      <option *ngFor="let cam of camaras; let i = index" [value]="cam.deviceId">
+        {{ cam.label || 'Cámara ' + i }}
+      </option>
+    </select>
+  </div>
 </div>

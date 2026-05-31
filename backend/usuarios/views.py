@@ -1,7 +1,7 @@
 from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Usuario, Docente
+from .models import Usuario, Docente, Estudiante
 from .serializers import UsuarioSerializer, UsuarioCreateSerializer, UsuarioUpdateSerializer, ImportacionResponseSerializer
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -199,6 +199,19 @@ class LoginView(APIView):
             
             rol_nombre = usuario.rol.nombre if usuario.rol else None
             
+            # ✅ Obtener estudiante_id si el usuario es estudiante
+            estudiante_id = None
+            if rol_nombre == 'estudiante':
+                try:
+                    from .models import Estudiante
+                    estudiante = Estudiante.objects.get(usuario_id=usuario.id)
+                    estudiante_id = estudiante.id
+                    print(f"✅ Estudiante encontrado: ID {estudiante_id}")
+                except Estudiante.DoesNotExist:
+                    print(f"⚠️ Estudiante no encontrado para usuario_id: {usuario.id}")
+                except Exception as e:
+                    print(f"❌ Error obteniendo estudiante: {e}")
+            
             response_data = {
                 'user': {
                     'id': usuario.id,
@@ -208,7 +221,8 @@ class LoginView(APIView):
                     'ci': usuario.ci,
                     'rol': rol_nombre,
                     'rol_id': usuario.rol.id if usuario.rol else None,
-                    'estado': usuario.estado
+                    'estado': usuario.estado,
+                    'estudiante_id': estudiante_id  # ✅ Agregar estudiante_id
                 },
                 'token': f'token_{usuario.id}_{usuario.rol.id}'
             }
@@ -221,8 +235,6 @@ class LoginView(APIView):
             {'mensaje': 'Credenciales inválidas'}, 
             status=status.HTTP_401_UNAUTHORIZED
         )
-    
-# usuarios/views.py - Añade esto al final del archivo
 
 class DocentePorUsuarioView(APIView):
     def get(self, request, usuario_id):
@@ -242,3 +254,18 @@ class DocentePorUsuarioView(APIView):
             todos = Docente.objects.all().values('id', 'usuario_id')
             print(f"Docentes existentes: {list(todos)}")
             return Response({'error': 'Docente no encontrado'}, status=404)
+
+
+class EstudiantePorUsuarioView(APIView):
+    def get(self, request, usuario_id):
+        print(f"🔍 Buscando estudiante con usuario_id: {usuario_id}")
+        
+        try:
+            estudiante = Estudiante.objects.get(usuario_id=usuario_id)
+            print(f"✅ Estudiante encontrado: ID {estudiante.id}")
+            return Response({
+                'estudiante_id': estudiante.id
+            })
+        except Estudiante.DoesNotExist:
+            print(f"❌ Estudiante NO encontrado para usuario_id: {usuario_id}")
+            return Response({'estudiante_id': None}, status=404)

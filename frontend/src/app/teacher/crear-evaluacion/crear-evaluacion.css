@@ -194,3 +194,119 @@ input.form-control:disabled {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   }
 }
+
+
+/* Agrega esto a tu crear-evaluacion.css */
+
+/* Selección de señas */
+.senas-seleccion {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.senas-busqueda {
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8f9fa;
+}
+
+.senas-busqueda input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.senas-lista {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.sena-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.sena-item:hover {
+  background: #f8f9fa;
+}
+
+.sena-item.selected {
+  background: #e6f7e6;
+}
+
+.sena-icon {
+  font-size: 18px;
+}
+
+.sena-nombre {
+  flex: 1;
+  font-size: 14px;
+  color: #1a202c;
+}
+
+.sena-check {
+  color: #48bb78;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.no-senas, .loading-senas {
+  text-align: center;
+  padding: 20px;
+  color: #a0aec0;
+  font-size: 14px;
+}
+
+/* Badges de señas seleccionadas */
+.senas-seleccionadas {
+  margin-top: 12px;
+}
+
+.selected-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.badge-sena {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e6f7e6;
+  color: #2e7d32;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.badge-remove {
+  background: none;
+  border: none;
+  color: #2e7d32;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+  font-weight: bold;
+}
+
+.badge-remove:hover {
+  color: #c62828;
+}
+
+/* Fecha y hora */
+input[type="datetime-local"] {
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  width: 100%;
+}

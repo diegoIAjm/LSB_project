@@ -169,7 +169,15 @@ export const routes: Routes = [
     {
       path: 'crear-evaluacion/:cursoId',
       loadComponent: () => import('./teacher/crear-evaluacion/crear-evaluacion').then(m => m.CrearEvaluacionComponent)
-    }
+    },
+    {
+      path: 'entregas-cursos/:id',
+      loadComponent: () => import('./teacher/entregas-cursos/entregas-cursos').then(m => m.EntregasCursosComponent)
+    },
+    {
+  path: 'estudiante-practicas/:id',
+  loadComponent: () => import('./teacher/estudiante-practicas/estudiante-practicas').then(m => m.EstudiantePracticasComponent)
+}
     ]
   },
 

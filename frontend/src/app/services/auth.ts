@@ -1,9 +1,10 @@
+// src/app/services/auth.ts
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-
 
 export interface User {
   id: number;
@@ -63,15 +64,34 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
-  // 🔹 Obtener el rol del usuario
   getUserRole(): string | null {
     const user = this.getCurrentUser();
     return user ? user.rol : null;
   }
 
-  // 🔹 Obtener el ID del rol
   getUserRolId(): number | null {
     const user = this.getCurrentUser();
     return user ? user.rol_id : null;
+  }
+
+  // ✅ MODIFICAR ESTE MÉTODO - NO hacer llamada HTTP
+  getEstudianteId(): Observable<number | null> {
+    const user = this.getCurrentUser();
+    console.log('Usuario actual:', user);
+    
+    // Usar el estudiante_id del objeto user si existe
+    if (user && user.estudiante_id) {
+      console.log('✅ Estudiante ID encontrado en user:', user.estudiante_id);
+      return of(user.estudiante_id);
+    }
+    
+    // Si no hay estudiante_id, usar el id del usuario (fallback)
+    if (user && user.id) {
+      console.log('⚠️ Usando user.id como estudiante_id:', user.id);
+      return of(user.id);
+    }
+    
+    console.log('❌ No se pudo obtener estudiante_id');
+    return of(null);
   }
 }

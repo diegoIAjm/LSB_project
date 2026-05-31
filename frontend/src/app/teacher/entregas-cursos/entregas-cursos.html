@@ -1,0 +1,68 @@
+<!-- src/app/teacher/entregas-cursos/entregas-cursos.html -->
+
+<div class="entregas-cursos-container">
+  <div class="header">
+    <button class="btn-back" (click)="volver()">
+      ← Volver a cursos
+    </button>
+    <h1>Entregas - {{ cursoNombre }}</h1>
+    <p>Prácticas entregadas por los estudiantes de este curso</p>
+  </div>
+
+  <div class="filter-tabs">
+    <button class="filter-tab" [class.active]="filtroEstado === 'todos'" (click)="filtroEstado='todos'; cargarEntregas()">Todas</button>
+    <button class="filter-tab" [class.active]="filtroEstado === 'pendiente'" (click)="filtroEstado='pendiente'; cargarEntregas()">Pendientes</button>
+    <button class="filter-tab" [class.active]="filtroEstado === 'completado'" (click)="filtroEstado='completado'; cargarEntregas()">Por revisar</button>
+    <button class="filter-tab" [class.active]="filtroEstado === 'revisado'" (click)="filtroEstado='revisado'; cargarEntregas()">Revisadas</button>
+  </div>
+
+  @if (cargando) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Cargando entregas...</p>
+    </div>
+  }
+
+  @if (!cargando && entregasFiltradas.length === 0) {
+    <div class="empty-state">
+      <p>No hay entregas para este curso</p>
+    </div>
+  }
+
+  @if (!cargando && entregasFiltradas.length > 0) {
+    <div class="entregas-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Estudiante</th>
+            <th>Práctica</th>
+            <th>Fecha entrega</th>
+            <th>Estado</th>
+            <th>Nota</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (entrega of entregasFiltradas; track entrega.id) {
+            <tr>
+              <td>{{ entrega.estudiante_nombre }}</td>
+              <td>{{ entrega.evaluacion_titulo }}</td>
+              <td>{{ entrega.fecha_entrega | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>
+                <span class="estado-badge" [class]="getEstadoBadgeClass(entrega.estado)">
+                  {{ getEstadoTexto(entrega.estado) }}
+                </span>
+              </td>
+              <td>
+                @if (entrega.nota_final) {
+                  <span class="nota">{{ entrega.nota_final }}/20</span>
+                } @else {
+                  <span class="sin-nota">-</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
