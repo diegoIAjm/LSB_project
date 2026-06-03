@@ -4,7 +4,10 @@
   <!-- Header -->
   <div class="page-header">
     <button class="btn-back" (click)="volver()">
-      ← Volver a Estudiantes
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Volver a Estudiantes
     </button>
     <div class="header-info">
       <h1>{{ estudianteNombre }}</h1>
@@ -15,42 +18,71 @@
   <!-- Tarjetas de estadísticas -->
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="stat-icon">📋</div>
+      <div class="stat-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+      </div>
       <div class="stat-content">
         <span class="stat-value">{{ estadisticas.totalEvaluaciones }}</span>
         <span class="stat-label">Total prácticas</span>
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon">✅</div>
+      <div class="stat-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
+      </div>
       <div class="stat-content">
         <span class="stat-value">{{ estadisticas.evaluacionesCompletadas }}</span>
         <span class="stat-label">Completadas</span>
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon">⏳</div>
+      <div class="stat-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
       <div class="stat-content">
         <span class="stat-value">{{ estadisticas.evaluacionesPendientes }}</span>
         <span class="stat-label">Pendientes</span>
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon">⭐</div>
+      <div class="stat-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+      </div>
       <div class="stat-content">
         <span class="stat-value">{{ estadisticas.promedioGeneral | number:'1.0' }}/20</span>
         <span class="stat-label">Nota promedio</span>
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon">🎯</div>
+      <div class="stat-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v4l3 3"/>
+        </svg>
+      </div>
       <div class="stat-content">
         <span class="stat-value">{{ estadisticas.precisionPromedio | number:'1.0' }}%</span>
         <span class="stat-label">Precisión promedio</span>
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon">🎬</div>
+      <div class="stat-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      </div>
       <div class="stat-content">
         <span class="stat-value">{{ estadisticas.videosAprobados }}/{{ estadisticas.videosTotales }}</span>
         <span class="stat-label">Videos aprobados</span>
@@ -61,6 +93,10 @@
   <!-- Filtros -->
   <div class="filters-section">
     <div class="search-box">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
       <input 
         type="text" 
         placeholder="Buscar práctica..." 
@@ -76,6 +112,13 @@
       <button class="filter-tab" [class.active]="filtroEstado === 'completado'" (click)="filtroEstado='completado'; filtrarEntregas()">Por revisar</button>
       <button class="filter-tab" [class.active]="filtroEstado === 'revisado'" (click)="filtroEstado='revisado'; filtrarEntregas()">Revisadas</button>
     </div>
+    <button class="btn-estadisticas" (click)="verEstadisticas()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 16v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2M7 10l3-3 3 3 4-4"/>
+        <path d="M17 10V4h-3"/>
+      </svg>
+      Ver Estadísticas
+    </button>
   </div>
 
   <!-- Loading -->
@@ -89,7 +132,11 @@
   <!-- Empty state -->
   @if (!cargando && entregasFiltradas.length === 0) {
     <div class="empty-state">
-      <div class="empty-icon">📭</div>
+      <div class="empty-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <path d="M22 6L12 13L2 6M22 6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6l10 7l10-7z"/>
+        </svg>
+      </div>
       <h3>No hay prácticas</h3>
       <p>Este estudiante aún no ha realizado ninguna práctica</p>
     </div>
@@ -147,66 +194,4 @@
       }
     </div>
   }
-
-  <!-- Modal de detalle de videos -->
-  <div class="modal" *ngIf="mostrarModalVideo" (click)="cerrarModal()">
-    <div class="modal-content modal-large" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>{{ entregaSeleccionada?.evaluacion_titulo }}</h3>
-        <button class="btn-cerrar" (click)="cerrarModal()">×</button>
-      </div>
-      <div class="modal-body">
-        <!-- Resumen -->
-        <div class="resumen-evaluacion">
-          <div class="resumen-item">
-            <span class="resumen-label">Nota final</span>
-            <span class="resumen-value">{{ getNotaFinal(entregaSeleccionada!) }}/20</span>
-          </div>
-          <div class="resumen-item">
-            <span class="resumen-label">Precisión promedio</span>
-            <span class="resumen-value">{{ getPrecisionPromedio(entregaSeleccionada!) | number:'1.0' }}%</span>
-          </div>
-          <div class="resumen-item">
-            <span class="resumen-label">Intentos</span>
-            <span class="resumen-value">{{ entregaSeleccionada?.intentos || 1 }}</span>
-          </div>
-          <div class="resumen-item" *ngIf="getFeedbackGeneral(entregaSeleccionada!)">
-            <span class="resumen-label">Feedback</span>
-            <span class="resumen-value feedback-text">{{ getFeedbackGeneral(entregaSeleccionada!) }}</span>
-          </div>
-        </div>
-        
-        <!-- Videos por seña -->
-        <div class="videos-list">
-          <h4>Videos grabados por seña</h4>
-          <div class="senas-videos">
-            <div *ngFor="let sena of getVideosPorSena(entregaSeleccionada!)" class="sena-section">
-              <div class="sena-header">
-                <h5>📹 Seña: {{ sena.sena_nombre }}</h5>
-                <span class="intentos-badge">{{ sena.videos.length }} intento(s)</span>
-              </div>
-              <div class="videos-grid">
-                <div *ngFor="let video of sena.videos" class="video-card" [class.mejor-intento]="esMejorIntento(video, sena.videos)">
-                  <div class="video-header">
-                    <div class="intento-badge">Intento #{{ video.intento }}</div>
-                    <div class="video-precision" [class]="getColorClase(video.resultado?.precision)">
-                      {{ video.resultado?.precision || 0 }}%
-                    </div>
-                  </div>
-                  <video class="video-preview" controls>
-                    <source [src]="getVideoUrl(video.video_url)" type="video/mp4">
-                    Tu navegador no soporta el elemento video.
-                  </video>
-                  <div class="video-feedback" *ngIf="video.resultado && video.resultado.feedback">
-                    <span>✋ {{ getFeedbackMano(video) }}</span>
-                    <span>🔄 {{ getFeedbackMovimiento(video) }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>

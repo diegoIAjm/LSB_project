@@ -92,12 +92,20 @@ export interface EntregaDocente {
   estudiante_id: number;
   estudiante_nombre: string;
   estudiante_apellido: string;
+  evaluacion_descripcion?: string;
   estado: string;
   fecha_inicio: string;
   fecha_entrega: string | null;
   nota_final: number | null;
   intentos: number;
+  reintentos_permitidos?: number;
   videos: EntregaVideoDocente[];
+  senas_requeridas?: {  
+    sena_id: number;
+    sena_nombre: string;
+    orden: number;
+    puntos_maximos: number;
+  }[];  
   resumen: {
     nota_total: number | null;
     precision_promedio: number | null;
@@ -203,6 +211,10 @@ calificarEntrega(entregaId: number, nota: number, observaciones: string): Observ
     nota: nota,
     observaciones: observaciones
   });
+}
+
+getSenasPorCurso(cursoId: number): Observable<any[]> {
+  return this.http.get<any[]>(`${this.apiUrl}/evaluaciones/curso/${cursoId}/senas/`);
 }
 
 

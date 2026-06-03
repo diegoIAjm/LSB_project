@@ -3,75 +3,86 @@
 .estudiante-practicas-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 32px;
   min-height: 100vh;
-  background: #f8fafc;
+  background: #f5f6f8;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
 }
 
 /* Header */
 .page-header {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 32px;
   margin-bottom: 32px;
   flex-wrap: wrap;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .btn-back {
-  background: white;
-  border: 1px solid #e2e8f0;
-  color: #1e293b;
-  padding: 8px 20px;
-  border-radius: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  padding: 8px 0;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   transition: all 0.2s;
 }
 
 .btn-back:hover {
-  background: #f1f5f9;
-  transform: translateX(-3px);
+  color: #1f2937;
+  transform: translateX(-2px);
+}
+
+.btn-back svg {
+  stroke: currentColor;
 }
 
 .header-info h1 {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 600;
-  color: #0f172a;
+  color: #111827;
   margin-bottom: 4px;
+  letter-spacing: -0.3px;
 }
 
 .header-info p {
-  font-size: 13px;
-  color: #64748b;
+  font-size: 14px;
+  color: #6b7280;
 }
 
 /* Stats Grid */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-  margin-bottom: 28px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1px;
+  margin-bottom: 32px;
+  background: #e5e7eb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .stat-card {
   background: white;
-  border-radius: 16px;
-  padding: 18px 20px;
+  padding: 20px 16px;
   display: flex;
-  align-items: center;
-  gap: 14px;
-  border: 1px solid #e2e8f0;
+  flex-direction: column;
+  gap: 8px;
   transition: all 0.2s;
 }
 
 .stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background: #fafbfc;
 }
 
-.stat-icon {
-  font-size: 32px;
+.stat-icon svg {
+  stroke: #9ca3af;
 }
 
 .stat-content {
@@ -80,14 +91,18 @@
 }
 
 .stat-value {
-  font-size: 24px;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: 28px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.2;
 }
 
 .stat-label {
   font-size: 12px;
-  color: #64748b;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
 }
 
 /* Filters */
@@ -98,20 +113,34 @@
   flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 24px;
+  background: white;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
 }
 
 .search-box {
   flex: 1;
-  max-width: 300px;
+  position: relative;
+  max-width: 280px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
 }
 
 .search-input {
   width: 100%;
-  padding: 10px 16px;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  padding: 10px 12px 10px 36px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   font-size: 13px;
   background: white;
+  transition: all 0.2s;
 }
 
 .search-input:focus {
@@ -128,22 +157,47 @@
 .filter-tab {
   padding: 6px 14px;
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #e5e7eb;
   border-radius: 20px;
   font-size: 12px;
-  color: #475569;
+  color: #4b5563;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .filter-tab:hover {
-  background: #f1f5f9;
+  background: #f9fafb;
+  border-color: #d1d5db;
 }
 
 .filter-tab.active {
-  background: #3b82f6;
-  border-color: #3b82f6;
+  background: #1f2937;
+  border-color: #1f2937;
   color: white;
+}
+
+.btn-estadisticas {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-estadisticas:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.btn-estadisticas svg {
+  stroke: currentColor;
 }
 
 /* Loading */
@@ -151,13 +205,14 @@
   text-align: center;
   padding: 60px;
   background: white;
-  border-radius: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
 }
 
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid #e2e8f0;
+  border: 3px solid #e5e7eb;
   border-top-color: #3b82f6;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -173,23 +228,35 @@
   text-align: center;
   padding: 60px;
   background: white;
-  border-radius: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
 }
 
 .empty-icon {
-  font-size: 64px;
-  margin-bottom: 16px;
-  opacity: 0.5;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 20px;
+  background: #f9fafb;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-icon svg {
+  stroke: #9ca3af;
 }
 
 .empty-state h3 {
   font-size: 18px;
-  color: #1e293b;
+  font-weight: 600;
+  color: #111827;
   margin-bottom: 8px;
 }
 
 .empty-state p {
-  color: #64748b;
+  color: #6b7280;
+  font-size: 14px;
 }
 
 /* Entregas List */
@@ -201,17 +268,17 @@
 
 .entrega-card {
   background: white;
-  border-radius: 20px;
+  border-radius: 12px;
   padding: 20px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #e5e7eb;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .entrega-card:hover {
   transform: translateX(4px);
-  border-color: #cbd5e1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-color: #d1d5db;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .card-header {
@@ -226,13 +293,13 @@
 .card-title h3 {
   font-size: 16px;
   font-weight: 600;
-  color: #0f172a;
+  color: #111827;
   margin-bottom: 4px;
 }
 
 .card-title .fecha {
   font-size: 11px;
-  color: #94a3b8;
+  color: #6b7280;
 }
 
 .estado-badge {
@@ -276,15 +343,15 @@
   gap: 4px;
 }
 
-.stat-label {
+.stat-item .stat-label {
   font-size: 11px;
-  color: #64748b;
+  color: #6b7280;
 }
 
-.stat-number {
+.stat-item .stat-number {
   font-size: 16px;
   font-weight: 600;
-  color: #0f172a;
+  color: #111827;
 }
 
 .precision-badge {
@@ -317,7 +384,7 @@
 
 .progress-bar {
   height: 6px;
-  background: #e2e8f0;
+  background: #e5e7eb;
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 8px;
@@ -325,14 +392,14 @@
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  background: #3b82f6;
   border-radius: 10px;
   transition: width 0.3s;
 }
 
 .progress-stats {
   font-size: 11px;
-  color: #64748b;
+  color: #6b7280;
 }
 
 .card-footer {
@@ -346,178 +413,16 @@
   font-weight: 500;
 }
 
-/* Modal */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 24px;
-  width: 90%;
-  max-width: 800px;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.modal-header h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.btn-cerrar {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #94a3b8;
-}
-
-.modal-body {
-  padding: 24px;
-}
-
-/* Resumen evaluación */
-.resumen-evaluacion {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.resumen-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.resumen-label {
-  font-size: 11px;
-  color: #64748b;
-}
-
-.resumen-value {
-  font-size: 18px;
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.feedback-text {
-  font-size: 13px;
-  font-weight: normal;
-  color: #475569;
-}
-
-/* Videos list */
-.videos-list h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #0f172a;
-  margin-bottom: 16px;
-}
-
-.videos-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.video-card {
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 16px;
-}
-
-.video-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.sena-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.sena-numero {
-  background: #3b82f6;
-  color: white;
-  width: 28px;
-  height: 28px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.sena-nombre {
-  font-weight: 500;
-  color: #0f172a;
-}
-
-.video-precision {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.video-precision.verde {
-  background: #d1fae5;
-  color: #065f46;
-}
-
-.video-precision.amarillo {
-  background: #fef3c7;
-  color: #b45309;
-}
-
-.video-precision.rojo {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.video-preview {
-  width: 100%;
-  border-radius: 12px;
-  margin-bottom: 12px;
-}
-
-.video-feedback {
-  display: flex;
-  gap: 16px;
-  font-size: 12px;
-  color: #64748b;
-}
-
 /* Responsive */
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .estudiante-practicas-container {
-    padding: 16px;
+    padding: 20px;
   }
   
   .stats-grid {
@@ -526,17 +431,49 @@
   
   .filters-section {
     flex-direction: column;
+    align-items: stretch;
   }
   
   .search-box {
     max-width: 100%;
   }
   
+  .filter-tabs {
+    justify-content: center;
+  }
+  
   .card-stats {
     gap: 16px;
   }
   
-  .resumen-evaluacion {
+  .header-info h1 {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .estudiante-practicas-container {
+    padding: 16px;
+  }
+  
+  .stats-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .filter-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .card-stats {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .entrega-card {
+    padding: 16px;
+  }
+  
+  .card-title h3 {
+    font-size: 14px;
   }
 }

@@ -440,9 +440,20 @@ class EntregaEvaluacionViewSet(viewsets.ModelViewSet):
         
         for video in videos:
             resultado = ResultadosVideo.objects.filter(entrega_video=video).first()
+            
+            # Obtener el nombre de la seña
+            from duolingo.models import Sena
+            sena_nombre = None
+            try:
+                sena = Sena.objects.get(id=video.sena_id)
+                sena_nombre = sena.nombre
+            except:
+                sena_nombre = f"Seña {video.sena_id}"
+            
             videos_data.append({
                 'id': video.id,
                 'sena_id': video.sena_id,
+                'sena_nombre': sena_nombre,
                 'video_url': video.video_url,
                 'fecha_subida': video.fecha_subida,
                 'resultado': {
@@ -453,13 +464,53 @@ class EntregaEvaluacionViewSet(viewsets.ModelViewSet):
                 } if resultado else None
             })
         
+        senas_requeridas = []
+        evaluacion_senas = EvaluacionSenas.objects.filter(evaluacion=entrega.evaluacion).order_by('orden')
+        from duolingo.models import Sena
+        for sena_eval in evaluacion_senas:
+            try:
+                sena = Sena.objects.get(id=sena_eval.sena_id)
+                senas_requeridas.append({
+                    'sena_id': sena_eval.sena_id,
+                    'sena_nombre': sena.nombre,
+                    'orden': sena_eval.orden,
+                    'puntos_maximos': sena_eval.puntos_maximos
+                })
+            except:
+                senas_requeridas.append({
+                    'sena_id': sena_eval.sena_id,
+                    'sena_nombre': f"Seña {sena_eval.sena_id}",
+                    'orden': sena_eval.orden,
+                    'puntos_maximos': sena_eval.puntos_maximos
+                })
+        
+        resumen_data = None
+        if hasattr(entrega, 'resumen') and entrega.resumen:
+            resumen_data = {
+                'nota_total': float(entrega.resumen.nota_total) if entrega.resumen.nota_total else None,
+                'precision_promedio': float(entrega.resumen.precision_promedio) if entrega.resumen.precision_promedio else None,
+                'videos_aprobados': entrega.resumen.videos_aprobados,
+                'videos_total': entrega.resumen.videos_total,
+                'feedback_general': entrega.resumen.feedback_general or ''
+            }
+        
         return Response({
-            'entrega_id': entrega.id,
+            'id': entrega.id,
+            'evaluacion_id': entrega.evaluacion_id,
+            'evaluacion_titulo': entrega.evaluacion.titulo,  
+            'evaluacion_descripcion': entrega.evaluacion.descripcion or '',  
+            'estudiante_id': entrega.estudiante_id,
+            'estudiante_nombre': '',  
+            'estudiante_apellido': '',
             'estado': entrega.estado,
             'fecha_inicio': entrega.fecha_inicio,
             'fecha_entrega': entrega.fecha_entrega,
             'nota_final': float(entrega.nota_final) if entrega.nota_final else None,
-            'videos': videos_data
+            'intentos': entrega.intentos,
+            'reintentos_permitidos': entrega.evaluacion.reintentos_permitidos,  
+            'videos': videos_data,
+            'senas_requeridas': senas_requeridas,  
+            'resumen': resumen_data,
         })
     
     @action(detail=False, methods=['post'], url_path='reiniciar')
@@ -533,6 +584,34 @@ class EntregaEvaluacionViewSet(viewsets.ModelViewSet):
             'intentos_realizados': entrega.intentos,
             'intentos_restantes': evaluacion.reintentos_permitidos - entrega.intentos
         })
+    
+    @action(detail=False, methods=['get'], url_path='curso/(?P<curso_id>[^/.]+)/senas')
+    def senas_por_curso(self, request, curso_id=None):
+        """Obtener todas las señas de todas las evaluaciones de un curso"""
+        from duolingo.models import Sena
+        
+        todas_senas = {}
+        evaluaciones = Evaluaciones.objects.filter(curso_id=curso_id)
+        
+        for evaluacion in evaluaciones:
+            evaluacion_senas = EvaluacionSenas.objects.filter(evaluacion=evaluacion).order_by('orden')
+            for sena_eval in evaluacion_senas:
+                try:
+                    sena = Sena.objects.get(id=sena_eval.sena_id)
+                    if sena.nombre not in todas_senas:
+                        todas_senas[sena.nombre] = {
+                            'sena_id': sena_eval.sena_id,
+                            'sena_nombre': sena.nombre,
+                            'orden': sena_eval.orden,
+                            'puntos_maximos': sena_eval.puntos_maximos
+                        }
+                except:
+                    pass
+        
+        resultado = list(todas_senas.values())
+        resultado.sort(key=lambda x: x['orden'])
+        
+        return Response(resultado)
 
 
 from rest_framework import viewsets

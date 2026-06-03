@@ -177,6 +177,14 @@ export const routes: Routes = [
     {
   path: 'estudiante-practicas/:id',
   loadComponent: () => import('./teacher/estudiante-practicas/estudiante-practicas').then(m => m.EstudiantePracticasComponent)
+},
+{
+  path: 'detalle-practica/:id',
+  loadComponent: () => import('./teacher/detalle-practica/detalle-practica').then(m => m.DetallePracticaComponent)
+},
+{
+  path: 'estadisticas-estudiante/:id',
+  loadComponent: () => import('./teacher/estadisticas-estudiante/estadisticas-estudiante').then(m => m.EstadisticasEstudianteComponent)
 }
     ]
   },

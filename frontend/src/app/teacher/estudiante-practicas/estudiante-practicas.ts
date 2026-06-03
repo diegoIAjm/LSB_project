@@ -16,21 +16,6 @@ interface EstadisticasGenerales {
   videosAprobados: number;
 }
 
-interface VideoConIntento {
-  id: number;
-  sena_id: number;
-  sena_nombre: string;
-  video_url: string;
-  fecha_subida: string;
-  intento: number;
-  resultado: {
-    precision: number;
-    puntuacion: number;
-    color: string;
-    feedback: any;
-  } | null;
-}
-
 @Component({
   selector: 'app-estudiante-practicas',
   standalone: true,
@@ -59,9 +44,6 @@ export class EstudiantePracticasComponent implements OnInit {
     videosTotales: 0,
     videosAprobados: 0
   };
-  
-  entregaSeleccionada: EntregaDocente | null = null;
-  mostrarModalVideo = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -102,33 +84,54 @@ export class EstudiantePracticasComponent implements OnInit {
     });
   }
 
-  calcularEstadisticas(): void {
-    const completadas = this.entregas.filter(e => e.estado === 'revisado' || e.estado === 'completado');
-    const pendientes = this.entregas.filter(e => e.estado === 'pendiente' || e.estado === 'en_progreso');
-    
-    const notas = completadas.filter(e => e.nota_final !== null).map(e => e.nota_final as number);
-    const precisiones = completadas.filter(e => e.resumen?.precision_promedio !== null).map(e => e.resumen?.precision_promedio as number);
-    
-    let totalVideos = 0;
-    let videosAprobados = 0;
-    
-    this.entregas.forEach(entrega => {
-      if (entrega.resumen) {
-        totalVideos += entrega.resumen.videos_total || 0;
-        videosAprobados += entrega.resumen.videos_aprobados || 0;
-      }
+calcularEstadisticas(): void {
+  const completadas = this.entregas.filter(e => e.estado === 'revisado' || e.estado === 'completado');
+  const pendientes = this.entregas.filter(e => e.estado === 'pendiente' || e.estado === 'en_progreso');
+  
+  // ✅ Convertir nota_final a número (puede venir como string)
+  const notas = completadas
+    .filter(e => e.nota_final !== null && e.nota_final !== undefined)
+    .map(e => {
+      const nota = typeof e.nota_final === 'string' ? parseFloat(e.nota_final) : (e.nota_final as number);
+      return isNaN(nota) ? 0 : nota;
     });
-    
-    this.estadisticas = {
-      totalEvaluaciones: this.entregas.length,
-      evaluacionesCompletadas: completadas.length,
-      evaluacionesPendientes: pendientes.length,
-      promedioGeneral: notas.length > 0 ? notas.reduce((a, b) => a + b, 0) / notas.length : 0,
-      precisionPromedio: precisiones.length > 0 ? precisiones.reduce((a, b) => a + b, 0) / precisiones.length : 0,
-      videosTotales: totalVideos,
-      videosAprobados: videosAprobados
-    };
-  }
+  
+  const precisiones = completadas
+    .filter(e => e.resumen?.precision_promedio !== null)
+    .map(e => e.resumen?.precision_promedio as number);
+  
+  let totalVideos = 0;
+  let videosAprobados = 0;
+  
+  this.entregas.forEach(entrega => {
+    if (entrega.resumen) {
+      totalVideos += entrega.resumen.videos_total || 0;
+      videosAprobados += entrega.resumen.videos_aprobados || 0;
+    }
+  });
+  
+  // ✅ Calcular promedio con números
+  const promedioGeneral = notas.length > 0 
+    ? notas.reduce((a, b) => a + b, 0) / notas.length 
+    : 0;
+  
+  const precisionPromedio = precisiones.length > 0 
+    ? precisiones.reduce((a, b) => a + b, 0) / precisiones.length 
+    : 0;
+  
+  console.log('Notas convertidas:', notas);
+  console.log('Promedio general calculado:', promedioGeneral);
+  
+  this.estadisticas = {
+    totalEvaluaciones: this.entregas.length,
+    evaluacionesCompletadas: completadas.length,
+    evaluacionesPendientes: pendientes.length,
+    promedioGeneral: promedioGeneral,
+    precisionPromedio: precisionPromedio,
+    videosTotales: totalVideos,
+    videosAprobados: videosAprobados
+  };
+}
 
   filtrarEntregas(): void {
     let filtradas = [...this.entregas];
@@ -147,16 +150,24 @@ export class EstudiantePracticasComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  verDetalleEntrega(entrega: EntregaDocente): void {
-    this.entregaSeleccionada = entrega;
-    this.mostrarModalVideo = true;
-    this.cdr.detectChanges();
-  }
-
-  cerrarModal(): void {
-    this.mostrarModalVideo = false;
-    this.entregaSeleccionada = null;
-  }
+verDetalleEntrega(entrega: EntregaDocente): void {
+  console.log('Navegando a detalle con:', {
+    entregaId: entrega.id,
+    estudianteId: this.estudianteId,
+    cursoId: this.cursoId,
+    estudianteNombre: this.estudianteNombre,
+    cursoNombre: this.cursoNombre
+  });
+  
+  this.router.navigate(['/teacher/detalle-practica', entrega.id], {
+    queryParams: {
+      estudianteId: this.estudianteId,
+      cursoId: this.cursoId,
+      estudianteNombre: this.estudianteNombre,
+      cursoNombre: this.cursoNombre
+    }
+  });
+}
 
   volver(): void {
     this.router.navigate(['/teacher/curso-estudiantes', this.cursoId]);
@@ -211,54 +222,14 @@ export class EstudiantePracticasComponent implements OnInit {
     return (this.getVideosAprobados(entrega) / total) * 100;
   }
 
-  getFeedbackGeneral(entrega: EntregaDocente): string {
-    return entrega.resumen?.feedback_general || '';
-  }
+  verEstadisticas(): void {
+  this.router.navigate(['/teacher/estadisticas-estudiante', this.estudianteId], {
+    queryParams: {
+      cursoId: this.cursoId,
+      cursoNombre: this.cursoNombre,
+      estudianteNombre: this.estudianteNombre
+    }
+  });
+}
 
-  getFeedbackMano(video: any): string {
-    return video.resultado?.feedback?.mano || 'Mano';
-  }
-
-  getFeedbackMovimiento(video: any): string {
-    return video.resultado?.feedback?.movimiento || 'Movimiento';
-  }
-
-  getVideoUrl(videoUrl: string): string {
-    if (!videoUrl) return '';
-    if (videoUrl.startsWith('http')) return videoUrl;
-    if (videoUrl.startsWith('/')) return `http://127.0.0.1:8000/media${videoUrl}`;
-    return `http://127.0.0.1:8000/media/${videoUrl}`;
-  }
-
-  // Métodos para agrupar videos por seña
-  getVideosPorSena(entrega: EntregaDocente): { sena_nombre: string; videos: VideoConIntento[] }[] {
-    if (!entrega.videos || entrega.videos.length === 0) return [];
-    
-    const videosPorSena: { [key: string]: VideoConIntento[] } = {};
-    
-    entrega.videos.forEach(video => {
-      const nombreSena = video.sena_nombre || `Seña ${video.sena_id}`;
-      if (!videosPorSena[nombreSena]) {
-        videosPorSena[nombreSena] = [];
-      }
-      
-      const intento = videosPorSena[nombreSena].length + 1;
-      
-      videosPorSena[nombreSena].push({
-        ...video,
-        intento: intento
-      });
-    });
-    
-    return Object.entries(videosPorSena).map(([sena_nombre, videos]) => ({
-      sena_nombre,
-      videos
-    }));
-  }
-
-  esMejorIntento(video: VideoConIntento, todosLosVideos: VideoConIntento[]): boolean {
-    if (!video.resultado) return false;
-    const mejorPrecision = Math.max(...todosLosVideos.map(v => v.resultado?.precision || 0));
-    return video.resultado.precision === mejorPrecision && mejorPrecision > 0;
-  }
 }

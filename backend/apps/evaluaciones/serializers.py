@@ -127,15 +127,56 @@ class EntregaEvaluacionSerializer(serializers.ModelSerializer):
     puede_entregar = serializers.SerializerMethodField()
     tiempo_restante = serializers.SerializerMethodField()
     reintentos_permitidos = serializers.SerializerMethodField()
+    evaluacion_titulo = serializers.SerializerMethodField()  
+    evaluacion_descripcion = serializers.SerializerMethodField()  
+    senas_requeridas = serializers.SerializerMethodField()
 
     class Meta:
         model = EntregasEvaluacion
         fields = [
-            'id', 'evaluacion_id', 'estudiante_id', 'estado', 'intentos',  # ✅ Un solo 'intentos'
+            'id', 'evaluacion_id', 'estudiante_id', 'estado', 'intentos',  
             'fecha_inicio', 'fecha_entrega', 'nota_final',
             'videos', 'resumen', 'estudiante_nombre', 'puede_entregar',
-            'tiempo_restante', 'reintentos_permitidos'
+            'tiempo_restante', 'reintentos_permitidos',
+            'evaluacion_titulo', 'evaluacion_descripcion', 'senas_requeridas'
         ]
+
+    def get_senas_requeridas(self, obj):
+        try:
+            senas = EvaluacionSenas.objects.filter(evaluacion=obj.evaluacion).order_by('orden')
+            from duolingo.models import Sena
+            result = []
+            for sena_eval in senas:
+                try:
+                    sena = Sena.objects.get(id=sena_eval.sena_id)
+                    result.append({
+                        'sena_id': sena_eval.sena_id,
+                        'sena_nombre': sena.nombre,
+                        'orden': sena_eval.orden,
+                        'puntos_maximos': sena_eval.puntos_maximos
+                    })
+                except:
+                    result.append({
+                        'sena_id': sena_eval.sena_id,
+                        'sena_nombre': f"Seña {sena_eval.sena_id}",
+                        'orden': sena_eval.orden,
+                        'puntos_maximos': sena_eval.puntos_maximos
+                    })
+            return result
+        except:
+            return []
+
+    def get_evaluacion_titulo(self, obj):
+        try:
+            return obj.evaluacion.titulo
+        except:
+            return None
+
+    def get_evaluacion_descripcion(self, obj):
+        try:
+            return obj.evaluacion.descripcion
+        except:
+            return None
 
     def get_reintentos_permitidos(self, obj):
         return obj.evaluacion.reintentos_permitidos

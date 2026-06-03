@@ -4,10 +4,15 @@
   <!-- Header -->
   <div class="page-header">
     <button class="btn-back" (click)="volver()">
-      ← Volver
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Volver
     </button>
-    <h1>📝 Asignar Nueva Práctica</h1>
-    <p>Curso: <strong>{{ cursoNombre || 'Cargando...' }}</strong></p>
+    <div class="header-title">
+      <h1>Asignar Nueva Práctica</h1>
+      <p>Curso: <strong>{{ cursoNombre || 'Cargando...' }}</strong></p>
+    </div>
   </div>
 
   <!-- Formulario -->
@@ -17,13 +22,13 @@
         
         <!-- Curso (solo lectura) -->
         <div class="form-group">
-          <label class="form-label">📚 Curso</label>
+          <label class="form-label">Curso</label>
           <input type="text" class="form-control" [value]="cursoNombre" disabled>
         </div>
 
         <!-- Lección -->
         <div class="form-group">
-          <label class="form-label">📖 Lección *</label>
+          <label class="form-label">Lección <span class="required">*</span></label>
           <select formControlName="leccion_id" class="form-control" (change)="onLeccionChange()">
             <option value="">Seleccionar lección</option>
             @for (leccion of lecciones; track leccion.id) {
@@ -37,7 +42,7 @@
 
         <!-- Título -->
         <div class="form-group">
-          <label class="form-label">🏷️ Título de la Práctica *</label>
+          <label class="form-label">Título de la Práctica <span class="required">*</span></label>
           <input type="text" formControlName="titulo" class="form-control" 
                  placeholder="Ej: Evaluación de señas - Unidad 1">
           @if (evaluacionForm.get('titulo')?.invalid && evaluacionForm.get('titulo')?.touched) {
@@ -47,7 +52,7 @@
 
         <!-- Descripción -->
         <div class="form-group">
-          <label class="form-label">📝 Descripción *</label>
+          <label class="form-label">Descripción <span class="required">*</span></label>
           <textarea formControlName="descripcion" rows="4" class="form-control" 
                     placeholder="Describe lo que los estudiantes deben hacer, qué señas deben grabar, etc..."></textarea>
           @if (evaluacionForm.get('descripcion')?.invalid && evaluacionForm.get('descripcion')?.touched) {
@@ -57,7 +62,7 @@
 
         <!-- Fecha Límite con hora -->
         <div class="form-group">
-          <label class="form-label">⏰ Fecha y Hora Límite *</label>
+          <label class="form-label">Fecha y Hora Límite <span class="required">*</span></label>
           <input type="datetime-local" formControlName="fecha_limite" class="form-control">
           @if (evaluacionForm.get('fecha_limite')?.invalid && evaluacionForm.get('fecha_limite')?.touched) {
             <div class="error-message">Seleccione una fecha y hora límite</div>
@@ -66,9 +71,15 @@
 
         <!-- Selección de señas -->
         <div class="form-group">
-          <label class="form-label">🖐️ Señas a evaluar *</label>
+          <label class="form-label">Señas a evaluar <span class="required">*</span></label>
           <div class="senas-seleccion">
             <div class="senas-busqueda" *ngIf="senasDisponibles.length > 0">
+              <div class="search-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+              </div>
               <input type="text" 
                      class="form-control" 
                      [(ngModel)]="busquedaSena" 
@@ -84,7 +95,11 @@
                    (click)="toggleSena(sena.id, sena.nombre)">
                 <span class="sena-icon">✋</span>
                 <span class="sena-nombre">{{ sena.nombre }}</span>
-                <span class="sena-check" *ngIf="isSenaSelected(sena.id)">✓</span>
+                <span class="sena-check" *ngIf="isSenaSelected(sena.id)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                </span>
               </div>
               
               <div *ngIf="senasFiltradas.length === 0 && !cargandoSenas" class="no-senas">
@@ -115,14 +130,14 @@
 
         <!-- Tiempo estimado -->
         <div class="form-group">
-          <label class="form-label">⏱️ Tiempo estimado (minutos)</label>
+          <label class="form-label">Tiempo estimado (minutos)</label>
           <input type="number" formControlName="tiempo_estimado_minutos" class="form-control" 
                  placeholder="Ej: 30" min="1" max="180">
         </div>
 
         <!-- Reintentos permitidos -->
         <div class="form-group">
-          <label class="form-label">🔄 Reintentos permitidos</label>
+          <label class="form-label">Reintentos permitidos</label>
           <select formControlName="reintentos_permitidos" class="form-control">
             <option [value]="1">1 intento</option>
             <option [value]="2">2 intentos</option>
@@ -135,9 +150,9 @@
           <button type="button" class="btn-cancelar" (click)="volver()">Cancelar</button>
           <button type="submit" class="btn-crear" [disabled]="evaluacionForm.invalid || loading || senasSeleccionadas.length === 0">
             @if (loading) {
-              <span>⏳ Asignando...</span>
+              <span>Asignando...</span>
             } @else {
-              <span>📤 Asignar Práctica</span>
+              <span>Asignar Práctica</span>
             }
           </button>
         </div>

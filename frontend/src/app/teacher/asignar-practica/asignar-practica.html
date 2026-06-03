@@ -2,15 +2,23 @@
 
 <div class="asignar-practica-container">
   <div class="page-header">
-    <h1>📝 Asignar Práctica</h1>
-    <p>Selecciona un curso para asignar una nueva práctica o evaluación</p>
+    <div class="header-content">
+      <h1>Asignar Práctica</h1>
+      <p>Seleccione un curso para asignar una nueva práctica o evaluación</p>
+    </div>
   </div>
 
   <!-- Buscador -->
   <div class="search-section">
+    <div class="search-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+    </div>
     <input 
       type="text" 
-      placeholder="🔍 Buscar curso..." 
+      placeholder="Buscar curso..." 
       [(ngModel)]="filtroBusqueda"
       (input)="filtrarCursos()"
       class="search-input"
@@ -26,7 +34,13 @@
 
   @if (!cargando && cursosFiltrados.length === 0) {
     <div class="empty-state">
-      <p>No hay cursos disponibles</p>
+      <div class="empty-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M22 6L12 13L2 6M22 6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6l10 7l10-7z"/>
+        </svg>
+      </div>
+      <h3>No hay cursos disponibles</h3>
+      <p>No se encontraron cursos para asignar prácticas</p>
     </div>
   }
 
@@ -34,16 +48,37 @@
     <div class="cursos-grid">
       @for (curso of cursosFiltrados; track curso.id) {
         <div class="curso-card">
-          <div class="curso-icon">{{ getIconoPorNivel(curso.nivel) }}</div>
-          <h3>{{ curso.nombre }}</h3>
-          <p class="curso-nivel">{{ curso.nivel_nombre }}</p>
-          <p class="curso-fecha">📅 Inicio: {{ curso.fecha_inicio | date:'dd/MM/yyyy' }}</p>
+          <div class="curso-header">
+            <div class="curso-nivel-badge">{{ curso.nivel_nombre || 'Nivel ' + curso.nivel }}</div>
+            <h3>{{ curso.nombre }}</h3>
+          </div>
+          <div class="curso-info">
+            <div class="info-item">
+              <span class="info-label">Fecha de inicio</span>
+              <span class="info-value">{{ curso.fecha_inicio | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Modalidad</span>
+              <span class="info-value">{{ curso.modalidad || 'Virtual' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Estado</span>
+              <span class="info-value estado-activo">{{ curso.estado || 'Activo' }}</span>
+            </div>
+          </div>
           <div class="curso-actions">
             <button class="btn-asignar" (click)="asignarPractica(curso.id, curso.nombre)">
-              📝 Asignar Práctica
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              Asignar Práctica
             </button>
             <button class="btn-ver-entregas" (click)="verEntregas(curso.id, curso.nombre)">
-              📋 Ver Entregas
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              Ver Entregas
             </button>
           </div>
         </div>

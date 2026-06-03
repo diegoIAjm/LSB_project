@@ -1,0 +1,193 @@
+<!-- src/app/teacher/detalle-practica/detalle-practica.html -->
+
+<div class="detalle-practica-container">
+  <!-- Header -->
+  <div class="page-header">
+    <button class="btn-back" (click)="volver()">
+      ← Volver a prácticas
+    </button>
+    <div class="header-info">
+      <h1>{{ entrega?.evaluacion_titulo || 'Cargando...' }}</h1>
+      <p>{{ estudianteNombre }} • {{ cursoNombre }}</p>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (cargando) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Cargando detalles...</p>
+    </div>
+  }
+
+  <!-- Error state -->
+  @if (!cargando && errorCargando) {
+    <div class="error-state">
+      <div class="error-icon">⚠️</div>
+      <h3>Error al cargar los detalles</h3>
+      <p>No se pudieron cargar los detalles de esta práctica</p>
+      <button class="btn-reintentar" (click)="reintentarCarga()">Reintentar</button>
+    </div>
+  }
+
+  <!-- Detalle -->
+  @if (!cargando && !errorCargando && entrega) {
+    <!-- Información de la práctica -->
+    <div class="info-practica">
+      <div class="info-card">
+        <div class="info-icon">📝</div>
+        <div class="info-content">
+          <h4>Título</h4>
+          <p>{{ entrega.evaluacion_titulo }}</p>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">📅</div>
+        <div class="info-content">
+          <h4>Fecha de entrega</h4>
+          <p>{{ entrega.fecha_entrega ? (entrega.fecha_entrega | date:'dd/MM/yyyy HH:mm') : 'No entregada' }}</p>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🔄</div>
+        <div class="info-content">
+          <h4>Estado</h4>
+          <p class="estado-texto" [class]="getEstadoBadgeClass(entrega.estado)">{{ getEstadoTexto(entrega.estado) }}</p>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🎯</div>
+        <div class="info-content">
+          <h4>Intentos permitidos</h4>
+          <p>{{ entrega.reintentos_permitidos || 1 }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Descripción de la práctica -->
+    @if (getDescripcion()) {
+      <div class="descripcion-card">
+        <div class="descripcion-icon">📋</div>
+        <div class="descripcion-content">
+          <h4>Descripción</h4>
+          <p>{{ getDescripcion() }}</p>
+        </div>
+      </div>
+    }
+
+    <!-- Tarjetas de estadísticas -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-content">
+          <span class="stat-value">{{ getNotaFinal() }}/20</span>
+          <span class="stat-label">Nota final</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-content">
+          <span class="stat-value">{{ getPrecisionPromedio() | number:'1.0' }}%</span>
+          <span class="stat-label">Precisión promedio</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔄</div>
+        <div class="stat-content">
+          <span class="stat-value">{{ entrega.intentos }}</span>
+          <span class="stat-label">Intentos realizados</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📹</div>
+        <div class="stat-content">
+          <span class="stat-value">{{ entrega.videos?.length || 0 }}</span>
+          <span class="stat-label">Videos grabados</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feedback general -->
+    @if (getFeedbackGeneral()) {
+      <div class="feedback-card">
+        <div class="feedback-icon">💬</div>
+        <div class="feedback-content">
+          <h4>Feedback del docente</h4>
+          <p>{{ getFeedbackGeneral() }}</p>
+        </div>
+      </div>
+    }
+
+    <!-- Señas requeridas -->
+    <div class="senas-requeridas">
+      <h2>📋 Señas a evaluar</h2>
+      @if (getSenasRequeridas().length === 0) {
+        <div class="no-senas">
+          <p>No hay señas registradas para esta práctica</p>
+        </div>
+      } @else {
+        <div class="senas-lista">
+          @for (senaInfo of getSenasRequeridas(); track senaInfo.sena_id) {
+            <div class="sena-requerida-card">
+              <div class="sena-requerida-icon">✋</div>
+              <div class="sena-requerida-info">
+                <h4>{{ senaInfo.sena_nombre }}</h4>
+                <p>Orden: {{ senaInfo.orden }} • Puntos máximos: {{ senaInfo.puntos_maximos }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Videos por seña -->
+    <div class="videos-section">
+      <h2>📹 Videos grabados por el estudiante</h2>
+      @if (getVideosPorSena().length === 0) {
+        <div class="no-videos">
+          <p>No hay videos disponibles para esta práctica</p>
+        </div>
+      } @else {
+        <div class="senas-container">
+          @for (sena of getVideosPorSena(); track sena.sena_nombre) {
+            <div class="sena-card">
+              <div class="sena-header">
+                <div class="sena-title">
+                  <span class="sena-icon">📹</span>
+                  <h3>{{ sena.sena_nombre }}</h3>
+                </div>
+                <span class="intentos-badge">{{ sena.videos.length }} intento(s)</span>
+              </div>
+              <div class="videos-grid">
+                @for (video of sena.videos; track video.id) {
+                  <div class="video-card" [class.mejor-intento]="esMejorIntento(video, sena.videos)">
+                    <div class="video-header">
+                      <div class="intento-tag">Intento #{{ video.intento }}</div>
+                      <div class="precision-tag" [class]="getColorClase(video.resultado?.precision)">
+                        {{ video.resultado?.precision || 0 }}%
+                      </div>
+                    </div>
+                    <video class="video-preview" controls>
+                      <source [src]="getVideoUrl(video.video_url)" type="video/mp4">
+                      Tu navegador no soporta el elemento video.
+                    </video>
+                    <div class="video-feedback" *ngIf="video.resultado?.feedback">
+                      <div class="feedback-item">
+                        <span>✋</span>
+                        <span>{{ getFeedbackMano(video) }}</span>
+                      </div>
+                      <div class="feedback-item">
+                        <span>🔄</span>
+                        <span>{{ getFeedbackMovimiento(video) }}</span>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
